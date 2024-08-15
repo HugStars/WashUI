@@ -18,12 +18,10 @@ hero:
   actions:
     - theme: brand
       text: 组件
-      link: /components
+      link: /components/button
     - theme: alt
       text: 记录
       link: /records
-
-
 # features:
 #   - icon: 🔨
 #     title: 实际项目

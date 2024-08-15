@@ -6,12 +6,18 @@ export default {
                 {
                     text: set_title('按钮', 'BUTTON'),
                     link: '/components/button',
-                    // collapsed: false,
-                    items: [
-                        { text: '按钮 &lt;button&gt;', }
-                    ]
+                    collapsed: false,
+                    // items: [
+                    //     {
+                    //         text: '基本',
+                    //         link: '/components/button#1',
+                    //     }
+                    // ]
                 },
-                { text: set_title('分割线', 'HR'), link: '/components/hr' },
+                {
+                    text: set_title('分割线', 'HR'),
+                    link: '/components/hr'
+                },
             ]
         }
     ]
