@@ -21,13 +21,13 @@ npm run build:ui
 npm run preview
 
 # 启动文档服务
-npm run docs:dev
+npm run serve:docs
 
 # 打包文档
-npm run docs:build
+npm run build:docs
 
 # 预览文档
-npm run docs:preview
+npm run preview:docs
 
 # 同时启动开发服务和文档服务
 npm run serve_both

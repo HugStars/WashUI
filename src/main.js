@@ -8,7 +8,6 @@ import CyanUI from '../Cyan/index'
 const app = createApp(App)
 
 // - 也可使用 CyanUI(app,'c-')
-
 app.use(CyanUI)
 
 app.use(router)

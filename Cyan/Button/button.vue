@@ -1,5 +1,5 @@
 <template>
-    <button>
+    <button class="cyan_button">
         <slot />
     </button>
 </template>
@@ -13,3 +13,9 @@ const props = defineProps({ // 接受传参
     }
 })
 </script>
+
+<style lang="scss">
+.cyan_button{
+    border: 2px solid #ccc;
+}
+</style>
