@@ -156,3 +156,7 @@ h1, h2 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
+.vp-doc div[class*='language-'], .vp-block{
+    margin: unset;
+}

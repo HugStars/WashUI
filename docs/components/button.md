@@ -14,16 +14,35 @@
 
 </UICode>
 
+
+## 尺寸
+
+<UICode>
+
+- 尺寸 ： `mini` 、 `small` 、 `medium` 、 `large` 
+
+<!-- @include: @/code/button/button_size.md -->
+
+<template #code>
+
+<<< @/code/button/button_size.md
+
+</template>
+
+</UICode>
+
+
 ## 属性
 
 <UICode>
 
-按钮的属性有：`round` 等
-
-属性值均为 `true` 或 `false`
+- 圆角 ： `round` 、 `circle`
+- 透明 ： `transp` 
+- 虚线 ： `dotted` 、 `dashed` 
+- 禁用 ： `disabled` 
+- 文本 ： `text`
 
 <!-- @include: @/code/button/button_attribute.md -->
-
 
 <template #code>
 
@@ -32,17 +51,3 @@
 </template>
 
 </UICode>
-
-::: code-group
-
-```sh [pnpm]
-#查询pnpm版本
-pnpm -v
-```
-
-```sh [yarn]
-#查询yarn版本
-yarn -v
-```
-
-:::
