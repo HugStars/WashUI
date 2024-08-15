@@ -5,7 +5,10 @@ import { fileURLToPath, URL } from 'node:url'
 
 
 // - Vite官网：https://cn.vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(command => {
+    let { mode } = command
+
+    console.log("命令：" + JSON.stringify(command))
     console.log("模式：" + mode)
 
     let config = {
@@ -27,8 +30,8 @@ export default defineConfig(({ mode }) => {
         }
     }
 
-    if (mode == 'lib') config['build'] = {
-        outDir: 'Cyan_Lib', // 指定构建结果的输出目录
+    if (mode == 'ui') config['build'] = {
+        outDir: 'CyanUI', // 指定构建结果的输出目录
         target: 'es2015', // 指定要构建的目标环境，可以是某个浏览器的版本，或者是Node.js的版本
         minify: 'esbuild', // 是否为代码开启压缩
         cssTarget: 'chrome80',
