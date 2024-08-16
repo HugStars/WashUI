@@ -8,10 +8,10 @@
         "build": "vite build",
         "build:ui": "vite build --mode ui",
         "preview": "vite preview",
-        "serve:docs": "vitepress dev ./docs --open",
+        "serve:docs": "vitepress dev ./docs --open --host",
         "build:docs": "vitepress build ./docs",
         "preview:docs": "vitepress preview ./docs",
-        "serve_both": "concurrently \"vite\" \"vitepress dev ./docs\""
+        "serve:both": "concurrently \"vite\" \"vitepress dev ./docs\""
     },
     "dependencies": {
         "sass-embedded": "^1.77.8",

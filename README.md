@@ -30,7 +30,7 @@ npm run build:docs
 npm run preview:docs
 
 # 同时启动开发服务和文档服务
-npm run serve_both
+npm run serve:both
 ```
 
 ## 目录

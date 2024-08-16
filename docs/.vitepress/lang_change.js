@@ -4,6 +4,7 @@ export default {
     lightModeSwitchTitle: "切换日间主题",
     darkModeSwitchTitle: "切换夜晚主题",
     outlineTitle: "大纲",
+    sidebarMenuLabel: "菜单",
     notFound: {
         code: "404",
         title: "页面不存在",
@@ -14,5 +15,6 @@ export default {
     docFooter: {
         prev: "上一篇",
         next: "下一篇"
-    }
+    },
+    externalLinkIcon: true,
 }

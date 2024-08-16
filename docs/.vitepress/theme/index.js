@@ -1,7 +1,7 @@
 import DefaultTheme from "vitepress/theme"
-import "./custom.css"
-import UICode from './UICode.vue'
-// import Layout from './Layout.vue'
+import "./custom.scss"
+import UICode from '../component/UICode.vue'
+import Layout from '../component/Layout.vue'
 
 
 import Cyan from '../../../Cyan'
@@ -9,11 +9,11 @@ import Cyan from '../../../Cyan'
 
 export default {
     ...DefaultTheme,
+    Layout,
     NotFound: () => "404",
     enhanceApp(argument) {
-        let { app, router, siteData } = argument
+        let { app } = argument
         app.component('UICode', UICode)
-        // app.component('Layout', Layout)
         app.use(Cyan)
     }
 }

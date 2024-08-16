@@ -10,5 +10,9 @@
     flex-flow: wrap;
     justify-content: flex-start;
     gap: 8px 12px;
+
+    &+& {
+        margin-top: 10px;
+    }
 }
 </style>

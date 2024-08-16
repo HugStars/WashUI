@@ -18,10 +18,11 @@ hero:
   actions:
     - theme: brand
       text: 组件
-      link: /components/button
-    - theme: alt
-      text: 记录
-      link: /records
+      link: /components
+    - theme: brand
+      text: 方法
+      link: /function
+
 # features:
 #   - icon: 🔨
 #     title: 实际项目
@@ -33,4 +34,3 @@ hero:
 #     title: Vue驱动。
 #     details: 享受 Vue3 + vite3 的开发体验，在 Markdown 中使用 Vue 组件，同时可以使用 Vue 来开发自定义主题。
 ---
-

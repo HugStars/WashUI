@@ -9,7 +9,6 @@ import { nextTick, provide } from 'vue'
 
 const { isDark } = useData()
 
-
 const enableTransitions = () =>
     'startViewTransition' in document &&
     window.matchMedia('(prefers-reduced-motion: no-preference)').matches
@@ -43,7 +42,6 @@ provide('toggle-appearance', async ({ clientX: x, clientY: y }) => {
     )
 })
 </script>
-
 
 
 <style>
