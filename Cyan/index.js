@@ -2,6 +2,8 @@ import { defineAsyncComponent } from 'vue'
 
 import ripple from './Utils/v-ripple'
 
+import "./index.scss"
+
 const components = import.meta.glob('./*/*.vue')
 
 // - 传入 vue实例 和 组件前缀 prefix

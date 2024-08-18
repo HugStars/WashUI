@@ -19,6 +19,7 @@ const HrClass = computed(() => {
         'vertical': props.type === 'v',
     }
 })
+
 </script>
 
 <style lang="scss">

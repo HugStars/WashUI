@@ -1,12 +1,12 @@
 <template>
-    <button :class="ButtonClass" :disabled="disabled" v-ripple
-        :style="{ '--w': props.w, '--h': props.h, '--bg': GRB_Color }">
+    <button :class="ButtonClass" :disabled="disabled" v-ripple :style="{ '--w': props.w, '--h': props.h, '--bg': GRB_Color }">
         <slot></slot>
     </button>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue';
+import { FnHexToRGB } from '../Utils/utils_fn.js'
 
 let GRB_Color = ref('')
 
@@ -63,24 +63,7 @@ if (props.color) {
     GRB_Color = FnHexToRGB(props.color)
 }
 
-function FnHexToRGB(color) {
-    if (color.includes('rgb')) {
-        let match = /^rgb\((\d+),(\d+),(\d+)\)$/
-        if (color.includes(" ")) match = /^rgb\((\d+) (\d+) (\d+)\)$/
-        return color.replace(match, (m, r, g, b) => `${r} ${g} ${b}`)
-    }
 
-    if (color.length == 4) color = color.replace(/^#(.)(.)(.)$/, '$1$1$2$2$3$3')
-    color = color.replace(/^#/, '')
-
-    const bigintColor = parseInt(color, 16)
-
-    const r = (bigintColor >> 16) & 255
-    const g = (bigintColor >> 8) & 255
-    const b = bigintColor & 255
-
-    return `${r} ${g} ${b}`
-}
 
 </script>
 
@@ -99,7 +82,7 @@ function FnHexToRGB(color) {
     overflow: hidden;
     font-size: var(--fs);
     cursor: pointer;
-    transition: background .2s, box-shadow .2s;
+    transition: background 0.2s, box-shadow 0.2s;
     user-select: none;
 
     &.mini {
@@ -159,7 +142,7 @@ function FnHexToRGB(color) {
         border-color: #e0e0e6;
         color: #333639;
         background-color: #e0e0e6;
-        opacity: .5;
+        opacity: 0.5;
 
         &.transparent {
             background-color: transparent;
@@ -178,7 +161,7 @@ function FnHexToRGB(color) {
 
     &.fade {
         border-color: transparent;
-        background-color: rgba(var(--bg), .1);
+        background-color: rgba(var(--bg), 0.1);
         color: rgb(var(--bg));
 
         &.dotted {
@@ -194,34 +177,6 @@ function FnHexToRGB(color) {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-    }
-
-    &.default {
-        --bg: 80, 146, 255;
-    }
-
-    &.primary {
-        --bg: 20, 184, 166;
-    }
-
-    &.info {
-        --bg: 100, 116, 139;
-    }
-
-    &.success {
-        --bg: 65, 207, 125;
-    }
-
-    &.error {
-        --bg: 255, 118, 125;
-    }
-
-    &.warn {
-        --bg: 245, 189, 30;
-    }
-
-    &.help {
-        --bg: 156, 113, 254;
     }
 }
 </style>
