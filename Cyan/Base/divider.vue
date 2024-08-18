@@ -78,19 +78,19 @@ else if (props.right) TextPosition = 'right'
 
 <style lang="scss">
 .cyan_divider {
-    position: relative;
     --w: 100%;
     --h: 2px;
     --m: 6px;
 
-    &.default {
-        --bg: 226, 226, 226;
-    }
-
+    position: relative;
     width: var(--w);
     height: var(--h);
     margin: var(--m) auto;
     background-color: rgb(var(--bg));
+
+    &.default {
+        --bg: 226, 226, 226;
+    }
 
     &.vertical {
         --w: 2px;
