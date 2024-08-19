@@ -99,10 +99,10 @@ export default {
         {
             "text": "便捷方法",
             "items": [
-                { ...base_menu('时间格式化', 'time format') },
-                { ...base_menu('金额格式化', 'money format') },
-                { ...base_menu('Base64转换', 'base64') },
-                { ...base_menu('文件下载', 'down') }
+                { ...base_menu('Base64转换', 'base64', 'function') },
+                { ...base_menu('文件下载', 'down', 'function') },
+                { ...base_menu('金额格式化', 'money format', 'function') },
+                { ...base_menu('时间格式化', 'time format', 'function') },
             ]
         },
         {
@@ -116,7 +116,7 @@ export default {
     ]
 }
 
-function base_menu(title, name) {
+function base_menu(title, name, path) {
     const words = name.split(' ')
     const capitalizedWords = words.map(word =>
         word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
@@ -126,6 +126,6 @@ function base_menu(title, name) {
 
     return {
         text: `${title} <span style="font-size:12px">${formattedString}</span>`,
-        link: `/components/${linkString}`
+        link: `/${path ? path : 'components'}/${linkString}`
     }
 }

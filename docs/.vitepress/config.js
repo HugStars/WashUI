@@ -1,6 +1,7 @@
 import sidebar from "./sidebar"
 import lang_change from "./lang_change"
 
+console.log(sidebar)
 
 export default {
     title: 'CyanUI',
@@ -15,8 +16,8 @@ export default {
         sidebar,
         logo: '../assets/favicon.svg',
         nav: [
-            { text: '组件', link: '/components/', activeMatch: '/components/' },
-            { text: '方法', link: '/function/', activeMatch: '/function/' },
+            { text: '组件', link: '/components/badge', activeMatch: '/components/' },
+            { text: '方法', link: '/function/base64', activeMatch: '/function/' },
             {
                 text: 'v0.01',
                 items: [
@@ -56,4 +57,8 @@ export default {
         },
         ...lang_change,
     },
+    rewrites: {
+        'components/:type/:name': 'components/:name',
+        'function/:type/:name': 'function/:name',
+    }
 }

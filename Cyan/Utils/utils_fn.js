@@ -6,9 +6,10 @@
 
 export function FnHexToRGB(color) {
     if (color.includes('rgb')) {
+        color = color.replaceAll(', ', ',')
         let match = /^rgb\((\d+),(\d+),(\d+)\)$/
         if (color.includes(" ")) match = /^rgb\((\d+) (\d+) (\d+)\)$/
-        return color.replace(match, (m, r, g, b) => `${r} ${g} ${b}`)
+        return color.replace(match, (m, r, g, b) => `${r.trim()} ${g.trim()} ${b.trim()}`)
     }
 
     if (color.length == 4) color = color.replace(/^#(.)(.)(.)$/, '$1$1$2$2$3$3')
