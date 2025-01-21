@@ -18,10 +18,10 @@ hero:
   actions:
     - theme: brand
       text: 组件
-      link: /components
+      link: /components/badge
     - theme: brand
       text: 方法
-      link: /function
+      link: /function/base64
 
 # features:
 #   - icon: 🔨

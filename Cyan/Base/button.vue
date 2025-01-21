@@ -1,5 +1,5 @@
 <template>
-    <button :class="ButtonClass" :disabled="disabled" v-ripple :style="{ '--w': props.w, '--h': props.h, '--bg': GRB_Color }">
+    <button :class="ButtonClass" :disabled="disabled" v-ripple :style="{ '--w': props.w, '--h': props.h, '--bg': RGB_Color }">
         <slot></slot>
     </button>
 </template>
@@ -8,7 +8,7 @@
 import { computed, ref } from 'vue';
 import { FnHexToRGB } from '../Utils/utils_fn.js'
 
-let GRB_Color = ref('')
+let RGB_Color = ref('')
 
 const props = defineProps({
     type: {
@@ -60,7 +60,7 @@ const ButtonClass = computed(() => ({
 }))
 
 if (props.color) {
-    GRB_Color = FnHexToRGB(props.color)
+    RGB_Color = FnHexToRGB(props.color)
 }
 
 

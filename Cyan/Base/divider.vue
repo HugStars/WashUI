@@ -81,7 +81,6 @@ else if (props.right) TextPosition = 'right'
     --w: 100%;
     --h: 2px;
     --m: 6px;
-
     position: relative;
     width: var(--w);
     height: var(--h);
