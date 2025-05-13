@@ -89,7 +89,7 @@
 
 ## 更多属性
 
-分割线样式： `dotted` 、 `dashed`
+分割线样式： `centered` 、 `dotted` 、 `dashed`
 
 <UICode>
 

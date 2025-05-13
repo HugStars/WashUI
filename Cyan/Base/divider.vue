@@ -1,5 +1,5 @@
 <template>
-    <div :class="DividerClass" :style="{ '--w': props.w, '--h': props.h, '--m':props.m, '--bg': GRB_Color }">
+    <div :class="DividerClass" :style="{ '--w': props.w, '--h': props.h, '--m': props.m, '--bg': GRB_Color }">
         <p class="text" v-if="TextPosition">
             {{ props[TextPosition] }}
         </p>
@@ -52,16 +52,18 @@ const props = defineProps({
     round: Boolean,
     dotted: Boolean,
     dashed: Boolean,
+    centered: Boolean,
 })
 
 const DividerClass = computed(() => ({
     'cyan_divider': true,
     [props.type]: true,
+    [TextPosition]: true,
+    vertical: props.v,
     round: props.round,
     dashed: props.dashed,
     dotted: props.dotted,
-    vertical: props.v,
-    [TextPosition]: true
+    centered: props.centered,
 }))
 
 
@@ -104,17 +106,13 @@ else if (props.right) TextPosition = 'right'
         --d: right;
         --size: var(--h);
         background-color: unset;
-        background-image: linear-gradient(
-            to var(--d),
-            rgb(var(--bg)) 0 var(--size),
-            rgba(255, 255, 255, 0) var(--size) calc(2 * var(--size))
-        );
-        background-size: calc(2 * var(--size));
+        background-image: repeating-linear-gradient(to var(--d),
+                rgb(var(--bg)) 0 var(--size),
+                rgba(255, 255, 255, 0) var(--size) calc(2 * var(--size)));
 
         &.vertical {
             --d: bottom;
             --size: var(--w);
-            background-size: 1px calc(2 * var(--size));
         }
     }
 
@@ -122,18 +120,20 @@ else if (props.right) TextPosition = 'right'
         --d: right;
         --size: var(--h);
         background-color: unset;
-        background-image: linear-gradient(
-            to var(--d),
-            rgb(var(--bg)) 0 calc(3 * var(--size)),
-            rgba(255, 255, 255, 0) calc(3 * var(--size)) calc(6 * var(--size))
-        );
-        background-size: calc(6 * var(--size));
+        background-image: repeating-linear-gradient(to var(--d),
+                rgb(var(--bg)) 0 calc(3 * var(--size)),
+                rgba(255, 255, 255, 0) calc(3 * var(--size)) calc(6 * var(--size)));
 
         &.vertical {
             --d: bottom;
             --size: var(--w);
-            background-size: 1px calc(6 * var(--size));
         }
+    }
+
+    &.centered {
+        --d: right;
+        background-color: unset;
+        background-image: linear-gradient(to var(--d), transparent, rgb(var(--bg)), transparent);
     }
 
     &.left .text {
