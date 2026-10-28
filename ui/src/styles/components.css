@@ -840,7 +840,7 @@
 
 .wa_select_panel {
     display: grid;
-    gap: var(--wa_popover_padding);
+    gap: calc(var(--wa_popover_padding) * 2);
     min-width: 0;
     max-height: min(320px, calc(100vh - 120px));
     overflow-y: auto;

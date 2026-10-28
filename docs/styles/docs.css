@@ -1,7 +1,6 @@
 :root {
     --doc_side_width: 240px;
     --doc_side_padding: 10px;
-    --doc_side_gap: 8px;
     --doc_side_radius: 18px;
 }
 
@@ -111,29 +110,12 @@
 .doc_side {
     position: sticky;
     top: 86px;
-    display: flex;
-    flex-direction: column;
-    gap: var(--doc_side_gap);
     align-self: start;
     max-height: calc(100vh - 110px);
     padding: var(--doc_side_padding);
-    overflow: hidden;
+    overflow-y: auto;
     border-radius: var(--doc_side_radius);
     background: var(--wa_color_surface);
-}
-
-.doc_side_title {
-    padding: 0 var(--wa_space_1);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: .08em;
-    color: var(--wa_color_text_faint);
-    text-transform: uppercase;
-}
-
-.doc_side_panel {
-    max-height: calc(100vh - 170px);
-    overflow-y: auto;
 }
 
 .doc_header_nav {
