@@ -5,6 +5,7 @@
     --doc_side_radius: 18px;
 }
 
+/* 文档站布局：桌面侧栏、移动端 Header 下拉 */
 .doc_version {
     font-size: 12px;
     color: var(--wa_color_text_faint);

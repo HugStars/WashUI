@@ -2,7 +2,7 @@
     <AppShell :nav="nav" :active="active" @navigate="go">
         <PageHeader :title="title">
             <template #center>
-                <DocNavSelect />
+                <DocNavSelect v-if="Mobile" />
             </template>
             <template #actions>
                 <span class="doc_version">v0.1.0</span>
@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { AppThemeToggle } from '@wash/ui'
 import DocNavSelect from './components/DocNavSelect.vue'
@@ -34,6 +34,21 @@ const route = useRoute()
 const router = useRouter()
 const active = computed(() => route.meta.nav || route.name)
 const title = computed(() => route.meta.title || '文档')
+// Header 导航下拉只在移动端使用，桌面端使用 DocSideNav。
+const Media = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(max-width: 860px)') : null
+const Mobile = ref(Media?.matches ?? false)
+
+function OnMedia(event) {
+    Mobile.value = event.matches
+}
+
+onMounted(() => {
+    Media?.addEventListener('change', OnMedia)
+})
+
+onUnmounted(() => {
+    Media?.removeEventListener('change', OnMedia)
+})
 
 const entry = {
     home: '/',

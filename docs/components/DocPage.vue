@@ -61,6 +61,7 @@ defineProps({
 })
 
 const route = useRoute()
+// 桌面端左侧面板与移动端 Header 下拉共用同一份 section 配置。
 const section = computed(() => sections[route.meta.section] || null)
 const index = computed(() => pageNav.findIndex(item => item.name === route.name))
 const prev = computed(() => index.value > 0 ? pageNav[index.value - 1] : null)

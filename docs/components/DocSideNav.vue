@@ -1,7 +1,8 @@
 <template>
-    <aside v-if="section" class="doc_side">
-        <p class="doc_side_title">{{ section.title }}</p>
-        <AppSelectPanel class="doc_side_panel" :groups="Groups" :model-value="route.name" @select="Go" />
+    <aside v-if="props.section" class="doc_side">
+        <p class="doc_side_title">{{ props.section.title }}</p>
+        <AppSelectPanel class="doc_side_panel" role="listbox" aria-label="文档导航" :groups="Groups"
+            :model-value="route.name" @select="Go" />
     </aside>
 </template>
 

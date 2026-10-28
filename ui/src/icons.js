@@ -1,3 +1,5 @@
+import { shallowReactive } from 'vue'
+
 export const defaultIcons = {
     home: [
         ['path', { d: 'm3 10.5 9-7.5 9 7.5' }],
@@ -79,10 +81,10 @@ export const defaultIcons = {
     ],
 }
 
-const registry = { ...defaultIcons }
+const registry = shallowReactive({ ...defaultIcons })
 
 export function configureIcons(icons = {}) {
-    for (const [name, value] of Object.entries(icons)) {
+    for (const [name, value] of Object.entries(icons || {})) {
         if (value === null || value === undefined) delete registry[name]
         else registry[name] = value
     }
