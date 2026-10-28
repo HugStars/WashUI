@@ -1,0 +1,49 @@
+<template>
+    <DocPage category="基础" name="AppThemeToggle" title="主题切换" description="封装亮暗主题切换的按钮，内置太阳与月亮图标切换动画。">
+        <DemoBlock title="基础" description="点击在亮色与暗色之间切换，图标会随主题过渡。" :code="baseCode">
+            <div class="doc_row">
+                <AppThemeToggle />
+                <AppThemeToggle size="sm" />
+                <span class="wa_tag">当前主题：{{ theme }}</span>
+            </div>
+        </DemoBlock>
+
+        <DemoBlock title="切换事件" description="change 返回切换后的实际主题。" :code="eventCode">
+            <div class="doc_row">
+                <AppThemeToggle size="sm" @change="onChange" />
+                <span class="wa_hint">最近切换：{{ last }}</span>
+            </div>
+        </DemoBlock>
+
+        <template #api>
+            <ApiTable :rows="propsRows" />
+            <ApiTable title="事件" kind="events" :rows="eventRows" />
+        </template>
+    </DocPage>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { useTheme } from '@wash/ui'
+import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
+
+const { theme } = useTheme()
+const last = ref('无')
+
+function onChange(value) {
+    last.value = value
+}
+
+const propsRows = [
+    { name: 'size', type: 'md | sm', default: 'md', desc: '按钮尺寸' },
+]
+
+const eventRows = [
+    { name: 'change', type: 'light | dark', desc: '切换后的实际主题' },
+]
+
+const baseCode = `<AppThemeToggle />
+<AppThemeToggle size="sm" />`
+
+const eventCode = `<AppThemeToggle size="sm" @change="onChange" />`
+</script>

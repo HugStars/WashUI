@@ -1,57 +1,39 @@
+import { fileURLToPath, URL } from 'node:url'
+
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
-import { fileURLToPath, URL } from 'node:url'
+function resolvePath(value) {
+    return fileURLToPath(new URL(value, import.meta.url))
+}
 
-
-// - Vite官网：https://cn.vitejs.dev/config/
-export default defineConfig(command => {
-    let { mode } = command
-
-    console.log("命令：" + JSON.stringify(command))
-    console.log("模式：" + mode)
-
-    let config = {
-        plugins: [
-            vue(),
+export default defineConfig({
+    root: resolvePath('./docs'),
+    appType: 'spa',
+    plugins: [
+        vue(),
+    ],
+    optimizeDeps: {
+        include: ['vue', 'vue-router'],
+    },
+    resolve: {
+        alias: [
+            { find: /^@wash\/ui\/style\.css$/, replacement: resolvePath('./ui/src/styles/index.css') },
+            { find: /^@wash\/ui\/tokens\.css$/, replacement: resolvePath('./ui/tokens.css') },
+            { find: /^@wash\/ui\/tokens\.js$/, replacement: resolvePath('./ui/tokens.js') },
+            { find: /^@wash\/ui\/router$/, replacement: resolvePath('./ui/src/router/index.js') },
+            { find: /^@wash\/ui\/utils$/, replacement: resolvePath('./ui/src/utils/index.js') },
+            { find: /^@wash\/ui$/, replacement: resolvePath('./ui/src/index.js') },
         ],
-        resolve: {
-            alias: {
-                '^': fileURLToPath(new URL('./src', import.meta.url))
-            }
-        },
-        server: {
-            open: true,
-            port: 4173,
-        },
-        preview: {
-            open: true,
-            port: 4173,
-        }
-    }
-
-    if (mode == 'ui') config['build'] = {
-        outDir: 'CyanUI', // 指定构建结果的输出目录
-        target: 'es2015', // 指定要构建的目标环境，可以是某个浏览器的版本，或者是Node.js的版本
-        minify: 'esbuild', // 是否为代码开启压缩
-        cssTarget: 'chrome80',
-        chunkSizeWarningLimit: 2000, // 设置大块大小（以字节为单位）的警告限制
-        emptyOutDir: true, // 在构建前是否清空outDir目录
-        rollupOptions: { // 修改内部Rollup配置
-            // 请确保外部化那些你的库中不需要的依赖
-            external: ['vue'],
-            output: {
-                // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
-                globals: {
-                    vue: 'Vue',
-                },
-            },
-        },
-        lib: {
-            entry: './Cyan/index.js', // 入口文件，可以是相对于项目根目录的路径
-            name: 'CyanUI', // 设置库的名称
-        }
-    }
-
-    return config
+    },
+    server: {
+        host: 'localhost',
+        port: 5180,
+        strictPort: true,
+        open: true,
+    },
+    build: {
+        outDir: 'dist',
+        emptyOutDir: true,
+    },
 })
