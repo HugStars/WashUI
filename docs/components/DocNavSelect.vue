@@ -1,6 +1,6 @@
 <template>
     <div v-if="section" class="doc_header_nav">
-        <AppSelect :model-value="route.name" :groups="Groups" aria-label="文档导航" @change="Go" />
+        <AppSelect :model-value="route.name" :groups="Groups" size="sm" aria-label="文档导航" @change="Go" />
     </div>
 </template>
 

@@ -844,6 +844,37 @@
     min-width: 0;
     max-height: min(320px, calc(100vh - 120px));
     overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+}
+
+.wa_select_panel::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.wa_select_panel::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.wa_select_panel::-webkit-scrollbar-button:vertical:start:decrement,
+.wa_select_panel::-webkit-scrollbar-button:vertical:end:increment {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.wa_select_panel::-webkit-scrollbar-track {
+    margin-top: var(--wa_radius_popover);
+    margin-bottom: var(--wa_radius_popover);
+    background: transparent;
+}
+
+.wa_select_panel::-webkit-scrollbar-thumb {
+    border-radius: var(--wa_radius_pill);
 }
 
 .wa_select_group {

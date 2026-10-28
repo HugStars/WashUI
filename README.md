@@ -30,7 +30,7 @@ pnpm dev:docs
 | --- | --- |
 | `pnpm dev:docs` | 启动文档站开发服务（5180） |
 | `pnpm dev:docs:force` | 强制重建依赖预构建后启动 |
-| `pnpm build:docs` | 构建文档站到 `docs/dist` |
+| `pnpm build:docs` | 构建文档站到根目录 `dist` |
 | `pnpm preview:docs` | 预览文档站构建结果 |
 | `pnpm build:ui` | 构建库到 `ui/dist` |
 | `pnpm dev` | 等同 `pnpm dev:docs` |
