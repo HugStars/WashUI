@@ -24,7 +24,7 @@
             <AppCard v-for="item in features" :key="item.path" compact>
                 <template #title>{{ item.title }}</template>
                 <template #extra>
-                    <AppButton size="sm" variant="icon" aria-label="刷新">
+                    <AppButton size="sm" variant="icon" aria-label="跳转" @click="router.push(item.path)">
                         <AppIcon name="chevron" :size="16" />
                     </AppButton>
                 </template>
@@ -47,23 +47,13 @@ const stats = [
 ]
 
 const features = [
-    { title: '安装与初始化', text: '安装依赖、引入样式、注册组件与配置主题。', path: '/guide/install', action: '查看安装' },
-    { title: '组件', text: '按钮、卡片、表单与反馈组件。', path: '/components', action: '浏览组件' },
-    { title: '图标', text: '内置图标与全局图标配置。', path: '/icons', action: '浏览图标' },
-    { title: '布局', text: '壳层、页面标题、进度条与路由过渡。', path: '/layout', action: '浏览布局' },
-    { title: '主题与变量', text: '亮暗主题、CSS tokens 与加载时配置。', path: '/guide/theme', action: '查看主题' },
-    { title: '组合式函数', text: '请求、剪贴板与主题状态。', path: '/composables', action: '查看能力' },
-    { title: '设计变量', text: '颜色、圆角、阴影、层级与断点。', path: '/tokens', action: '查看变量' },
+    { title: '安装与初始化', text: '安装依赖、引入样式、注册组件与配置主题。', path: '/guide/install' },
+    { title: '组件', text: '按钮、卡片、表单与反馈组件。', path: '/components' },
+    { title: '图标', text: '内置图标与全局图标配置。', path: '/icons' },
+    { title: '布局', text: '壳层、页面标题、进度条与路由过渡。', path: '/layout' },
+    { title: '主题与变量', text: '亮暗主题、CSS tokens 与加载时配置。', path: '/guide/theme' },
+    { title: '组合式函数', text: '请求、剪贴板与主题状态。', path: '/composables' },
+    { title: '设计变量', text: '颜色、圆角、阴影、层级与断点。', path: '/tokens' },
 ]
 
-const installCode = `pnpm add @wash/ui`
-
-const shellCode = `<AppShell :nav="nav" :active="route.name" @navigate="go">
-    <PageHeader :title="route.meta.title" />
-    <RouterView v-slot="{ Component }">
-        <PageTransition>
-            <component :is="Component" />
-        </PageTransition>
-    </RouterView>
-</AppShell>`
 </script>
