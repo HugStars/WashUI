@@ -18,8 +18,11 @@
         <pre class="doc_pre"><code>{{ initCode }}</code></pre>
         <p class="doc_text doc_gap">createUi 会全局注册全部组件、初始化主题，并应用 tokens。主题默认读取 wa_theme，没有保存值时跟随系统。</p>
 
-        <h2 class="doc_h2">按需导入</h2>
-        <pre class="doc_pre"><code>import { AppButton, AppCard, AppDialog } from '@wash/ui'</code></pre>
+        <h2 class="doc_h2">按需引入</h2>
+        <p class="doc_text">组件与布局都有独立子路径入口，适合需要 tree-shaking 的项目；样式统一引入一次 style.css。</p>
+        <pre class="doc_pre doc_gap"><code>{{ onDemandCode }}</code></pre>
+        <p class="doc_text doc_gap">也可以在主入口使用命名导入；打包器可 tree-shake 未使用的组件。createUi 会全量注册，不需要 tree-shaking 时更省事。</p>
+        <pre class="doc_pre doc_gap"><code>import { AppButton, AppCard, AppDialog } from '@wash/ui'</code></pre>
 
         <h2 class="doc_h2">子路径</h2>
         <ApiTable kind="values" :rows="exports" />
@@ -42,7 +45,18 @@ const exports = [
     { name: '@wash/ui/tokens.js', desc: '图表配色、断点与层级常量' },
     { name: '@wash/ui/router', desc: 'createAppRouter 路由工厂' },
     { name: '@wash/ui/utils', desc: '纯格式化函数' },
+    { name: '@wash/ui/components/*', desc: '单个组件的独立入口，例如 AppButton' },
+    { name: '@wash/ui/layout/*', desc: '单个布局的独立入口，例如 AppShell' },
 ]
+
+const onDemandCode = `import { createApp } from 'vue'
+import '@wash/ui/style.css'
+import AppButton from '@wash/ui/components/AppButton'
+import AppShell from '@wash/ui/layout/AppShell'
+
+const app = createApp(App)
+app.component('AppButton', AppButton)
+app.component('AppShell', AppShell)`
 
 const initCode = `import { createApp } from 'vue'
 import '@wash/ui/style.css'

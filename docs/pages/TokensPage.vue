@@ -46,6 +46,8 @@ const colors = [
     '--wa_color_warning',
     '--wa_color_help',
     '--wa_color_danger',
+    '--wa_color_nav_active',
+    '--wa_color_on_nav_active',
 ]
 
 const shapeRows = [

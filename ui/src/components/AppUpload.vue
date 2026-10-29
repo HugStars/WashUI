@@ -142,3 +142,122 @@ function Remove(index) {
     emit('remove', file, index)
 }
 </script>
+
+<style>
+.wa_upload_zone:focus-visible,
+.wa_upload_remove:focus-visible {
+    outline: 2px solid var(--wa_color_accent);
+    outline-offset: 2px;
+}
+
+.wa_upload_zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 22px 16px;
+    border: 1px dashed var(--wa_color_line_strong);
+    border-radius: var(--wa_radius_control);
+    color: var(--wa_color_text_subtle);
+    background: var(--wa_color_soft);
+    cursor: pointer;
+    text-align: center;
+    transition: border-color var(--wa_duration_fast), background var(--wa_duration_fast), color var(--wa_duration_fast);
+}
+
+.wa_upload_zone:hover,
+.wa_upload_zone.on {
+    border-color: var(--wa_color_text);
+    color: var(--wa_color_text);
+    background: var(--wa_color_hover);
+}
+
+.wa_upload_zone.off {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.wa_upload_zone>svg {
+    color: var(--wa_color_text_muted);
+}
+
+.wa_upload_title {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--wa_color_text);
+}
+
+.wa_upload_rule {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--wa_color_text_faint);
+}
+
+.wa_upload_input {
+    display: none;
+}
+
+.wa_upload_list {
+    display: grid;
+    gap: 6px;
+    margin-top: 2px;
+    list-style: none;
+}
+
+.wa_upload_item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--wa_color_soft);
+    font-size: 12px;
+}
+
+.wa_upload_item>svg {
+    flex: none;
+    color: var(--wa_color_text_subtle);
+}
+
+.wa_upload_name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--wa_color_text_muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wa_upload_size {
+    flex: none;
+    color: var(--wa_color_text_faint);
+    font-variant-numeric: tabular-nums;
+}
+
+.wa_upload_remove {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: var(--wa_color_text_faint);
+    background: transparent;
+    cursor: pointer;
+}
+
+.wa_upload_remove:hover {
+    color: var(--wa_color_danger);
+    background: var(--wa_color_danger_soft);
+}
+
+.wa_upload_remove:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+</style>

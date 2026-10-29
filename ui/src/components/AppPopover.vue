@@ -27,8 +27,8 @@ const props = defineProps({
         default: 'top',
     },
     offset: {
-        type: Number,
-        default: 8,
+        type: [Number, Object],
+        default: 0,
     },
     width: {
         type: [Number, String],
@@ -92,7 +92,10 @@ function Position() {
     const width = panel.offsetWidth
     const height = panel.offsetHeight
     const edge = 12
-    const gap = props.offset
+    const offset = typeof props.offset === 'number'
+        ? { x: 0, y: props.offset }
+        : { x: 0, y: 0, ...(props.offset || {}) }
+    const gap = 8
     let placement = props.placement
     let left = 0
     let top = 0
@@ -113,6 +116,9 @@ function Position() {
         left = rect.left + rect.width / 2 - width / 2
         top = rect.top - height - gap
     }
+
+    left += offset.x
+    top += offset.y
 
     left = Math.min(Math.max(edge, left), Math.max(edge, window.innerWidth - width - edge))
     top = Math.min(Math.max(edge, top), Math.max(edge, window.innerHeight - height - edge))
@@ -213,3 +219,43 @@ onMounted(() => {
 
 onUnmounted(Unlisten)
 </script>
+
+<style>
+.wa_popover_trigger {
+    display: contents;
+}
+
+.wa_popover_panel {
+    position: fixed;
+    z-index: var(--wa_z_popover);
+    max-width: calc(100vw - 24px);
+    padding: var(--wa_popover_padding);
+    border: 1px solid var(--wa_color_border);
+    border-radius: var(--wa_radius_popover);
+    background: var(--wa_color_glass);
+    background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
+    -webkit-backdrop-filter: blur(var(--wa_blur));
+    backdrop-filter: blur(var(--wa_blur));
+    box-shadow: var(--wa_shadow_nav);
+    outline: 0;
+}
+
+.wa_popover_enter_active,
+.wa_popover_leave_active {
+    transition: opacity .18s ease, transform .18s var(--wa_ease_out);
+}
+
+.wa_popover_enter_from,
+.wa_popover_leave_to {
+    opacity: 0;
+    transform: translateY(6px) scale(.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .wa_popover_enter_active,
+    .wa_popover_leave_active {
+        transition: none;
+    }
+}
+</style>

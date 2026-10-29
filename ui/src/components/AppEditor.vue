@@ -133,3 +133,123 @@ watch(() => props.modelValue, value => {
     SetContent(value)
 })
 </script>
+
+<style>
+.wa_editor_btn:focus-visible {
+    outline: 2px solid var(--wa_color_accent);
+    outline-offset: 2px;
+}
+
+.wa_editor {
+    overflow: hidden;
+    border: 1px solid var(--wa_color_line);
+    border-radius: var(--wa_radius_control);
+    background: var(--wa_color_field);
+    transition: border-color var(--wa_duration_fast), box-shadow var(--wa_duration_fast), opacity var(--wa_duration_fast);
+}
+
+.wa_editor:focus-within {
+    border-color: var(--wa_color_text);
+    box-shadow: 0 0 0 3px var(--wa_color_focus_ring);
+}
+
+.wa_editor.on {
+    border-color: var(--wa_color_danger);
+}
+
+.wa_editor.on:focus-within {
+    box-shadow: 0 0 0 3px var(--wa_color_danger_soft);
+}
+
+.wa_editor.off {
+    opacity: .7;
+}
+
+.wa_editor_tool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 8px;
+    border-bottom: 1px solid var(--wa_color_line);
+    background: var(--wa_color_surface);
+}
+
+.wa_editor_btn {
+    min-width: 30px;
+    height: 30px;
+    padding: 0 7px;
+    border: 0;
+    border-radius: 7px;
+    color: var(--wa_color_text_subtle);
+    background: transparent;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.wa_editor_btn:hover {
+    color: var(--wa_color_text);
+    background: var(--wa_color_hover);
+}
+
+.wa_editor_btn.on {
+    color: var(--wa_color_on_text);
+    background: var(--wa_color_text);
+}
+
+.wa_editor_btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.wa_editor_body {
+    min-height: 180px;
+    max-height: 420px;
+    overflow: auto;
+    padding: 14px 16px;
+    outline: 0;
+    color: var(--wa_color_text);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.wa_editor_empty::before {
+    content: attr(data-placeholder);
+    color: var(--wa_color_text_faint);
+    pointer-events: none;
+}
+
+.wa_editor_body :where(p, ul, ol, blockquote, pre) {
+    margin-bottom: 10px;
+}
+
+.wa_editor_body> :last-child {
+    margin-bottom: 0;
+}
+
+.wa_editor_body :where(ul, ol) {
+    padding-left: 20px;
+}
+
+.wa_editor_body :where(h1, h2, h3) {
+    margin-bottom: 8px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.wa_editor_body h1 {
+    font-size: 22px;
+}
+
+.wa_editor_body h2 {
+    font-size: 18px;
+}
+
+.wa_editor_body h3 {
+    font-size: 16px;
+}
+
+.wa_editor_body a {
+    color: var(--wa_color_accent);
+    text-decoration: underline;
+}
+</style>

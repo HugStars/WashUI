@@ -30,6 +30,8 @@
     --wa_color_danger_hover: #d4380d1f;
     --wa_color_primary_hover: #333333;
     --wa_color_focus_ring: #00000020;
+    --wa_color_nav_active: var(--wa_color_text);
+    --wa_color_on_nav_active: var(--wa_color_on_text);
     --wa_color_toast: #1a1a1ad9;
     --wa_color_toast_strong: #242424e6;
     --wa_color_on_toast: #ffffff;
@@ -90,6 +92,8 @@
     --wa_color_scroll: #ffffff26;
     --wa_color_primary_hover: #d9d9d9;
     --wa_color_focus_ring: #ffffff26;
+    --wa_color_nav_active: #ffffffcc;
+    --wa_color_on_nav_active: #141414;
     --wa_color_danger: #ff7875;
     --wa_color_danger_soft: #ff78751f;
     --wa_color_danger_hover: #ff78752e;

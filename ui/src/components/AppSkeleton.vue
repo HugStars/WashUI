@@ -30,3 +30,29 @@ const Style = computed(() => ({
     borderRadius: toSize(props.radius),
 }))
 </script>
+
+<style>
+.wa_skeleton {
+    display: block;
+    background: linear-gradient(90deg, var(--wa_color_soft), var(--wa_color_hover), var(--wa_color_soft));
+    background-size: 200% 100%;
+    animation: wa_skeleton_shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes wa_skeleton_shimmer {
+    from {
+        background-position: 100% 0;
+    }
+
+    to {
+        background-position: -100% 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .wa_skeleton {
+        animation: none;
+    }
+}
+</style>

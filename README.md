@@ -47,7 +47,7 @@ WashUI/
 │  │  ├─ layout/           AppShell、PageHeader、AppRouteBar、PageTransition
 │  │  ├─ composables/      useClipboard、useRequest
 │  │  ├─ router/           createAppRouter
-│  │  ├─ styles/           base、layout、components
+│  │  ├─ styles/           base、form、index 共享样式
 │  │  ├─ utils/            格式化函数
 │  │  ├─ theme.js          主题与 tokens 配置
 │  │  ├─ toast.js          Toast 服务
@@ -102,12 +102,24 @@ app.use(createUi({
 - 键名会自动补 `--wa_` 前缀，也可以直接传完整变量名
 - 运行时可以调用 `configureTokens` 重新应用
 
+## 按需引入
+
+组件与布局提供独立子路径入口，构建后保留独立 JS 模块：
+
+```js
+import AppButton from '@wash/ui/components/AppButton'
+import AppShell from '@wash/ui/layout/AppShell'
+import '@wash/ui/style.css'
+```
+
+也可以从主入口命名导入，由打包器 tree-shake。`createUi()` 会全量注册所有组件；不使用它时手动注册即可。样式统一抽取为 `dist/style.css`。
+
 ## 命名
 
 - CSS 类名、CSS 变量与动画名统一 `wa_` 前缀，使用下划线拼接
 - 状态类统一使用 `.on`
 - 组件样式只引用变量和修饰类，不使用 `!important`
-- 布局样式在 `ui/src/styles/layout.css`，组件样式在 `ui/src/styles/components.css`
+- 组件与布局样式写在各自 SFC 的 `<style>` 中，构建时统一抽取为 `dist/style.css`
 
 ## 构建与发布
 

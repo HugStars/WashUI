@@ -321,3 +321,173 @@ onUnmounted(() => {
     RestoreFocus()
 })
 </script>
+
+<style>
+.wa_dialog_close:focus-visible {
+    outline: 2px solid var(--wa_color_accent);
+    outline-offset: 2px;
+}
+
+.wa_dialog_mask {
+    position: fixed;
+    inset: 0;
+    z-index: var(--wa_z_dialog);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: #0000006b;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+
+.wa_dialog {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: auto;
+    padding: 26px;
+    border: 1px solid var(--wa_color_dialog_line);
+    border-radius: var(--wa_radius_dialog);
+    background: var(--wa_color_dialog);
+    box-shadow: var(--wa_shadow_dialog);
+    touch-action: pan-y;
+    transform: translateY(var(--wa_drag_y, 0px));
+    transition: transform var(--wa_duration_base) var(--wa_ease_out);
+}
+
+.wa_dialog:focus {
+    outline: 0;
+}
+
+.wa_dialog_head,
+.wa_dialog_grabber {
+    touch-action: none;
+}
+
+.wa_dialog_head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.wa_dialog_title {
+    min-width: 0;
+    padding-right: 36px;
+    overflow: hidden;
+    font-size: 17px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wa_dialog_close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--wa_radius_small);
+    color: var(--wa_color_text_subtle);
+    background: transparent;
+    cursor: pointer;
+    transition: color var(--wa_duration_fast), background var(--wa_duration_fast);
+}
+
+.wa_dialog_close:hover {
+    color: var(--wa_color_text);
+    background: var(--wa_color_hover);
+}
+
+.wa_dialog_body {
+    min-width: 0;
+}
+
+.wa_dialog_foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 2px;
+}
+
+.wa_dialog_grabber {
+    display: none;
+}
+
+.wa_dialog_enter_active,
+.wa_dialog_leave_active {
+    transition: opacity .18s ease;
+}
+
+.wa_dialog_enter_active .wa_dialog,
+.wa_dialog_leave_active .wa_dialog {
+    transition: opacity .2s ease, transform .2s var(--wa_ease_out);
+}
+
+.wa_dialog_enter_from,
+.wa_dialog_leave_to {
+    opacity: 0;
+}
+
+.wa_dialog_enter_from .wa_dialog,
+.wa_dialog_leave_to .wa_dialog {
+    opacity: 0;
+    transform: translateY(12px) scale(.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .wa_dialog_enter_active,
+    .wa_dialog_leave_active,
+    .wa_dialog_enter_active .wa_dialog,
+    .wa_dialog_leave_active .wa_dialog {
+        transition: none;
+    }
+}
+
+@media (max-width: 860px) {
+    .wa_dialog_mask {
+        align-items: flex-end;
+        padding: 0;
+        background: linear-gradient(180deg, #00000000 0%, #00000040 35%, #000000a6 100%);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    .wa_dialog {
+        width: 100%;
+        max-height: 70vh;
+        padding: 22px 20px calc(22px + env(safe-area-inset-bottom));
+        border-radius: var(--wa_radius_dialog) var(--wa_radius_dialog) 0 0;
+    }
+
+    .wa_dialog_enter_from .wa_dialog,
+    .wa_dialog_leave_to .wa_dialog {
+        transform: translateY(100%);
+    }
+
+    .wa_dialog_grabber {
+        display: block;
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        width: 38px;
+        height: 4px;
+        margin-left: -19px;
+        border-radius: var(--wa_radius_pill);
+        background: var(--wa_color_line_strong);
+    }
+
+    .wa_dialog_head {
+        padding-top: 6px;
+    }
+}
+</style>

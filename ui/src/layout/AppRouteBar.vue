@@ -17,3 +17,47 @@ const props = defineProps({
 
 const Loading = computed(() => props.loading ?? routeLoading.value)
 </script>
+
+<style>
+.wa_route_bar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: var(--wa_z_route);
+    width: auto;
+    height: 3px;
+    background: var(--wa_color_accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+}
+
+.wa_route_bar.on {
+    opacity: 1;
+    animation: wa_route_grow .55s cubic-bezier(.1, .8, .3, 1) forwards;
+}
+
+@keyframes wa_route_grow {
+    0% {
+        transform: scaleX(0);
+    }
+
+    60% {
+        transform: scaleX(.75);
+    }
+
+    100% {
+        transform: scaleX(.92);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_route_bar.on {
+        animation: none;
+        transform: scaleX(.5);
+    }
+}
+</style>

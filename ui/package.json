@@ -25,6 +25,8 @@
         "./style.css": "./dist/style.css",
         "./utils": "./dist/utils.js",
         "./router": "./dist/router.js",
+        "./components/*": "./dist/components/*.js",
+        "./layout/*": "./dist/layout/*.js",
         "./tokens.css": "./tokens.css",
         "./tokens.js": "./tokens.js",
         "./package.json": "./package.json"

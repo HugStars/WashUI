@@ -20,28 +20,17 @@
             </div>
         </section>
 
-        <div class="doc_stats">
-            <AppStat v-for="item in stats" :key="item.label" :label="item.label" :value="item.value" />
-        </div>
-
         <div class="doc_feature_grid">
-            <AppCard v-for="item in features" :key="item.path" :title="item.title" compact>
-                <p class="wa_hint">{{ item.text }}</p>
-                <template #footer>
-                    <AppButton size="sm" variant="line" @click="router.push(item.path)">{{ item.action }}</AppButton>
+            <AppCard v-for="item in features" :key="item.path" compact>
+                <template #title>{{ item.title }}</template>
+                <template #extra>
+                    <AppButton size="sm" variant="icon" aria-label="刷新">
+                        <AppIcon name="chevron" :size="16" />
+                    </AppButton>
                 </template>
+                <p class="wa_hint">{{ item.text }}</p>
             </AppCard>
         </div>
-
-        <AppCard title="安装">
-            <pre class="doc_pre"><code>{{ installCode }}</code></pre>
-            <p class="wa_hint doc_gap">style.css 已包含 tokens.css。createUi 会注册全部组件、初始化主题，并应用自定义 tokens。</p>
-        </AppCard>
-
-        <AppCard title="页面骨架">
-            <pre class="doc_pre"><code>{{ shellCode }}</code></pre>
-            <p class="wa_hint doc_gap">PageHeader 放在页面过渡外，切换路由时标题不会闪空。</p>
-        </AppCard>
     </div>
 </template>
 

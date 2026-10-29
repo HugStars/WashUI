@@ -15,3 +15,19 @@ defineProps({
     },
 })
 </script>
+
+<style>
+.wa_empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-height: 420px;
+    color: var(--wa_color_text_faint);
+}
+
+.wa_empty p {
+    font-size: 13px;
+}
+</style>

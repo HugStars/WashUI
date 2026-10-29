@@ -1,3 +1,5 @@
+import './toast.css'
+
 const CONTAINER_CLASS = 'wa_toast_box'
 const ITEM_CLASS = 'wa_toast_item'
 const LEAVE_DELAY = 220

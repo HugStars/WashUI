@@ -4,7 +4,7 @@
             <slot name="label">{{ label }}</slot>
         </label>
 
-        <AppPopover placement="bottom" :offset="6" match-trigger role="listbox" :aria-label="ariaLabel"
+        <AppPopover placement="bottom" match-trigger role="listbox" :aria-label="ariaLabel"
             :disabled="disabled">
             <template #trigger="{ open, toggle }">
                 <button :id="SelectId" v-bind="$attrs" type="button" class="wa_select_trigger"
@@ -90,3 +90,75 @@ function Choose(item, close) {
     close()
 }
 </script>
+
+<style>
+.wa_select_trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: var(--wa_control_height);
+    padding: 0 var(--wa_space_3);
+    border: 1px solid var(--wa_color_line);
+    border-radius: var(--wa_radius_control);
+    color: var(--wa_color_text);
+    background: var(--wa_color_field);
+    font: inherit;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--wa_duration_fast), box-shadow var(--wa_duration_fast), opacity var(--wa_duration_fast);
+}
+
+.wa_select_trigger:hover {
+    border-color: var(--wa_color_line_strong);
+}
+
+.wa_select_trigger:focus-visible {
+    border-color: var(--wa_color_text);
+    outline: 0;
+    box-shadow: 0 0 0 3px var(--wa_color_focus_ring);
+}
+
+.wa_select_trigger.on {
+    border-color: var(--wa_color_danger);
+}
+
+.wa_select_trigger.on:focus-visible {
+    box-shadow: 0 0 0 3px var(--wa_color_danger_soft);
+}
+
+.wa_select_trigger.off {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.wa_select_trigger.wa_select_sm {
+    min-height: var(--wa_control_height_sm);
+    padding: 0 var(--wa_space_3);
+    font-size: 13px;
+}
+
+.wa_select_value {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wa_select_placeholder {
+    color: var(--wa_color_text_faint);
+}
+
+.wa_select_arrow {
+    flex: none;
+    color: var(--wa_color_text_faint);
+    transform: rotate(90deg);
+    transition: transform var(--wa_duration_fast);
+}
+
+.wa_select_trigger[aria-expanded='true'] .wa_select_arrow {
+    transform: rotate(-90deg);
+}
+</style>

@@ -64,7 +64,7 @@ app.mount('#app')
 
 ## 页面骨架
 
-```vue
+```html
 <template>
     <AppShell :nav="nav" :active="route.name" @navigate="go">
         <PageHeader :title="route.meta.title || '首页'" />
@@ -118,6 +118,26 @@ PageHeader 必须放在 AppShell 内，并且放在 RouterView 与 PageTransitio
 | `AppDialog` | `open`、`title`、`ariaLabel`、`describedBy`、`width`、`closable`、`closeOnMask`、`closeOnEsc`、`gesture` | `update:open`、`close` | 默认、`title`、`footer` |
 
 `AppButton` 的 `variant`：`default`、`primary`、`line`、`danger`、`icon`；`size`：`md`、`sm`。
+
+## 按需引入
+
+组件与布局都有独立子路径入口，构建后保留独立模块，便于打包器做 JS tree-shaking：
+
+```js
+import AppButton from '@wash/ui/components/AppButton'
+import AppShell from '@wash/ui/layout/AppShell'
+import '@wash/ui/style.css'
+```
+
+也可以继续从主入口按需导入：
+
+```js
+import { AppButton, AppShell } from '@wash/ui'
+```
+
+样式统一抽取在 `dist/style.css`，按需引入组件时仍需引入一次。
+
+`createUi()` 会全量注册所有组件；需要 tree-shaking 时使用上面的子路径导入，并手动注册需要的组件。
 `AppPanel` 的 `tone`：`default`、`success`、`warning`、`help`、`danger`。
 `AppDialog` 是受控组件，必须使用 `v-model:open`。
 
@@ -256,7 +276,8 @@ import { formatBytes, formatSpeed, formatMbps, formatDuration, formatCount } fro
 - 所有 CSS 类名、CSS 变量、动画名使用下划线拼接，统一 `wa_` 前缀
 - 状态类统一使用 `.on`
 - 不使用 `!important`
-- 组件样式集中在 `src/styles/components.css`，布局样式在 `src/styles/layout.css`
+- 组件与布局样式写在各自 SFC 的 `<style>` 中，构建时抽取为 `dist/style.css`
+- `styles/` 只保留 `base.css`、`form.css` 与汇总入口 `index.css`
 - 主题通过 `[data-theme='dark']` 覆盖变量，不覆盖组件规则
 
 主要变量：
@@ -267,6 +288,7 @@ import { formatBytes, formatSpeed, formatMbps, formatDuration, formatCount } fro
 | 文字 | `--wa_color_text`、`--wa_color_text_muted`、`--wa_color_text_subtle`、`--wa_color_text_faint` |
 | 容器 | `--wa_color_glass`、`--wa_color_border`、`--wa_color_line`、`--wa_color_soft`、`--wa_color_hover` |
 | 强调 | `--wa_color_accent`、`--wa_color_success`、`--wa_color_warning`、`--wa_color_help`、`--wa_color_danger` |
+| 导航选中 | `--wa_color_nav_active`、`--wa_color_on_nav_active` |
 | 圆角 | `--wa_radius_card`、`--wa_radius_control`、`--wa_radius_small`、`--wa_radius_popover`、`--wa_radius_dialog`、`--wa_radius_pill` |
 | 间距 | `--wa_space_1`、`--wa_space_2`、`--wa_space_3`、`--wa_popover_padding` |
 | 控件高度 | `--wa_control_height`、`--wa_control_height_sm` |

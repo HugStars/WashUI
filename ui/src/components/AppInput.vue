@@ -77,3 +77,109 @@ function Clear() {
     InputEl.value?.focus()
 }
 </script>
+
+<style>
+.wa_input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: var(--wa_control_height);
+    padding: 0 var(--wa_space_3);
+    border: 1px solid var(--wa_color_line);
+    border-radius: var(--wa_radius_control);
+    background: var(--wa_color_field);
+    transition: border-color var(--wa_duration_fast), box-shadow var(--wa_duration_fast), opacity var(--wa_duration_fast);
+}
+
+.wa_input:hover {
+    border-color: var(--wa_color_line_strong);
+}
+
+.wa_input:focus-within {
+    border-color: var(--wa_color_text);
+    box-shadow: 0 0 0 3px var(--wa_color_focus_ring);
+}
+
+.wa_input.on {
+    border-color: var(--wa_color_danger);
+}
+
+.wa_input.on:focus-within {
+    box-shadow: 0 0 0 3px var(--wa_color_danger_soft);
+}
+
+.wa_input.off {
+    opacity: .55;
+}
+
+.wa_input_sm {
+    min-height: var(--wa_control_height_sm);
+    padding: 0 var(--wa_space_2);
+}
+
+.wa_input_control {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    height: calc(var(--wa_control_height) - 2px);
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    outline: 0;
+    color: inherit;
+    background: transparent;
+    box-shadow: none;
+    font-size: 14px;
+}
+
+.wa_input_control:hover,
+.wa_input_control:focus {
+    border: 0;
+    box-shadow: none;
+}
+
+.wa_input_control:disabled {
+    cursor: not-allowed;
+}
+
+.wa_input_sm .wa_input_control {
+    height: calc(var(--wa_control_height_sm) - 2px);
+    font-size: 13px;
+}
+
+.wa_input_affix {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    color: var(--wa_color_text_faint);
+}
+
+.wa_input_clear {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: var(--wa_color_text_faint);
+    background: var(--wa_color_soft);
+    cursor: pointer;
+}
+
+.wa_input_clear:hover {
+    color: var(--wa_color_text);
+    background: var(--wa_color_hover);
+}
+
+.wa_input_clear:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.wa_input_clear:focus-visible {
+    outline: 2px solid var(--wa_color_accent);
+    outline-offset: 2px;
+}
+</style>

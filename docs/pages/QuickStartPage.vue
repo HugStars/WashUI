@@ -18,6 +18,7 @@
             <li>PageHeader 必须放在 AppShell 内，并且要放在 RouterView 与 PageTransition 外。</li>
             <li>PageTransition 要求页面组件是单根元素；多块内容请用一个元素包住。</li>
             <li>主入口不自动加载发布后的 CSS，必须显式引入 @wash/ui/style.css。</li>
+            <li>需要 tree-shaking 时使用 @wash/ui/components/* 和 @wash/ui/layout/* 子路径；createUi 会全量注册。</li>
             <li>AppDialog 是受控组件，关闭需要绑定 v-model:open。</li>
         </ul>
 

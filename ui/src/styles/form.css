@@ -1,0 +1,29 @@
+
+
+.wa_field {
+    display: grid;
+    align-content: start;
+    gap: 6px;
+    min-width: 0;
+}
+
+.wa_field_label {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--wa_color_text_muted);
+}
+
+.wa_field_hint,
+.wa_field_error {
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.wa_field_hint {
+    color: var(--wa_color_text_subtle);
+}
+
+.wa_field_error {
+    color: var(--wa_color_danger);
+}

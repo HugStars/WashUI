@@ -17,8 +17,8 @@
         </RouterView>
 
         <template #footer>
-            WashUI · <span class="wa_mono">@wash/ui</span> ·
-            <a href="https://hugstars.top" target="_blank" rel="noopener noreferrer">©HugStars</a>
+            <span class="wa_mono">@wash/ui</span>
+            <a href="https://hugstars.top" target="_blank" rel="noopener noreferrer">✨ By Hugstars.</a>
         </template>
     </AppShell>
 </template>

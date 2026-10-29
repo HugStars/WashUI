@@ -72,17 +72,6 @@ svg {
     font-family: var(--wa_font_mono);
 }
 
-.wa_icon_raw {
-    display: inline-flex;
-    flex: none;
-}
-
-.wa_icon_raw>svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
 .wa_tag {
     display: inline-flex;
     align-items: center;
@@ -98,40 +87,6 @@ svg {
     font-size: 12px;
     line-height: 1.65;
     color: var(--wa_color_text_subtle);
-}
-
-.wa_spinner {
-    display: inline-block;
-    flex: none;
-    width: 20px;
-    height: 20px;
-    border: 2px solid currentColor;
-    border-right-color: transparent;
-    border-radius: 50%;
-    animation: wa_spin .8s linear infinite;
-}
-
-@keyframes wa_spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.wa_skeleton {
-    display: block;
-    background: linear-gradient(90deg, var(--wa_color_soft), var(--wa_color_hover), var(--wa_color_soft));
-    background-size: 200% 100%;
-    animation: wa_skeleton_shimmer 1.2s ease-in-out infinite;
-}
-
-@keyframes wa_skeleton_shimmer {
-    from {
-        background-position: 100% 0;
-    }
-
-    to {
-        background-position: -100% 0;
-    }
 }
 
 :where(.wa_shell, .wa_dialog) :where(input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']), textarea, select) {
@@ -187,14 +142,4 @@ svg {
 
 :where(.wa_card, .wa_panel_body, .wa_dialog_body) :where(ul, ol) {
     padding-left: 20px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .wa_spinner {
-        animation-duration: 1.6s;
-    }
-
-    .wa_skeleton {
-        animation: none;
-    }
 }

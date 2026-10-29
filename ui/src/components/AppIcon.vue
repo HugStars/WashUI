@@ -55,3 +55,16 @@ export default defineComponent({
     },
 })
 </script>
+
+<style>
+.wa_icon_raw {
+    display: inline-flex;
+    flex: none;
+}
+
+.wa_icon_raw>svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+</style>

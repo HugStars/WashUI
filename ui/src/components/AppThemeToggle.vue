@@ -30,3 +30,38 @@ function toggle() {
     emit('change', theme.value)
 }
 </script>
+
+<style>
+.wa_theme_toggle {
+    border: 1px solid var(--wa_color_line);
+    background: var(--wa_color_surface);
+}
+
+.wa_theme_toggle:hover {
+    border-color: var(--wa_color_line_strong);
+    background: var(--wa_color_hover);
+}
+
+.wa_theme_toggle .wa_theme_enter_active,
+.wa_theme_toggle .wa_theme_leave_active {
+    transition: opacity .18s ease, transform .18s var(--wa_ease_out);
+}
+
+.wa_theme_toggle .wa_theme_enter_from {
+    opacity: 0;
+    transform: rotate(-45deg) scale(.7);
+}
+
+.wa_theme_toggle .wa_theme_leave_to {
+    opacity: 0;
+    transform: rotate(45deg) scale(.7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .wa_theme_toggle .wa_theme_enter_active,
+    .wa_theme_toggle .wa_theme_leave_active {
+        transition: none;
+    }
+}
+</style>
