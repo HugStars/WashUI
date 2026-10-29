@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
-import { routeLoading } from '../route_state.js'
+import { routeLoading } from '../core/route_state.js'
 
 export function createAppRouter(options = {}) {
     const {

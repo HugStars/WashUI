@@ -185,6 +185,9 @@ importers:
 
   ui:
     dependencies:
+      '@speed-highlight/core':
+        specifier: ^2.1.0
+        version: 2.1.0
       vue-router:
         specifier: ^4.4.0 || ^5.0.0
         version: 4.6.4(vue@3.5.44)
@@ -525,6 +528,9 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@speed-highlight/core@2.1.0':
+    resolution: {integrity: sha512-KLoDVy82Hm3N09SLf1L5HoqPo+oIPsPn6C5K3Iz3VTSFygs6vV1Rn3kLyV+D5uyMW3wXtGGFzfJ+kKcFtSSBUQ==}
+
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
 
@@ -853,6 +859,8 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.65.1':
     optional: true
+
+  '@speed-highlight/core@2.1.0': {}
 
   '@types/estree@1.0.9': {}
 

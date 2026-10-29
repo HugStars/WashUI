@@ -16,7 +16,7 @@
 
 <script setup>
 import { inject } from 'vue'
-import { HEADER_TARGET } from '../keys.js'
+import { HEADER_TARGET } from '../core/keys.js'
 
 defineProps({
     title: {

@@ -1,5 +1,5 @@
-import * as components from './components/index.js'
-import * as layout from './layout/index.js'
+import * as components from '../components/index.js'
+import * as layout from '../layout/index.js'
 import { configureIcons } from './icons.js'
 import { configureTokens, initTheme } from './theme.js'
 

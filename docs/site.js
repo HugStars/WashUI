@@ -19,6 +19,7 @@ export const componentGroups = [
         items: [
             { name: 'button', label: '按钮', component: 'AppButton', page: 'ButtonPage', path: '/components/button', summary: '操作入口，支持类型、尺寸与加载态。' },
             { name: 'card', label: '卡片', component: 'AppCard', page: 'CardPage', path: '/components/card', summary: '内容分组容器，支持标题、额外区与页脚。' },
+            { name: 'code', label: '代码', component: 'AppCode', page: 'CodePage', path: '/components/code', summary: '基于 Speed-highlight 的代码块，支持多语言、行号与复制。' },
             { name: 'chip', label: '标记', component: 'AppChip', page: 'ChipPage', path: '/components/chip', summary: '轻量筛选与状态标记。' },
             { name: 'stat', label: '统计', component: 'AppStat', page: 'StatPage', path: '/components/stat', summary: '紧凑的指标展示。' },
             { name: 'empty', label: '空状态', component: 'AppEmpty', page: 'EmptyPage', path: '/components/empty', summary: '无数据时的占位与操作。' },

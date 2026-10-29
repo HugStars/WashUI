@@ -1,6 +1,6 @@
 <script>
 import { defineComponent, h } from 'vue'
-import { getIcon } from '../icons.js'
+import { getIcon } from '../core/icons.js'
 
 function toSize(value) {
     return typeof value === 'number' ? `${value}px` : value

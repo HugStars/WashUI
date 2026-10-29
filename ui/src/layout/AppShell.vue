@@ -49,7 +49,7 @@
 import { computed, onMounted, onUnmounted, provide, ref, watch } from 'vue'
 import AppIcon from '../components/AppIcon.vue'
 import AppPopover from '../components/AppPopover.vue'
-import { HEADER_TARGET } from '../keys.js'
+import { HEADER_TARGET } from '../core/keys.js'
 
 const MAX_NAV = 4
 

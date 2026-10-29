@@ -1,6 +1,6 @@
 <template>
     <AppSelectPanel v-if="props.section" class="doc_side" role="listbox" aria-label="文档导航" :groups="Groups"
-        :model-value="route.name" @select="Go" />
+        :model-value="route.name" @select="Go" :checkIcon="false" />
 </template>
 
 <script setup>

@@ -46,12 +46,10 @@ WashUI/
 │  │  ├─ components/       基础、加载、表单与反馈组件
 │  │  ├─ layout/           AppShell、PageHeader、AppRouteBar、PageTransition
 │  │  ├─ composables/      useClipboard、useRequest
+│  │  ├─ core/             图标、主题、Toast、路由状态、插件与代码语言
 │  │  ├─ router/           createAppRouter
 │  │  ├─ styles/           base、form、index 共享样式
 │  │  ├─ utils/            格式化函数
-│  │  ├─ theme.js          主题与 tokens 配置
-│  │  ├─ toast.js          Toast 服务
-│  │  ├─ plugin.js         createUi
 │  │  └─ index.js          主入口
 │  ├─ tokens.css           CSS 变量与暗色主题
 │  ├─ tokens.js            图表配色、断点与层级

@@ -9,7 +9,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useTheme } from '../theme.js'
+import { useTheme } from '../core/theme.js'
 import AppButton from './AppButton.vue'
 import AppIcon from './AppIcon.vue'
 

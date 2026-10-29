@@ -6,7 +6,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { routeLoading } from '../route_state.js'
+import { routeLoading } from '../core/route_state.js'
 
 const props = defineProps({
     loading: {

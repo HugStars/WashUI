@@ -101,6 +101,7 @@ PageHeader 必须放在 AppShell 内，并且放在 RouterView 与 PageTransitio
 | --- | --- | --- | --- |
 | `AppButton` | `variant`、`size`、`type`、`loading`、`disabled` | 原生 `click` | 默认 |
 | `AppCard` | `title`、`compact` | 无 | 默认、`title`、`extra`、`footer` |
+| `AppCode` | `code`、`lang`、`showLineNumbers`、`showLang`、`copyable`、`maxHeight` | 无 | 无 |
 | `AppChip` | `active`、`text` | 原生 `click` | 默认 |
 | `AppStat` | `label`、`value` | 无 | 默认、`label` |
 | `AppEmpty` | `text` | 无 | 默认、`action` |
@@ -118,6 +119,20 @@ PageHeader 必须放在 AppShell 内，并且放在 RouterView 与 PageTransitio
 | `AppDialog` | `open`、`title`、`ariaLabel`、`describedBy`、`width`、`closable`、`closeOnMask`、`closeOnEsc`、`gesture` | `update:open`、`close` | 默认、`title`、`footer` |
 
 `AppButton` 的 `variant`：`default`、`primary`、`line`、`danger`、`icon`；`size`：`md`、`sm`。
+
+`AppCode` 基于 Speed-highlight，`lang` 支持 `js`、`ts`、`html`、`css`、`json`、`md`、`py`、`bash`、`sql`、`go`、`java`、`c`、`rs`、`yaml`、`xml` 等 34 种语言，也接受 `javascript`、`python`、`shell` 等常见别名。完整列表与标签从 `codeLanguages` 导入：
+
+```js
+import { codeLanguages } from '@wash/ui'
+
+// [{ value: 'js', label: 'JavaScript' }, ...]
+```
+
+```vue
+<AppCode :code="source" lang="ts" show-line-numbers :max-height="360" />
+```
+
+`maxHeight` 为 `0` 时不限制高度；`showLang` 与 `copyable` 都关闭时不再渲染头部。
 
 ## 按需引入
 
@@ -278,6 +293,7 @@ import { formatBytes, formatSpeed, formatMbps, formatDuration, formatCount } fro
 - 不使用 `!important`
 - 组件与布局样式写在各自 SFC 的 `<style>` 中，构建时抽取为 `dist/style.css`
 - `styles/` 只保留 `base.css`、`form.css` 与汇总入口 `index.css`
+- `core/` 存放图标、主题、Toast、路由状态、插件与代码语言等运行时模块；`toast.css` 与 `toast.js` 同目录
 - 主题通过 `[data-theme='dark']` 覆盖变量，不覆盖组件规则
 
 主要变量：

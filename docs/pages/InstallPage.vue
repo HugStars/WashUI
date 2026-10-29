@@ -12,7 +12,8 @@
 
         <h2 class="doc_h2">引入样式</h2>
         <pre class="doc_pre"><code>import '@wash/ui/style.css'</code></pre>
-        <p class="doc_text doc_gap">style.css 已经包含 tokens.css，Vue 项目只需要引这一行。只使用变量或非 Vue 项目时，改为引入 tokens.css，两者不要同时引入。</p>
+        <p class="doc_text doc_gap">style.css 已经包含 tokens.css，Vue 项目只需要引这一行。只使用变量或非 Vue 项目时，改为引入 tokens.css，两者不要同时引入。
+        </p>
 
         <h2 class="doc_h2">初始化</h2>
         <pre class="doc_pre"><code>{{ initCode }}</code></pre>

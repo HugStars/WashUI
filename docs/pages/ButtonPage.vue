@@ -12,7 +12,7 @@
         <DemoBlock title="尺寸与图标" description="sm 使用紧凑尺寸；icon 用于纯图标操作。" :code="sizeCode">
             <div class="doc_row">
                 <AppButton variant="primary" size="sm">小号</AppButton>
-                <AppButton variant="line" size="sm">小号描边</AppButton>
+                <AppButton variant="line" size="md">中号描边</AppButton>
                 <AppButton variant="icon" aria-label="刷新">
                     <AppIcon name="refresh" :size="17" />
                 </AppButton>
@@ -57,7 +57,7 @@ onUnmounted(() => clearTimeout(timer))
 
 const propsRows = [
     { name: 'variant', type: 'default | primary | line | danger | icon', default: 'default', desc: '视觉类型' },
-    { name: 'size', type: 'md | sm', default: 'md', desc: '尺寸' },
+    { name: 'size', type: 'md | sm', default: 'sm', desc: '尺寸' },
     { name: 'type', type: 'button | submit | reset', default: 'button', desc: '原生 button type' },
     { name: 'loading', type: 'boolean', default: 'false', desc: '加载中，自动禁用' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用' },

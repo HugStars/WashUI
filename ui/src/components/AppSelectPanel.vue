@@ -6,7 +6,12 @@
                 :class="{ on: item.value === modelValue }" role="option" :aria-selected="item.value === modelValue"
                 :disabled="item.disabled" @click="emit('select', item)">
                 <span>{{ item.label }}</span>
-                <span v-if="item.value === modelValue" class="wa_select_check" aria-hidden="true">✓</span>
+                <template v-if="item.value === modelValue">
+                    <span v-if="checkRender?.mode === 'text'" class="wa_select_check" aria-hidden="true">
+                        {{ checkRender.value }}</span>
+                    <component v-else-if="checkRender?.mode === 'icon'" :is="iconComponent" :name="checkRender.name"
+                        class="wa_select_check" aria-hidden="true" />
+                </template>
             </button>
         </div>
 
@@ -14,7 +19,12 @@
             :class="{ on: item.value === modelValue }" role="option" :aria-selected="item.value === modelValue"
             :disabled="item.disabled" @click="emit('select', item)">
             <span>{{ item.label }}</span>
-            <span v-if="item.value === modelValue" class="wa_select_check" aria-hidden="true">✓</span>
+            <template v-if="item.value === modelValue">
+                <span v-if="checkRender?.mode === 'text'" class="wa_select_check" aria-hidden="true">
+                    {{ checkRender.value }}</span>
+                <component v-else-if="checkRender?.mode === 'icon'" :is="iconComponent" :name="checkRender.name"
+                    class="wa_select_check" aria-hidden="true" />
+            </template>
         </button>
 
         <p v-if="!HasOptions" class="wa_select_empty">{{ emptyText }}</p>
@@ -41,10 +51,59 @@ const props = defineProps({
         type: String,
         default: '暂无选项',
     },
+    /**
+     * 对号图标，一个属性覆盖三种场景：
+     * - true（默认）：显示默认 ✓
+     * - false：不显示
+     * - 字符串：短字符（如 '✓' '✔' '√' '●'）按文本显示；
+     *          长名称（如 'check' 'check-circle'）按图标名渲染
+     */
+    checkIcon: {
+        type: [Boolean, String],
+        default: true,
+    },
+    /**
+     * 图标组件，用于渲染「图标名称」。
+     * 项目里有统一 Icon 组件时传入，例如：
+     *   import { Icon } from '@wash/ui'
+     *   <WaSelect :icon-component="Icon" check-icon="check" />
+     * 不传时，图标名会降级显示默认 ✓。
+     */
+    iconComponent: {
+        type: [Object, Function],
+        default: null,
+    },
 })
 
 const emit = defineEmits(['select'])
-const HasOptions = computed(() => props.groups.some(group => group.options?.length) || props.options.length > 0)
+
+const HasOptions = computed(
+    () => props.groups.some(group => group.options?.length) || props.options.length > 0
+)
+
+// 常见可直接作为文本显示的字符图标
+const CHECK_TEXT_ICONS = new Set(['✓', '✔', '√', '☑', '●', '•', '★', '×', '✕'])
+
+// 是否显示对号
+const showCheck = computed(() => props.checkIcon !== false && props.checkIcon != null)
+
+// 统一计算渲染方式：{ mode: 'text', value } | { mode: 'icon', name } | null
+const checkRender = computed(() => {
+    if (!showCheck.value) return null
+    const v = props.checkIcon
+
+    // 默认 true：文本 ✓
+    if (v === true) return { mode: 'text', value: '✓' }
+    if (typeof v !== 'string') return null
+
+    // 短字符或白名单：按文本显示
+    const isText = CHECK_TEXT_ICONS.has(v) || [...v].length <= 2
+    if (isText) return { mode: 'text', value: v }
+
+    // 长字符串：按图标名渲染；没有图标组件时降级为 ✓
+    if (props.iconComponent) return { mode: 'icon', name: v }
+    return { mode: 'text', value: '✓' }
+})
 </script>
 
 <style>
@@ -134,7 +193,20 @@ const HasOptions = computed(() => props.groups.some(group => group.options?.leng
 
 .wa_select_check {
     margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1em;
+    height: 1em;
     font-size: 12px;
+    line-height: 1;
+}
+
+.wa_select_check svg {
+    width: 1em;
+    height: 1em;
+    display: block;
 }
 
 .wa_select_empty {
