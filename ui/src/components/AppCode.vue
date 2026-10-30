@@ -1,13 +1,11 @@
 <template>
-    <div v-if="plain" class="wa_code wa_code_plain" :class="`shj-lang-${Language}`" v-html="Html"></div>
-    <div v-else class="wa_code">
-        <header v-if="showHeader" class="wa_code_head">
-            <span v-if="showLang" class="wa_code_lang">{{ languageLabel }}</span>
-            <button v-if="copyable" type="button" class="wa_code_copy" :aria-label="copied ? '已复制' : '复制代码'"
-                @click="Copy">
-                {{ copied ? '已复制' : '复制' }}
-            </button>
-        </header>
+    <code v-if="inline" class="wa_code wa_code_inline" :class="`shj-lang-${Language}`" v-html="Html"></code>
+    <div v-else class="wa_code" :class="{ wa_code_plain: plain, wa_code_float: showLang || copyable }">
+        <span v-if="showLang" class="wa_code_lang">{{ languageLabel }}</span>
+        <button v-if="copyable" type="button" class="wa_code_copy" :class="{ on: copied }"
+            :aria-label="copied ? '已复制' : '复制代码'" :title="copied ? '已复制' : '复制代码'" @click="Copy">
+            <AppIcon :name="copied ? 'check' : 'copy'" :size="15" />
+        </button>
         <div class="wa_code_body" :style="BodyStyle">
             <div class="wa_code_pre" :class="`shj-lang-${Language} shj-block`" v-html="Html"></div>
         </div>
@@ -19,6 +17,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { highlightHTML } from '@speed-highlight/core'
 import { codeLanguageLabel, codeLanguageNames, normalizeCodeLang } from '../core/code_languages.js'
 import { useClipboard } from '../composables/useClipboard.js'
+import AppIcon from './AppIcon.vue'
 
 const props = defineProps({
     code: {
@@ -43,8 +42,13 @@ const props = defineProps({
         type: [Number, String],
         default: 0,
     },
-    // 无框模式
+    // 平铺模式：无边框、无背景、无圆角，语言与复制浮动在代码上方
     plain: {
+        type: Boolean,
+        default: false,
+    },
+    // 行内代码：只输出高亮文字，不含语言与复制
+    inline: {
         type: Boolean,
         default: false,
     },
@@ -52,7 +56,7 @@ const props = defineProps({
 
 const Language = computed(() => normalizeCodeLang(props.lang))
 const languageLabel = computed(() => codeLanguageLabel(props.lang))
-const showHeader = computed(() => props.showLang || props.copyable)
+const Flat = computed(() => props.plain || props.inline)
 const Html = ref('')
 const { copied, copy } = useClipboard()
 
@@ -79,9 +83,9 @@ async function Render() {
 
     try {
         const html = await highlightHTML(source, Language.value, {
-            // plain 模式只输出高亮 span，不生成块级行号结构
-            block: !props.plain,
-            showLineNumbers: props.showLineNumbers,
+            // 平铺与行内模式只输出高亮 span，不生成块级行号结构
+            block: !Flat.value,
+            showLineNumbers: props.showLineNumbers && !Flat.value,
         })
         if (id === run) Html.value = html
     } catch {
@@ -98,7 +102,7 @@ onBeforeUnmount(() => {
 })
 
 watch(
-    [() => props.code, Language, () => props.showLineNumbers, () => props.plain],
+    [() => props.code, Language, () => props.showLineNumbers, () => props.plain, () => props.inline],
     Render,
     { immediate: true }
 )
@@ -109,7 +113,7 @@ watch(
     --wa_code_kwd: var(--wa_color_danger);
     --wa_code_str: var(--wa_color_success);
     --wa_code_num: var(--wa_color_warning);
-    --wa_code_cmnt: var(--wa_color_text_faint);
+    --wa_code_cmnt: var(--wa_color_text_subtle);
     --wa_code_func: var(--wa_color_help);
     --wa_code_type: var(--wa_color_accent);
     --wa_code_var: var(--wa_color_text_muted);
@@ -121,6 +125,7 @@ watch(
     --wa_code_insert: var(--wa_color_success);
     --wa_code_deleted: var(--wa_color_danger);
     --wa_code_err: var(--wa_color_danger);
+    position: relative;
     overflow: hidden;
     border: 1px solid var(--wa_color_line);
     border-radius: var(--wa_radius_control);
@@ -128,37 +133,45 @@ watch(
     font-family: var(--wa_font_mono);
 }
 
-.wa_code_head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px 8px 14px;
-    border-bottom: 1px solid var(--wa_color_line);
-    background: var(--wa_color_surface);
-}
-
 .wa_code_lang {
+    position: absolute;
+    z-index: 2;
+    top: 10px;
+    left: 14px;
     overflow: hidden;
-    color: var(--wa_color_text_subtle);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: .02em;
+    max-width: calc(100% - 60px);
+    color: var(--wa_color_text_faint);
+    font: 600 11px/1.4 var(--wa_font_mono);
+    letter-spacing: .03em;
     text-overflow: ellipsis;
     white-space: nowrap;
+    pointer-events: none;
 }
 
 .wa_code_copy {
-    flex: none;
-    margin-left: auto;
-    padding: 3px 8px;
+    position: absolute;
+    z-index: 2;
+    top: 5px;
+    right: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
     border: 0;
-    border-radius: var(--wa_radius_small);
+    border-radius: 7px;
     color: var(--wa_color_text_subtle);
     background: transparent;
-    font: inherit;
-    font-size: 12px;
     cursor: pointer;
-    transition: color var(--wa_duration_fast), background var(--wa_duration_fast);
+    opacity: 0;
+    transition: opacity var(--wa_duration_fast), color var(--wa_duration_fast), background var(--wa_duration_fast);
+}
+
+.wa_code:hover .wa_code_copy,
+.wa_code_copy:focus-visible,
+.wa_code_copy.on {
+    opacity: 1;
 }
 
 .wa_code_copy:hover {
@@ -166,9 +179,20 @@ watch(
     background: var(--wa_color_hover);
 }
 
+.wa_code_copy.on {
+    color: var(--wa_color_success);
+}
+
 .wa_code_copy:focus-visible {
     outline: 2px solid var(--wa_color_accent);
     outline-offset: 2px;
+}
+
+@media (hover: none) {
+
+    .wa_code_copy {
+        opacity: 1;
+    }
 }
 
 .wa_code_body {
@@ -182,6 +206,10 @@ watch(
     font: 13px/1.7 var(--wa_font_mono);
     tab-size: 4;
     white-space: pre;
+}
+
+.wa_code_float .wa_code_pre {
+    padding-top: 34px;
 }
 
 .wa_code_pre>div {
@@ -274,12 +302,43 @@ watch(
     font-weight: 600;
 }
 
-/* 无框模式：单个内联 code，只保留语法高亮文字 */
+/* 平铺模式：无边框、无背景、无圆角，语言与复制浮动在代码上方 */
 .wa_code_plain {
+    border: 0;
+    border-radius: 0;
+    background: none;
+}
+
+.wa_code_plain .wa_code_lang {
+    top: 0;
+    left: 0;
+    color: var(--wa_color_text_subtle);
+}
+
+.wa_code_plain .wa_code_copy {
+    top: 0;
+    right: 0;
+}
+
+.wa_code_plain .wa_code_pre {
+    padding: 0;
+}
+
+.wa_code_plain.wa_code_float .wa_code_pre {
+    padding-top: 26px;
+}
+
+/* 行内代码：单个 code，只保留语法高亮文字 */
+.wa_code_inline {
+    position: static;
     display: inline;
     overflow: visible;
+    padding: 1px 5px;
     border: 0;
-    background: none;
+    border-radius: 5px;
+    background: var(--wa_color_soft);
+    font-size: 12px;
+    color: var(--wa_color_text);
     white-space: pre;
 }
 </style>
