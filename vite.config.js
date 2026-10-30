@@ -2,6 +2,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import demoBlockAutoCode from './docs/vite-plugin-demo-block.js'
 
 function resolvePath(value) {
     return fileURLToPath(new URL(value, import.meta.url))
@@ -11,6 +12,7 @@ export default defineConfig({
     root: resolvePath('./docs'),
     appType: 'spa',
     plugins: [
+        demoBlockAutoCode(),
         vue(),
     ],
     optimizeDeps: {
