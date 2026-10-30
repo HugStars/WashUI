@@ -68,3 +68,59 @@ const columns = computed(() => {
     ]
 })
 </script>
+
+<style>
+.doc_api+.doc_api {
+    margin-top: 18px;
+}
+
+.doc_api_title {
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--wa_color_text_muted);
+}
+
+.doc_table_wrap {
+    overflow-x: auto;
+    border: 1px solid var(--wa_color_line);
+    border-radius: var(--wa_radius_control);
+}
+
+.doc_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+}
+
+.doc_table th {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--wa_color_line);
+    font-weight: 600;
+    color: var(--wa_color_text_subtle);
+    background: var(--wa_color_soft);
+    white-space: nowrap;
+}
+
+.doc_table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--wa_color_line);
+    vertical-align: top;
+    color: var(--wa_color_text_muted);
+    line-height: 1.6;
+}
+
+.doc_table tr:last-child td {
+    border-bottom: 0;
+}
+
+.doc_table code {
+    padding: 1px 5px;
+    border-radius: 5px;
+    background: var(--wa_color_soft);
+    font: 12px var(--wa_font_mono);
+    color: var(--wa_color_text);
+    white-space: nowrap;
+}
+</style>

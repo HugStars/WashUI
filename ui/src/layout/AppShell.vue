@@ -65,6 +65,7 @@ const props = defineProps({
     navLayout: {
         type: String,
         default: 'auto',
+        allows: ['auto', 'inline', 'stacked', 'icon', 'text'],
     },
     loading: {
         type: Boolean,

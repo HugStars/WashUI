@@ -33,6 +33,7 @@ defineProps({
     tone: {
         type: String,
         default: 'default',
+        allows: ['default', 'success', 'warning', 'help', 'danger'],
     },
     compact: Boolean,
 })

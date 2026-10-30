@@ -30,3 +30,28 @@ function Go(value) {
     if (item && item.path !== route.path) router.push(item.path)
 }
 </script>
+
+<style>
+.doc_header_nav {
+    display: none;
+}
+
+.doc_header_nav .wa_field {
+    width: 100%;
+    max-width: 320px;
+}
+
+@media (max-width: 860px) {
+
+    .doc_header_nav {
+        display: flex;
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .doc_header_nav .wa_field {
+        width: 100%;
+        max-width: 220px;
+    }
+}
+</style>

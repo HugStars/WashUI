@@ -17,6 +17,7 @@ const props = defineProps({
     size: {
         type: String,
         default: 'md',
+        allows: ['md', 'sm'],
     },
 })
 

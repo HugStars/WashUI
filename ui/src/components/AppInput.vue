@@ -49,10 +49,16 @@ const props = defineProps({
     type: {
         type: String,
         default: 'text',
+        allows: [
+            'text', 'password', 'email', 'number', 'search', 'tel', 'url',
+            'date', 'time', 'datetime-local', 'month', 'week', 'color',
+            'file', 'range', 'checkbox', 'radio', 'hidden',
+        ],
     },
     size: {
         type: String,
         default: 'md',
+        allows: ['md', 'sm'],
     },
     clearable: Boolean,
     disabled: Boolean,

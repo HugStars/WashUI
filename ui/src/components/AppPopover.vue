@@ -25,6 +25,7 @@ const props = defineProps({
     placement: {
         type: String,
         default: 'top',
+        allows: ['top', 'bottom', 'left', 'right'],
     },
     offset: {
         type: [Number, Object],

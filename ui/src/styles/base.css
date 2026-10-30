@@ -47,25 +47,28 @@ svg {
     background: var(--wa_color_text);
 }
 
-* {
-    scrollbar-width: thin;
-    scrollbar-color: var(--wa_color_scroll) transparent;
-}
+/* PC / 鼠标设备：自定义滚动条  */
+@media (hover: hover) and (pointer: fine) {
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--wa_color_scroll) transparent;
+    }
 
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
 
-::-webkit-scrollbar-thumb {
-    border: 2px solid transparent;
-    border-radius: var(--wa_radius_pill);
-    background: var(--wa_color_scroll);
-    background-clip: content-box;
-}
+    ::-webkit-scrollbar-thumb {
+        border: 2px solid transparent;
+        border-radius: var(--wa_radius_pill);
+        background: var(--wa_color_scroll);
+        background-clip: content-box;
+    }
 
-::-webkit-scrollbar-track {
-    background: transparent;
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
 }
 
 .wa_mono {

@@ -55,3 +55,15 @@ const layoutCode = `<AppShell :nav="nav" :active="route.name" @navigate="go">
     </RouterView>
 </AppShell>`
 </script>
+
+<style>
+.doc_header_demo {
+    padding: 14px 18px;
+    border-radius: var(--wa_radius_control);
+    background: var(--wa_color_soft);
+}
+
+.doc_header_demo .wa_page_header h1 {
+    font-size: 18px;
+}
+</style>

@@ -57,8 +57,8 @@ WashUI/
 │  └─ package.json
 ├─ docs/                   文档站
 │  ├─ pages/               指南、组件、布局与能力页面
-│  ├─ components/          DocPage、DemoBlock、ApiTable
-│  ├─ styles/docs.css      文档站布局样式
+│  ├─ components/          DocPage、DemoBlock、ApiTable（样式在 SFC）
+│  ├─ pages/               文档页面（样式在 SFC）
 │  ├─ site.js              导航与页面注册数据
 │  ├─ router.js            文档路由
 │  ├─ App.vue              文档壳层

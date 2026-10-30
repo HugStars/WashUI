@@ -13,14 +13,17 @@ const props = defineProps({
     variant: {
         type: String,
         default: 'default',
+        allows: ['default', 'primary', 'line', 'danger', 'icon'],
     },
     size: {
         type: String,
         default: 'sm',
+        allows: ['md', 'sm'],
     },
     type: {
         type: String,
         default: 'button',
+        allows: ['button', 'submit', 'reset'],
     },
     loading: Boolean,
     disabled: Boolean,

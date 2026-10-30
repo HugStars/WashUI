@@ -52,3 +52,9 @@ const slotCode = `<AppEmpty>
     </template>
 </AppEmpty>`
 </script>
+
+<style>
+.doc_empty_demo {
+    min-height: 220px;
+}
+</style>

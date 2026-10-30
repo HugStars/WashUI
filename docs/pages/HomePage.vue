@@ -57,3 +57,97 @@ const features = [
 ]
 
 </script>
+
+<style>
+.doc_stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
+    gap: 12px;
+}
+
+.doc_stats>* {
+    min-width: 0;
+}
+
+.doc_hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding: 34px;
+    border: 1px solid var(--wa_color_border);
+    border-radius: var(--wa_radius_card);
+    background:
+        radial-gradient(110% 130% at 100% 0%, var(--wa_color_soft), transparent 58%),
+        var(--wa_color_surface);
+}
+
+.doc_hero_head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.doc_hero_title {
+    font-size: clamp(34px, 6vw, 54px);
+    font-weight: 600;
+    letter-spacing: -.03em;
+    line-height: 1.05;
+}
+
+.doc_hero_tag {
+    flex: none;
+    margin-right: auto;
+}
+
+.doc_hero_lead {
+    max-width: 680px;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--wa_color_text_muted);
+}
+
+.doc_actions,
+.doc_tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.doc_actions {
+    gap: 10px;
+}
+
+.doc_hero>* {
+    min-width: 0;
+}
+
+.doc_feature_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(175px, 100%), 1fr));
+    gap: 14px;
+}
+
+.doc_feature_grid>* {
+    min-width: 0;
+}
+
+.doc_feature_grid .wa_card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.doc_feature_grid .wa_card_foot {
+    margin-top: auto;
+    padding-top: 16px;
+}
+
+@media (max-width: 860px) {
+
+    .doc_hero {
+        padding: 24px 20px;
+    }
+}
+</style>

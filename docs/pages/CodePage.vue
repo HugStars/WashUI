@@ -1,5 +1,5 @@
 <template>
-    <DocPage category="基础" name="AppCode" title="代码" description="基于 Speed-highlight 的代码块，内置 34 种语言，支持行号、复制与自定义最大高度。">
+    <DocPage category="基础" name="AppCode" title="代码" description="基于 Speed-highlight 的代码块，内置 34 种语言，支持行号、复制、自定义最大高度与无框模式。">
         <DemoBlock title="基础" description="code 传入代码字符串，lang 指定高亮语言；头部展示语言名称与复制按钮。" :code="baseCode">
             <AppCode :code="jsCode" lang="js" />
         </DemoBlock>
@@ -11,8 +11,13 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="无头部" description="关闭 show-lang 与 copyable 后只保留代码区域，适合嵌入卡片或面板。" :code="plainCode">
+        <DemoBlock title="无头部" description="关闭 show-lang 与 copyable 后只保留代码区域，边框与背景仍然保留，适合嵌入卡片或面板。" :code="headlessCode">
             <AppCode :code="cssCode" lang="css" :show-lang="false" :copyable="false" :max-height="180" />
+        </DemoBlock>
+
+        <DemoBlock title="无框模式" description="设置 plain 后只渲染一个内联 code，不含边框、背景与头部，可直接嵌入正文或已有的代码容器。放入 pre 时必须与 pre 写在同一行，否则模板缩进会被当作空白行。" :code="plainCode">
+            <p class="doc_text">安装命令：<AppCode plain code="pnpm add @wash/ui" /></p>
+            <div class="doc_pre doc_gap"><AppCode plain :code="jsCode" lang="js" /></div>
         </DemoBlock>
 
         <template #api>
@@ -123,10 +128,11 @@ const sample = computed(() => samples[lang.value] || `<!-- ${lang.value} 示例 
 const propsRows = [
     { name: 'code', type: 'string', default: "''", desc: '需要高亮的代码' },
     { name: 'lang', type: 'string', default: "'plain'", desc: '语言名或常见别名' },
-    { name: 'showLineNumbers', type: 'boolean', default: 'false', desc: '显示行号' },
+    { name: 'showLineNumbers', type: 'boolean', default: 'false', desc: '显示行号（plain 模式下不生效）' },
     { name: 'showLang', type: 'boolean', default: 'true', desc: '头部显示语言名称' },
     { name: 'copyable', type: 'boolean', default: 'true', desc: '头部显示复制按钮' },
     { name: 'maxHeight', type: 'number | string', default: '0', desc: '代码区最大高度，0 表示不限制' },
+    { name: 'plain', type: 'boolean', default: 'false', desc: '无框模式，只渲染内联 code，保留语法高亮文字' },
 ]
 
 const languageRows = codeLanguages.map(item => ({ name: item.value, desc: item.label }))
@@ -135,5 +141,9 @@ const baseCode = `<AppCode :code="code" lang="js" />`
 
 const switchCode = `<AppCode :code="code" :lang="lang" show-line-numbers :max-height="320" />`
 
-const plainCode = `<AppCode :code="code" lang="css" :show-lang="false" :copyable="false" :max-height="180" />`
+const headlessCode = `<AppCode :code="code" lang="css" :show-lang="false" :copyable="false" :max-height="180" />`
+
+const plainCode = `<AppCode plain :code="code" lang="js" />
+
+<pre class="doc_pre"><AppCode plain :code="code" lang="js" /></pre>`
 </script>

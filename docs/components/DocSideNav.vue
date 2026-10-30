@@ -31,3 +31,23 @@ function Go(item) {
     if (item?.path && item.path !== route.path) router.push(item.path)
 }
 </script>
+
+<style>
+.doc_side {
+    position: sticky;
+    top: 86px;
+    align-self: start;
+    max-height: calc(100vh - 110px);
+    padding: var(--doc_side_padding);
+    overflow-y: auto;
+    border-radius: var(--doc_side_radius);
+    background: var(--wa_color_surface);
+}
+
+@media (max-width: 860px) {
+
+    .doc_side {
+        display: none;
+    }
+}
+</style>

@@ -8,29 +8,28 @@
         </ul>
 
         <h2 class="doc_h2">安装</h2>
-        <pre class="doc_pre"><code>pnpm add @wash/ui</code></pre>
+        <AppCode plain lang="bash" code="pnpm add @wash/ui"></AppCode>
 
         <h2 class="doc_h2">引入样式</h2>
-        <pre class="doc_pre"><code>import '@wash/ui/style.css'</code></pre>
+        <AppCode plain lang="js" code="import '@wash/ui/style.css'"></AppCode>
+
         <p class="doc_text doc_gap">style.css 已经包含 tokens.css，Vue 项目只需要引这一行。只使用变量或非 Vue 项目时，改为引入 tokens.css，两者不要同时引入。
         </p>
 
         <h2 class="doc_h2">初始化</h2>
-        <pre class="doc_pre"><code>{{ initCode }}</code></pre>
+        <AppCode plain lang="js" :code="initCode"></AppCode>
+
         <p class="doc_text doc_gap">createUi 会全局注册全部组件、初始化主题，并应用 tokens。主题默认读取 wa_theme，没有保存值时跟随系统。</p>
 
         <h2 class="doc_h2">按需引入</h2>
         <p class="doc_text">组件与布局都有独立子路径入口，适合需要 tree-shaking 的项目；样式统一引入一次 style.css。</p>
-        <pre class="doc_pre doc_gap"><code>{{ onDemandCode }}</code></pre>
+        <AppCode plain lang="js" :code="onDemandCode"></AppCode>
+
         <p class="doc_text doc_gap">也可以在主入口使用命名导入；打包器可 tree-shake 未使用的组件。createUi 会全量注册，不需要 tree-shaking 时更省事。</p>
-        <pre class="doc_pre doc_gap"><code>import { AppButton, AppCard, AppDialog } from '@wash/ui'</code></pre>
+        <AppCode copyable show-lang  lang="js" code="import { AppButton, AppCard, AppDialog } from '@wash/ui'" />
 
         <h2 class="doc_h2">子路径</h2>
         <ApiTable kind="values" :rows="exports" />
-
-        <h2 class="doc_h2">私有源</h2>
-        <p class="doc_text">包发布在私有源时，先在项目 .npmrc 中配置作用域：</p>
-        <pre class="doc_pre doc_gap"><code>@wash:registry=https://你的私有源地址</code></pre>
 
         <p class="doc_note doc_gap">本仓库根目录就是文档站，ui/ 是库源码。文档站通过 Vite alias 直接读取 ui/src，修改库源码会即时生效，不需要先构建。</p>
     </DocPage>

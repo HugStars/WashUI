@@ -1,5 +1,6 @@
 <template>
-    <div class="wa_code" :class="{ wa_code_headless: !showHeader }">
+    <div v-if="plain" class="wa_code wa_code_plain" :class="`shj-lang-${Language}`" v-html="Html"></div>
+    <div v-else class="wa_code">
         <header v-if="showHeader" class="wa_code_head">
             <span v-if="showLang" class="wa_code_lang">{{ languageLabel }}</span>
             <button v-if="copyable" type="button" class="wa_code_copy" :aria-label="copied ? '已复制' : '复制代码'"
@@ -8,7 +9,7 @@
             </button>
         </header>
         <div class="wa_code_body" :style="BodyStyle">
-            <div class="wa_code_pre" :class="[`shj-lang-${Language}`, 'shj-block']" v-html="Html"></div>
+            <div class="wa_code_pre" :class="`shj-lang-${Language} shj-block`" v-html="Html"></div>
         </div>
     </div>
 </template>
@@ -16,17 +17,18 @@
 <script setup>
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { highlightHTML } from '@speed-highlight/core'
-import { codeLanguageLabel, normalizeCodeLang } from '../core/code_languages.js'
+import { codeLanguageLabel, codeLanguageNames, normalizeCodeLang } from '../core/code_languages.js'
 import { useClipboard } from '../composables/useClipboard.js'
 
 const props = defineProps({
     code: {
         type: String,
-        default: '',
+        default: ''
     },
     lang: {
         type: String,
         default: 'plain',
+        allows: codeLanguageNames,
     },
     showLineNumbers: Boolean,
     showLang: {
@@ -40,6 +42,11 @@ const props = defineProps({
     maxHeight: {
         type: [Number, String],
         default: 0,
+    },
+    // 无框模式
+    plain: {
+        type: Boolean,
+        default: false,
     },
 })
 
@@ -72,7 +79,8 @@ async function Render() {
 
     try {
         const html = await highlightHTML(source, Language.value, {
-            block: true,
+            // plain 模式只输出高亮 span，不生成块级行号结构
+            block: !props.plain,
             showLineNumbers: props.showLineNumbers,
         })
         if (id === run) Html.value = html
@@ -89,7 +97,11 @@ onBeforeUnmount(() => {
     run++
 })
 
-watch([() => props.code, Language, () => props.showLineNumbers], Render, { immediate: true })
+watch(
+    [() => props.code, Language, () => props.showLineNumbers, () => props.plain],
+    Render,
+    { immediate: true }
+)
 </script>
 
 <style>
@@ -180,7 +192,7 @@ watch([() => props.code, Language, () => props.showLineNumbers], Render, { immed
     flex: 1;
 }
 
-.wa_code_pre .shj-numbers {
+.wa_code .shj-numbers {
     flex: none;
     margin-right: 14px;
     padding-right: 12px;
@@ -191,74 +203,83 @@ watch([() => props.code, Language, () => props.showLineNumbers], Render, { immed
     counter-reset: wa_code_line;
 }
 
-.wa_code_pre .shj-numbers:empty {
+.wa_code .shj-numbers:empty {
     display: none;
 }
 
-.wa_code_pre .shj-numbers>div::before {
+.wa_code .shj-numbers>div::before {
     counter-increment: wa_code_line;
     content: counter(wa_code_line);
 }
 
-.wa_code_pre .shj-syn-kwd {
+.wa_code .shj-syn-kwd {
     color: var(--wa_code_kwd);
 }
 
-.wa_code_pre .shj-syn-str {
+.wa_code .shj-syn-str {
     color: var(--wa_code_str);
 }
 
-.wa_code_pre .shj-syn-num {
+.wa_code .shj-syn-num {
     color: var(--wa_code_num);
 }
 
-.wa_code_pre .shj-syn-cmnt {
+.wa_code .shj-syn-cmnt {
     color: var(--wa_code_cmnt);
     font-style: italic;
 }
 
-.wa_code_pre .shj-syn-func {
+.wa_code .shj-syn-func {
     color: var(--wa_code_func);
 }
 
-.wa_code_pre .shj-syn-type {
+.wa_code .shj-syn-type {
     color: var(--wa_code_type);
 }
 
-.wa_code_pre .shj-syn-var {
+.wa_code .shj-syn-var {
     color: var(--wa_code_var);
 }
 
-.wa_code_pre .shj-syn-oper {
+.wa_code .shj-syn-oper {
     color: var(--wa_code_oper);
 }
 
-.wa_code_pre .shj-syn-bool {
+.wa_code .shj-syn-bool {
     color: var(--wa_code_bool);
 }
 
-.wa_code_pre .shj-syn-class {
+.wa_code .shj-syn-class {
     color: var(--wa_code_class);
 }
 
-.wa_code_pre .shj-syn-section {
+.wa_code .shj-syn-section {
     color: var(--wa_code_section);
 }
 
-.wa_code_pre .shj-syn-esc {
+.wa_code .shj-syn-esc {
     color: var(--wa_code_esc);
 }
 
-.wa_code_pre .shj-syn-insert {
+.wa_code .shj-syn-insert {
     color: var(--wa_code_insert);
 }
 
-.wa_code_pre .shj-syn-deleted {
+.wa_code .shj-syn-deleted {
     color: var(--wa_code_deleted);
 }
 
-.wa_code_pre .shj-syn-err {
+.wa_code .shj-syn-err {
     color: var(--wa_code_err);
     font-weight: 600;
+}
+
+/* 无框模式：单个内联 code，只保留语法高亮文字 */
+.wa_code_plain {
+    display: inline;
+    overflow: visible;
+    border: 0;
+    background: none;
+    white-space: pre;
 }
 </style>

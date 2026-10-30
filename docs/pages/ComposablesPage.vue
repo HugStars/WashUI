@@ -139,3 +139,11 @@ const { data, error, loading, run, cancel, reset } = useRequest(
 
 run({ page: 2 })`
 </script>
+
+<style>
+.doc_error {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--wa_color_danger);
+}
+</style>

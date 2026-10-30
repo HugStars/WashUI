@@ -98,3 +98,10 @@ const placementCode = `<AppPopover :placement="placement" :width="200">
     <p>浮层方位：{{ placement }}</p>
 </AppPopover>`
 </script>
+
+<style>
+.doc_popover_list {
+    display: grid;
+    gap: 6px;
+}
+</style>
