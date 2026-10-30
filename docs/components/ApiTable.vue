@@ -83,8 +83,6 @@ const columns = computed(() => {
 
 .doc_table_wrap {
     overflow-x: auto;
-    border: 1px solid var(--wa_color_line);
-    border-radius: var(--wa_radius_control);
 }
 
 .doc_table {
@@ -96,10 +94,9 @@ const columns = computed(() => {
 
 .doc_table th {
     padding: 9px 12px;
-    border-bottom: 1px solid var(--wa_color_line);
+    border-bottom: 1px solid var(--wa_color_line_strong);
     font-weight: 600;
     color: var(--wa_color_text_subtle);
-    background: var(--wa_color_soft);
     white-space: nowrap;
 }
 

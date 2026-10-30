@@ -131,10 +131,8 @@ function go(item) {
 }
 .doc_note {
     max-width: 760px;
-    padding: 12px 14px;
+    padding: 2px 0 2px 14px;
     border-left: 3px solid var(--wa_color_accent);
-    border-radius: 0 var(--wa_radius_control) var(--wa_radius_control) 0;
-    background: var(--wa_color_soft);
     font-size: 13px;
     line-height: 1.7;
     color: var(--wa_color_text_muted);
@@ -171,32 +169,6 @@ function go(item) {
     font-size: 12px;
     color: var(--wa_color_text_subtle);
 }
-.doc_pre {
-    margin: 0;
-    padding: 14px 16px;
-    overflow: auto;
-    border-radius: var(--wa_radius_control);
-    background: var(--wa_color_soft);
-    font: 12px/1.7 var(--wa_font_mono);
-    color: var(--wa_color_text_muted);
-    tab-size: 4;
-}
-.doc_pre code {
-    font: inherit;
-}
-/* 文档正文中顶层的 plain 代码块，直接复用 doc_pre 的外观 */
-.doc_article>.wa_code_plain {
-    display: block;
-    margin: 0;
-    padding: 14px 16px;
-    overflow: auto;
-    border: 0;
-    border-radius: var(--wa_radius_control);
-    background: var(--wa_color_soft);
-    font: 12px/1.7 var(--wa_font_mono);
-    color: var(--wa_color_text_muted);
-    tab-size: 4;
-}
 .doc_code_inline {
     padding: 1px 5px;
     border-radius: 5px;
@@ -204,6 +176,10 @@ function go(item) {
     font: 12px var(--wa_font_mono);
     color: var(--wa_color_text);
     white-space: nowrap;
+}
+/* 正文中直接放置的平铺代码块，补一点上下间距 */
+.doc_article>.wa_code_plain {
+    margin: 12px 0;
 }
 .doc_tokens {
     display: grid;

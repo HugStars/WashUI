@@ -146,16 +146,14 @@ const next = computed(() => index.value >= 0 && index.value < pageNav.length - 1
     display: grid;
     gap: 2px;
     min-width: min(200px, 40vw);
-    padding: 10px 14px;
-    border-radius: 12px;
+    padding: 10px 0;
     color: var(--wa_color_text);
-    background: var(--wa_color_soft);
     text-decoration: none;
-    transition: background var(--wa_duration_fast);
+    transition: color var(--wa_duration_fast);
 }
 
 .doc_pager_link:hover {
-    background: var(--wa_color_hover);
+    color: var(--wa_color_accent);
 }
 
 .doc_pager_link span {
