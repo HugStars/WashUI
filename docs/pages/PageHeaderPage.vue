@@ -12,7 +12,7 @@
         </DemoBlock>
 
         <h2 class="doc_h2">使用位置</h2>
-        <pre class="doc_pre"><code>{{ layoutCode }}</code></pre>
+        <AppCode plain :code="layoutCode" lang="html" />
         <ul class="doc_list doc_gap">
             <li>必须放在 AppShell 内，否则不会渲染。</li>
             <li>放在 RouterView 与 PageTransition 外，切换路由时标题不会闪空。</li>

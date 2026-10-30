@@ -1,10 +1,10 @@
 <template>
     <DocPage category="布局" name="AppShell" title="壳层" description="页面骨架，负责顶部栏、侧栏导航、页脚与路由进度条。">
         <h2 class="doc_h2">基本结构</h2>
-        <pre class="doc_pre"><code>{{ baseCode }}</code></pre>
+        <AppCode plain :code="baseCode" lang="html" />
 
         <h2 class="doc_h2">导航项</h2>
-        <pre class="doc_pre"><code>{{ navCode }}</code></pre>
+        <AppCode plain :code="navCode" lang="js" />
         <p class="doc_text doc_gap">导航项格式为 { name, label, icon }。active 与 name 对应，支持字符串或 Symbol。</p>
 
         <h2 class="doc_h2">导航布局</h2>

@@ -13,17 +13,17 @@
         </div>
 
         <h2 class="doc_h2">基本结构</h2>
-        <pre class="doc_pre"><code>{{ shellCode }}</code></pre>
+        <AppCode plain :code="shellCode" lang="html" />
 
         <h2 class="doc_h2">导航项</h2>
-        <pre class="doc_pre"><code>{{ navCode }}</code></pre>
+        <AppCode plain :code="navCode" lang="js" />
 
         <h2 class="doc_h2">导航布局</h2>
         <ApiTable kind="values" :rows="navLayouts" />
         <p class="doc_text doc_gap">桌面端默认只显示图标，移动端显示图标和文本；其他模式在两端保持一致。</p>
 
         <h2 class="doc_h2">页面标题</h2>
-        <pre class="doc_pre"><code>{{ headerCode }}</code></pre>
+        <AppCode plain :code="headerCode" lang="html" />
         <ul class="doc_list doc_gap">
             <li>PageHeader 必须放在 AppShell 内，会自动投递到顶部栏。</li>
             <li>不要把它放进被 PageTransition 包裹的页面组件，out-in 会先卸载旧页面，标题会短暂消失。</li>
@@ -31,7 +31,7 @@
         </ul>
 
         <h2 class="doc_h2">页面过渡</h2>
-        <pre class="doc_pre"><code>{{ transitionCode }}</code></pre>
+        <AppCode plain :code="transitionCode" lang="html" />
         <p class="doc_text doc_gap">PageTransition 使用 Vue 的 Transition，mode 为 out-in。页面组件必须是单根元素，否则过渡不会生效。</p>
     </DocPage>
 </template>

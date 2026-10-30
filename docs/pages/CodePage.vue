@@ -1,23 +1,26 @@
 <template>
-    <DocPage category="基础" name="AppCode" title="代码" description="基于 Speed-highlight 的代码块，内置 34 种语言，支持行号、复制、自定义最大高度与无框模式。">
-        <DemoBlock title="基础" description="code 传入代码字符串，lang 指定高亮语言；头部展示语言名称与复制按钮。" :code="baseCode">
-            <AppCode :code="jsCode" lang="js" />
+    <DocPage category="基础" name="AppCode" title="代码" description="基于 Speed-highlight 的代码块，内置 34 种语言，支持平铺、行内、行号、复制与自定义最大高度。">
+        <DemoBlock title="平铺模式" description="plain 去掉边框、背景与圆角，只保留语法高亮；语言标签与复制按钮浮动在代码上方。文档里的代码块默认都使用这种模式。" :code="baseCode">
+            <AppCode plain :code="jsCode" lang="js" />
         </DemoBlock>
 
         <DemoBlock title="切换语言" description="lang 使用 Speed-highlight 的语言名，也接受 javascript、python、shell 等常见别名。" :code="switchCode">
             <div class="doc_stack">
                 <AppSelect v-model="lang" label="语言" :options="languageOptions" />
-                <AppCode :code="sample" :lang="lang" show-line-numbers :max-height="320" />
+                <AppCode plain :code="sample" :lang="lang" :max-height="320" />
             </div>
         </DemoBlock>
 
-        <DemoBlock title="无头部" description="关闭 show-lang 与 copyable 后只保留代码区域，边框与背景仍然保留，适合嵌入卡片或面板。" :code="headlessCode">
-            <AppCode :code="cssCode" lang="css" :show-lang="false" :copyable="false" :max-height="180" />
+        <DemoBlock title="独立代码块" description="不传 plain 时渲染为带边框与背景的独立代码块，适合卡片、面板等需要明确边界的场景。" :code="cardCode">
+            <AppCode :code="cssCode" lang="css" show-line-numbers :max-height="180" />
         </DemoBlock>
 
-        <DemoBlock title="无框模式" description="设置 plain 后只渲染一个内联 code，不含边框、背景与头部，可直接嵌入正文或已有的代码容器。放入 pre 时必须与 pre 写在同一行，否则模板缩进会被当作空白行。" :code="plainCode">
-            <p class="doc_text">安装命令：<AppCode plain code="pnpm add @wash/ui" /></p>
-            <div class="doc_pre doc_gap"><AppCode plain :code="jsCode" lang="js" /></div>
+        <DemoBlock title="隐藏语言与复制" description="show-lang 与 copyable 可以单独关闭，平铺模式下只留下纯代码。" :code="headlessCode">
+            <AppCode plain :code="cssCode" lang="css" :show-lang="false" :copyable="false" :max-height="180" />
+        </DemoBlock>
+
+        <DemoBlock title="行内代码" description="inline 只输出高亮文字，适合嵌入正文。" :code="inlineCode">
+            <p class="doc_text">安装命令：<AppCode inline code="pnpm add @wash/ui" /></p>
         </DemoBlock>
 
         <template #api>
@@ -128,22 +131,23 @@ const sample = computed(() => samples[lang.value] || `<!-- ${lang.value} 示例 
 const propsRows = [
     { name: 'code', type: 'string', default: "''", desc: '需要高亮的代码' },
     { name: 'lang', type: 'string', default: "'plain'", desc: '语言名或常见别名' },
-    { name: 'showLineNumbers', type: 'boolean', default: 'false', desc: '显示行号（plain 模式下不生效）' },
-    { name: 'showLang', type: 'boolean', default: 'true', desc: '头部显示语言名称' },
-    { name: 'copyable', type: 'boolean', default: 'true', desc: '头部显示复制按钮' },
+    { name: 'showLineNumbers', type: 'boolean', default: 'false', desc: '显示行号（平铺与行内模式不生效）' },
+    { name: 'showLang', type: 'boolean', default: 'true', desc: '左上角显示语言名称' },
+    { name: 'copyable', type: 'boolean', default: 'true', desc: '悬停时右上角显示复制按钮' },
     { name: 'maxHeight', type: 'number | string', default: '0', desc: '代码区最大高度，0 表示不限制' },
-    { name: 'plain', type: 'boolean', default: 'false', desc: '无框模式，只渲染内联 code，保留语法高亮文字' },
+    { name: 'plain', type: 'boolean', default: 'false', desc: '平铺模式，无边框、无背景、无圆角' },
+    { name: 'inline', type: 'boolean', default: 'false', desc: '行内代码，只渲染高亮文字' },
 ]
 
 const languageRows = codeLanguages.map(item => ({ name: item.value, desc: item.label }))
 
-const baseCode = `<AppCode :code="code" lang="js" />`
+const baseCode = `<AppCode plain :code="code" lang="js" />`
 
-const switchCode = `<AppCode :code="code" :lang="lang" show-line-numbers :max-height="320" />`
+const switchCode = `<AppCode plain :code="code" :lang="lang" :max-height="320" />`
 
-const headlessCode = `<AppCode :code="code" lang="css" :show-lang="false" :copyable="false" :max-height="180" />`
+const cardCode = `<AppCode :code="code" lang="css" show-line-numbers :max-height="180" />`
 
-const plainCode = `<AppCode plain :code="code" lang="js" />
+const headlessCode = `<AppCode plain :code="code" lang="css" :show-lang="false" :copyable="false" :max-height="180" />`
 
-<pre class="doc_pre"><AppCode plain :code="code" lang="js" /></pre>`
+const inlineCode = `<AppCode inline code="pnpm add @wash/ui" />`
 </script>

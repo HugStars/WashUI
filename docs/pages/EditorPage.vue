@@ -5,7 +5,7 @@
                 hint="渲染到页面前请按业务需要过滤 HTML。" />
             <div class="doc_stack doc_gap">
                 <span class="wa_tag">HTML 长度：{{ content.length }}</span>
-                <pre class="doc_pre">{{ content || '（空）' }}</pre>
+                <AppCode plain :code="content || '（空）'" lang="html" :max-height="180" />
             </div>
         </DemoBlock>
 

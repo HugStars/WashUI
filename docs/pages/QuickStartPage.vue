@@ -1,17 +1,17 @@
 <template>
     <DocPage category="指南" title="快速开始" description="从应用入口到页面骨架，完成一个可运行的最小结构。">
         <h2 class="doc_h2">应用入口</h2>
-        <pre class="doc_pre"><code>{{ mainCode }}</code></pre>
+        <AppCode plain :code="mainCode" lang="js" />
 
         <h2 class="doc_h2">页面骨架</h2>
-        <pre class="doc_pre"><code>{{ appCode }}</code></pre>
+        <AppCode plain :code="appCode" lang="html" />
         <p class="doc_text doc_gap">AppShell 负责顶部栏、侧栏导航与页脚；PageHeader 会自动投递到顶部栏。</p>
 
         <h2 class="doc_h2">一个页面</h2>
-        <pre class="doc_pre"><code>{{ pageCode }}</code></pre>
+        <AppCode plain :code="pageCode" lang="html" />
 
         <h2 class="doc_h2">路由</h2>
-        <pre class="doc_pre"><code>{{ routerCode }}</code></pre>
+        <AppCode plain :code="routerCode" lang="js" />
 
         <h2 class="doc_h2">注意</h2>
         <ul class="doc_list">

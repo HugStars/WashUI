@@ -1,6 +1,6 @@
 <template>
     <DocPage category="指南" title="主题" description="亮色、暗色与跟随系统；主题状态由 useTheme 提供，颜色和尺寸来自 CSS tokens。">
-        <DemoBlock title="切换主题" description="mode 为 light / dark / auto，theme 为当前实际主题。" :code="themeCode">
+        <DemoBlock title="切换主题" description="mode 为 light / dark / auto，theme 为当前实际主题。" lang="js" :code="themeCode">
             <div class="doc_row">
                 <AppButton :variant="mode === 'light' ? 'primary' : 'line'" @click="setTheme('light')">亮色</AppButton>
                 <AppButton :variant="mode === 'dark' ? 'primary' : 'line'" @click="setTheme('dark')">暗色</AppButton>
@@ -14,11 +14,11 @@
         </DemoBlock>
 
         <h2 class="doc_h2">首屏防闪</h2>
-        <pre class="doc_pre"><code>{{ inlineCode }}</code></pre>
+        <AppCode plain :code="inlineCode" lang="html" />
 
         <h2 class="doc_h2">加载时配置 tokens</h2>
         <p class="doc_text">createUi 接受 tokens 与 themes。键名会自动补 --wa_ 前缀，也可以直接传完整变量名。</p>
-        <pre class="doc_pre doc_gap"><code>{{ tokenCode }}</code></pre>
+        <AppCode plain class="doc_gap" :code="tokenCode" lang="js" />
         <p class="doc_text doc_gap">tokens 在所有主题生效；themes.light 与 themes.dark 只对应各自主题，并覆盖同名 tokens。运行时可以调用 configureTokens 重新应用。</p>
 
         <h2 class="doc_h2">颜色变量</h2>
@@ -30,7 +30,7 @@
         </div>
 
         <h2 class="doc_h2">覆盖变量</h2>
-        <pre class="doc_pre"><code>{{ overrideCode }}</code></pre>
+        <AppCode plain :code="overrideCode" lang="css" />
         <p class="doc_note doc_gap">变量使用 --wa_ 前缀与下划线命名。组件样式只引用变量和修饰类，不会因为主题或尺寸切换互相覆盖。</p>
     </DocPage>
 </template>

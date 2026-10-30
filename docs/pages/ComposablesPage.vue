@@ -2,7 +2,7 @@
     <DocPage title="组合式函数" description="主题、剪贴板与请求状态。全部从主入口导入。">
         <h2 class="doc_h2">useTheme</h2>
         <p class="doc_text">管理亮色、暗色与跟随系统，默认存储键为 wa_theme。</p>
-        <DemoBlock title="切换主题" :code="themeCode">
+        <DemoBlock title="切换主题" lang="js" :code="themeCode">
             <div class="doc_row">
                 <AppButton :variant="mode === 'light' ? 'primary' : 'line'" @click="setTheme('light')">亮色</AppButton>
                 <AppButton :variant="mode === 'dark' ? 'primary' : 'line'" @click="setTheme('dark')">暗色</AppButton>
@@ -17,7 +17,7 @@
 
         <h2 class="doc_h2">useClipboard</h2>
         <p class="doc_text">复制文本，成功后 copied 在默认 1.5 秒后复位；浏览器剪贴板不可用时自动降级。</p>
-        <DemoBlock title="复制" :code="clipboardCode">
+        <DemoBlock title="复制" lang="js" :code="clipboardCode">
             <div class="doc_row">
                 <AppButton variant="line" @click="copyText">{{ copied ? '已复制' : '复制示例文本' }}</AppButton>
                 <code class="doc_code_inline">{{ sampleText }}</code>
@@ -28,7 +28,7 @@
 
         <h2 class="doc_h2">useRequest</h2>
         <p class="doc_text">管理加载、错误与取消。再次 run 会取消上一次请求，组件卸载时自动取消。</p>
-        <DemoBlock title="分页请求" :code="requestCode">
+        <DemoBlock title="分页请求" lang="js" :code="requestCode">
             <div class="doc_row">
                 <AppButton variant="primary" :loading="loading" @click="nextPage">加载下一页</AppButton>
                 <AppButton variant="line" :disabled="!loading" @click="cancel">取消</AppButton>

@@ -1,6 +1,6 @@
 <template>
     <DocPage category="反馈" name="toast" title="Toast" description="全局轻提示服务，内容通过 textContent 写入，不解析 HTML。">
-        <DemoBlock title="基础类型" description="默认 2200ms 自动关闭。" :code="typeCode">
+        <DemoBlock title="基础类型" description="默认 2200ms 自动关闭。" lang="js" :code="typeCode">
             <div class="doc_row">
                 <AppButton @click="toast('普通提示')">普通</AppButton>
                 <AppButton @click="toast.success('已保存')">成功</AppButton>
@@ -10,7 +10,7 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="加载、更新与清理" description="toast.loading 返回 update 与 close；update 后按默认时长关闭。" :code="taskCode">
+        <DemoBlock title="加载、更新与清理" description="toast.loading 返回 update 与 close；update 后按默认时长关闭。" lang="js" :code="taskCode">
             <div class="doc_row">
                 <AppButton variant="primary" @click="startTask">模拟任务</AppButton>
                 <AppButton variant="line" @click="startPersistent">常驻加载</AppButton>

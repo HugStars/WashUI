@@ -1,11 +1,11 @@
 <template>
     <DocPage category="布局" name="AppRouteBar" title="路由进度条" description="固定在视口顶部的加载进度条，默认跟随 routeLoading，也可以手动控制。">
-        <DemoBlock title="手动控制" description="AppShell 已内置 AppRouteBar；这里直接模拟 routeLoading。" :code="manualCode">
+        <DemoBlock title="手动控制" description="AppShell 已内置 AppRouteBar；这里直接模拟 routeLoading。" lang="js" :code="manualCode">
             <AppButton variant="line" :loading="loading" @click="start">模拟加载</AppButton>
         </DemoBlock>
 
         <h2 class="doc_h2">使用方式</h2>
-        <pre class="doc_pre"><code>{{ autoCode }}</code></pre>
+        <AppCode plain :code="autoCode" lang="html" />
         <p class="doc_text doc_gap">不使用 AppShell 时，把 AppRouteBar 放在应用根部一次即可。</p>
         <p class="doc_note doc_gap">AppShell 已内置一个 AppRouteBar，使用 AppShell 时不要再重复添加。</p>
 
