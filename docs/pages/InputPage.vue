@@ -1,13 +1,13 @@
 <template>
     <DocPage category="表单" name="AppInput" title="输入框" description="带标签、提示与校验的输入框，支持前后缀、清空、尺寸、禁用与只读。">
-        <DemoBlock title="基础" description="hint 显示在输入框下方，error 会替换 hint。" :code="baseCode">
+        <DemoBlock title="基础" description="hint 显示在输入框下方，error 会替换 hint。">
             <div class="doc_grid">
                 <AppInput v-model="name" label="名称" placeholder="例如：生产环境" hint="用于标识当前环境" clearable />
                 <AppInput v-model="invalid" label="校验" placeholder="输入任意内容" error="该字段不能为空" />
             </div>
         </DemoBlock>
 
-        <DemoBlock title="前缀、后缀与清空" description="前后缀通过插槽传入，clearable 在有值时显示清空按钮。" :code="affixCode">
+        <DemoBlock title="前缀、后缀与清空" description="前后缀通过插槽传入，clearable 在有值时显示清空按钮。">
             <div class="doc_grid">
                 <AppInput v-model="endpoint" label="地址" placeholder="https://example.com" clearable>
                     <template #prefix>
@@ -22,7 +22,7 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="尺寸、类型与状态" description="size 支持 md / sm；其余原生属性会透传到 input。" :code="stateCode">
+        <DemoBlock title="尺寸、类型与状态" description="size 支持 md / sm；其余原生属性会透传到 input。">
             <div class="doc_grid">
                 <AppInput v-model="token" label="密钥" type="password" placeholder="请输入密钥" clearable />
                 <AppInput v-model="small" label="小尺寸" size="sm" placeholder="sm" />
@@ -72,24 +72,4 @@ const slotRows = [
     { name: 'prefix', type: '—', desc: '输入框前缀' },
     { name: 'suffix', type: '—', desc: '输入框后缀' },
 ]
-
-const baseCode = `<AppInput v-model="name" label="名称" placeholder="例如：生产环境" hint="用于标识当前环境" clearable />
-<AppInput v-model="invalid" label="校验" error="该字段不能为空" />`
-
-const affixCode = `<AppInput v-model="endpoint" label="地址" clearable>
-    <template #prefix>
-        <AppIcon name="link" :size="15" />
-    </template>
-</AppInput>
-
-<AppInput v-model="timeout" label="超时">
-    <template #suffix>
-        <span>ms</span>
-    </template>
-</AppInput>`
-
-const stateCode = `<AppInput v-model="token" label="密钥" type="password" clearable />
-<AppInput v-model="small" label="小尺寸" size="sm" />
-<AppInput model-value="只读内容" label="只读" readonly />
-<AppInput model-value="禁用内容" label="禁用" disabled />`
 </script>

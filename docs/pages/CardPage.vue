@@ -1,12 +1,12 @@
 <template>
     <DocPage category="基础" name="AppCard" title="卡片" description="内容分组容器，支持标题、标题插槽、额外区与页脚。">
-        <DemoBlock title="基础" description="只传 title 时渲染默认标题栏。" :code="baseCode">
+        <DemoBlock title="基础" description="只传 title 时渲染默认标题栏。">
             <AppCard title="运行状态">
                 <p>所有节点在线，最近一次检查在 2 分钟前。</p>
             </AppCard>
         </DemoBlock>
 
-        <DemoBlock title="标题、额外区与页脚" description="title、extra、footer 三个插槽可以独立使用。" :code="slotCode">
+        <DemoBlock title="标题、额外区与页脚" description="title、extra、footer 三个插槽可以独立使用。">
             <AppCard title="今日数据">
                 <template #extra>
                     <AppChip active>全部</AppChip>
@@ -22,7 +22,7 @@
             </AppCard>
         </DemoBlock>
 
-        <DemoBlock title="紧凑模式" description="compact 使用更小的内边距，适合密集列表。" :code="compactCode">
+        <DemoBlock title="紧凑模式" description="compact 使用更小的内边距，适合密集列表。">
             <AppCard title="紧凑卡片" compact>
                 <p>内容区域使用 18px 22px 的内边距。</p>
             </AppCard>
@@ -49,22 +49,4 @@ const slotRows = [
     { name: 'extra', type: '—', desc: '标题右侧额外内容' },
     { name: 'footer', type: '—', desc: '页脚内容' },
 ]
-
-const baseCode = `<AppCard title="运行状态">
-    <p>所有节点在线，最近一次检查在 2 分钟前。</p>
-</AppCard>`
-
-const slotCode = `<AppCard title="今日数据">
-    <template #extra>
-        <AppChip active>全部</AppChip>
-    </template>
-    <AppStat label="请求数" value="12.3k" />
-    <template #footer>
-        <AppButton size="sm" variant="line">查看详情</AppButton>
-    </template>
-</AppCard>`
-
-const compactCode = `<AppCard title="紧凑卡片" compact>
-    <p>内容区域使用更小的内边距。</p>
-</AppCard>`
 </script>

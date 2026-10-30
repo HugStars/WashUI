@@ -1,6 +1,6 @@
 <template>
     <DocPage category="基础" name="AppThemeToggle" title="主题切换" description="封装亮暗主题切换的按钮，内置太阳与月亮图标切换动画。">
-        <DemoBlock title="基础" description="点击在亮色与暗色之间切换，图标会随主题过渡。" :code="baseCode">
+        <DemoBlock title="基础" description="点击在亮色与暗色之间切换，图标会随主题过渡。">
             <div class="doc_row">
                 <AppThemeToggle />
                 <AppThemeToggle size="sm" />
@@ -8,7 +8,7 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="切换事件" description="change 返回切换后的实际主题。" :code="eventCode">
+        <DemoBlock title="切换事件" description="change 返回切换后的实际主题。">
             <div class="doc_row">
                 <AppThemeToggle size="sm" @change="onChange" />
                 <span class="wa_hint">最近切换：{{ last }}</span>
@@ -41,9 +41,4 @@ const propsRows = [
 const eventRows = [
     { name: 'change', type: 'light | dark', desc: '切换后的实际主题' },
 ]
-
-const baseCode = `<AppThemeToggle />
-<AppThemeToggle size="sm" />`
-
-const eventCode = `<AppThemeToggle size="sm" @change="onChange" />`
 </script>

@@ -1,6 +1,6 @@
 <template>
     <DocPage category="反馈" name="AppPopover" title="弹出框" description="点击触发、浮层展示内容，支持方位、宽度、遮罩外关闭与 Esc 关闭。">
-        <DemoBlock title="基础" description="默认点击触发，点击浮层外部或按 Esc 关闭。" :code="baseCode">
+        <DemoBlock title="基础" description="默认点击触发，点击浮层外部或按 Esc 关闭。">
             <AppPopover placement="bottom" :width="240">
                 <template #trigger="{ open }">
                     <AppButton variant="line" :aria-expanded="open">打开弹出框</AppButton>
@@ -16,7 +16,7 @@
             </AppPopover>
         </DemoBlock>
 
-        <DemoBlock title="方位" description="placement 支持 top / bottom / left / right，空间不足时会自动翻转。" :code="placementCode">
+        <DemoBlock title="方位" description="placement 支持 top / bottom / left / right，空间不足时会自动翻转。">
             <div class="doc_row">
                 <AppChip v-for="item in placements" :key="item" :active="placement === item"
                     @click="placement = item">
@@ -78,25 +78,6 @@ const slotRows = [
     { name: 'trigger', type: '{ open, toggle }', desc: '触发元素' },
     { name: 'default', type: '{ close }', desc: '浮层内容' },
 ]
-
-const baseCode = `<AppPopover placement="bottom" :width="240">
-    <template #trigger="{ open }">
-        <AppButton variant="line" :aria-expanded="open">打开弹出框</AppButton>
-    </template>
-    <template #default="{ close }">
-        <div class="doc_popover_list">
-            <AppButton size="sm" variant="line" @click="close">查看详情</AppButton>
-            <AppButton size="sm" variant="line" @click="close">复制链接</AppButton>
-        </div>
-    </template>
-</AppPopover>`
-
-const placementCode = `<AppPopover :placement="placement" :width="200">
-    <template #trigger="{ open }">
-        <AppButton size="sm" :aria-expanded="open">当前：{{ placement }}</AppButton>
-    </template>
-    <p>浮层方位：{{ placement }}</p>
-</AppPopover>`
 </script>
 
 <style>

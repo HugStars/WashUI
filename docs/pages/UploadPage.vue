@@ -1,12 +1,12 @@
 <template>
     <DocPage category="表单" name="AppUpload" title="上传" description="处理选择、拖拽、类型/大小/数量校验与文件列表，不发起上传请求。">
-        <DemoBlock title="基础" description="modelValue 是 File[]；上传请求由业务层处理。" :code="baseCode">
+        <DemoBlock title="基础" description="modelValue 是 File[]；上传请求由业务层处理。">
             <AppUpload v-model="files" accept="image/*,.pdf" :max-size="2 * 1024 * 1024" :max-count="5"
                 hint="支持图片与 PDF，最多 5 个" @change="onChange" @reject="onReject" />
             <p v-if="files.length" class="wa_hint doc_gap">已选择 {{ files.length }} 个文件。</p>
         </DemoBlock>
 
-        <DemoBlock title="禁用" description="disabled 同时禁用选择区与移除按钮。" :code="disabledCode">
+        <DemoBlock title="禁用" description="disabled 同时禁用选择区与移除按钮。">
             <AppUpload :model-value="[]" label="禁用上传" disabled />
         </DemoBlock>
 
@@ -51,11 +51,4 @@ const eventRows = [
     { name: 'reject', type: '{ file, reason }', desc: '校验失败，reason 为 type / size / count' },
     { name: 'remove', type: 'file, index', desc: '移除文件' },
 ]
-
-const baseCode = `<AppUpload v-model="files" accept="image/*,.pdf"
-    :max-size="2 * 1024 * 1024" :max-count="5"
-    hint="支持图片与 PDF，最多 5 个"
-    @change="onChange" @reject="onReject" />`
-
-const disabledCode = `<AppUpload :model-value="[]" label="禁用上传" disabled />`
 </script>

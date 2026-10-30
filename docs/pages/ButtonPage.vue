@@ -1,6 +1,6 @@
 <template>
     <DocPage category="基础" name="AppButton" title="按钮" description="触发操作的基础组件。类型与尺寸通过独立修饰类组合，不会互相覆盖。">
-        <DemoBlock title="类型" description="variant 控制视觉层级。" :code="typeCode">
+        <DemoBlock title="类型" description="variant 控制视觉层级。">
             <div class="doc_row">
                 <AppButton>默认</AppButton>
                 <AppButton variant="primary">主要</AppButton>
@@ -9,7 +9,7 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="尺寸与图标" description="sm 使用紧凑尺寸；icon 用于纯图标操作。" :code="sizeCode">
+        <DemoBlock title="尺寸与图标" description="sm 使用紧凑尺寸；icon 用于纯图标操作。">
             <div class="doc_row">
                 <AppButton variant="primary" size="sm">小号</AppButton>
                 <AppButton variant="line" size="md">中号描边</AppButton>
@@ -22,9 +22,11 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="加载与禁用" description="loading 时自动禁用并显示加载圈。" :code="stateCode">
+        <DemoBlock title="加载与禁用" description="loading 时自动禁用并显示加载圈。">
             <div class="doc_row">
-                <AppButton variant="primary" :loading="saving" @click="save">{{ saving ? '保存中' : '保存' }}</AppButton>
+                <AppButton variant="primary" :loading="saving" @click="save">
+                    {{ saving ? '保存中' : '保存' }}
+                </AppButton>
                 <AppButton disabled>禁用</AppButton>
             </div>
         </DemoBlock>
@@ -70,19 +72,4 @@ const eventRows = [
 const slotRows = [
     { name: 'default', type: '—', desc: '按钮内容' },
 ]
-
-const typeCode = `<AppButton>默认</AppButton>
-<AppButton variant="primary">主要</AppButton>
-<AppButton variant="line">描边</AppButton>
-<AppButton variant="danger">危险</AppButton>`
-
-const sizeCode = `<AppButton variant="primary" size="sm">小号</AppButton>
-<AppButton variant="icon" aria-label="刷新">
-    <AppIcon name="refresh" :size="17" />
-</AppButton>`
-
-const stateCode = `<AppButton variant="primary" :loading="saving" @click="save">
-    {{ saving ? '保存中' : '保存' }}
-</AppButton>
-<AppButton disabled>禁用</AppButton>`
 </script>

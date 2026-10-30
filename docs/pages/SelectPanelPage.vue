@@ -1,6 +1,6 @@
 <template>
     <DocPage category="表单" name="AppSelectPanel" title="下拉面板" description="下拉框使用的选项面板，可配合 AppPopover 自定义触发元素。">
-        <DemoBlock title="配合 AppPopover" description="触发元素由业务层决定，面板负责分组、选中态与空状态。" :code="code">
+        <DemoBlock title="配合 AppPopover" description="触发元素由业务层决定，面板负责分组、选中态与空状态。">
             <AppPopover placement="bottom" :width="240" role="listbox" aria-label="组件选择">
                 <template #trigger="{ open }">
                     <AppButton variant="line" :aria-expanded="open">选择组件</AppButton>
@@ -59,14 +59,4 @@ const propsRows = [
 const eventRows = [
     { name: 'select', type: 'option', desc: '点击选项时返回选项对象' },
 ]
-
-const code = `<AppPopover placement="bottom" :width="240" role="listbox">
-    <template #trigger="{ open }">
-        <AppButton variant="line" :aria-expanded="open">选择组件</AppButton>
-    </template>
-    <template #default="{ close }">
-        <AppSelectPanel :groups="groups" :model-value="value"
-            @select="item => pick(item, close)" />
-    </template>
-</AppPopover>`
 </script>
