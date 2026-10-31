@@ -8,25 +8,25 @@
         </ul>
 
         <h2 class="doc_h2">安装</h2>
-        <AppCode plain lang="bash" code="pnpm add @wash/ui" />
+        <AppCode lang="bash" code="pnpm add @wash/ui" />
 
         <h2 class="doc_h2">引入样式</h2>
-        <AppCode plain lang="js" code="import '@wash/ui/style.css'" />
+        <AppCode lang="js" code="import '@wash/ui/style.css'" />
 
         <p class="doc_text doc_gap">style.css 已经包含 tokens.css，Vue 项目只需要引这一行。只使用变量或非 Vue 项目时，改为引入 tokens.css，两者不要同时引入。
         </p>
 
         <h2 class="doc_h2">初始化</h2>
-        <AppCode plain lang="js" :code="initCode" />
+        <AppCode lang="js" :code="initCode" />
 
         <p class="doc_text doc_gap">createUi 会全局注册全部组件、初始化主题，并应用 tokens。主题默认读取 wa_theme，没有保存值时跟随系统。</p>
 
         <h2 class="doc_h2">按需引入</h2>
         <p class="doc_text">组件与布局都有独立子路径入口，适合需要 tree-shaking 的项目；样式统一引入一次 style.css。</p>
-        <AppCode plain lang="js" :code="onDemandCode" />
+        <AppCode lang="js" :code="onDemandCode" />
 
         <p class="doc_text doc_gap">也可以在主入口使用命名导入；打包器可 tree-shake 未使用的组件。createUi 会全量注册，不需要 tree-shaking 时更省事。</p>
-        <AppCode plain lang="js" code="import { AppButton, AppCard, AppDialog } from '@wash/ui'" />
+        <AppCode lang="js" code="import { AppButton, AppCard, AppDialog } from '@wash/ui'" />
 
         <h2 class="doc_h2">子路径</h2>
         <ApiTable kind="values" :rows="exports" />

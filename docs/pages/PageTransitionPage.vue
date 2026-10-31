@@ -1,7 +1,7 @@
 <template>
     <DocPage category="布局" name="PageTransition" title="页面过渡" description="路由切换的 out-in 过渡，先卸载旧页面，再挂载新页面。">
         <h2 class="doc_h2">基本用法</h2>
-        <AppCode plain :code="baseCode" lang="html" />
+        <AppCode :code="baseCode" lang="html" />
 
         <h2 class="doc_h2">要求</h2>
         <ul class="doc_list">

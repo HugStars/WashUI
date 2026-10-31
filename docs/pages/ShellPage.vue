@@ -1,17 +1,21 @@
 <template>
     <DocPage category="布局" name="AppShell" title="壳层" description="页面骨架，负责顶部栏、侧栏导航、页脚与路由进度条。">
         <h2 class="doc_h2">基本结构</h2>
-        <AppCode plain :code="baseCode" lang="html" />
+        <AppCode :code="baseCode" lang="html" />
 
         <h2 class="doc_h2">导航项</h2>
-        <AppCode plain :code="navCode" lang="js" />
-        <p class="doc_text doc_gap">导航项格式为 { name, label, icon }。active 与 name 对应，支持字符串或 Symbol。</p>
+        <AppCode :code="navCode" lang="js" />
+        <p class="doc_text doc_gap">
+            导航项格式为 { name, label, icon }。active 与 name 对应，支持字符串或 Symbol。
+        </p>
 
         <h2 class="doc_h2">导航布局</h2>
         <ApiTable kind="values" :rows="navLayouts" />
 
         <h2 class="doc_h2">加载状态</h2>
-        <p class="doc_text">loading 不传时自动跟随路由进度条，传 false 可以关闭。顶部进度条由 routeLoading 驱动，createAppRouter 会保证最短 320ms 的可见时间。</p>
+        <p class="doc_text">
+            loading 不传时自动跟随路由进度条，传 false 可以关闭。顶部进度条由 routeLoading 驱动，createAppRouter 会保证最短 320ms 的可见时间。
+        </p>
 
         <template #api>
             <ApiTable :rows="propsRows" />

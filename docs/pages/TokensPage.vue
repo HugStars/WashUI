@@ -15,7 +15,7 @@
         <ApiTable kind="values" :rows="zRows" />
 
         <h2 class="doc_h2">JS Tokens</h2>
-        <AppCode plain :code="tokenCode" lang="js" />
+        <AppCode :code="tokenCode" lang="js" />
 
         <h2 class="doc_h2">命名规范</h2>
         <ul class="doc_list">
@@ -26,7 +26,7 @@
         </ul>
 
         <h2 class="doc_h2">自定义</h2>
-        <AppCode plain :code="overrideCode" lang="css" />
+        <AppCode :code="overrideCode" lang="css" />
     </DocPage>
 </template>
 

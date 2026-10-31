@@ -21,7 +21,7 @@
 
         <AppDialog v-model:open="basic" title="接口详情" @close="lastEvent = 'basic close'">
             <p class="wa_hint">默认标题、关闭按钮、Esc 与遮罩点击。</p>
-            <AppCode plain :code="sample" lang="json" :max-height="220" />
+            <AppCode :code="sample" lang="json" :max-height="220" />
             <template #footer>
                 <AppButton variant="line" @click="basic = false">取消</AppButton>
                 <AppButton variant="primary" @click="basic = false">确定</AppButton>
