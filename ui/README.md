@@ -176,6 +176,7 @@ app.use(createUi({
 - 字符串 SVG 原样渲染，不应用 `strokeWidth`，尺寸仍由 `size` 控制
 - 运行时使用 `configureIcons()`；传 `null` 可移除图标
 - `iconNames()` 返回当前图标名列表
+- `iconGroups` 提供内置图标的分类信息，可用于文档或图标选择器
 
 ## 布局
 
@@ -222,6 +223,39 @@ toast.clear()
 ```
 
 Toast 使用 `textContent` 写入内容，不解析 HTML。
+
+## Loading
+
+```js
+import { loading, loadingManager } from '@wash/ui'
+
+loading.show('save', '保存中...', {
+    priority: 1,
+    icon: 'loader',
+    gradient: true,
+    blur: 10,
+})
+
+loading.update('save', '正在写入...')
+loading.update('save', { icon: 'database', spin: false, blur: 16 })
+loading.hide('save')
+
+loading.show('sync', '同步中...', { priority: 0 })
+loading.count()
+loading.has('sync')
+loading.clear()
+```
+
+- 全局单例遮罩，多个 id 可同时注册
+- 按 `priority` 选择显示，同级取最新
+- 同一 id 重复 `show` 会覆盖配置
+- `icon` 使用内置图标名，`spin` 控制是否旋转
+- `gradient` 开启从透明到 `#00000059` 的渐变背景
+- `blur` 设置磨砂模糊半径（px），`0` 为关闭
+- 多个任务同时存在时，以当前显示的优先级最高任务的配置为准
+- 打开时锁定页面滚动并保留当前滚动位置，关闭后恢复
+- `loadingManager` 是 `loading` 的别名
+- 加载遮罩没有关闭按钮，由业务代码调用 `hide(id)` / `clear()` 关闭
 
 ## 主题
 
@@ -292,8 +326,8 @@ import { formatBytes, formatSpeed, formatMbps, formatDuration, formatCount } fro
 - 状态类统一使用 `.on`
 - 不使用 `!important`
 - 组件与布局样式写在各自 SFC 的 `<style>` 中，构建时抽取为 `dist/style.css`
-- `styles/` 只保留 `base.css`、`form.css` 与汇总入口 `index.css`
-- `core/` 存放图标、主题、Toast、路由状态、插件与代码语言等运行时模块；`toast.css` 与 `toast.js` 同目录
+- `styles/` 保留 `base.css`、`form.css`、`loading.css` 与汇总入口 `index.css`
+- `core/` 存放图标、主题、Toast、Loading、路由状态、插件与代码语言等运行时模块；`toast.css` 与 `toast.js` 同目录
 - 主题通过 `[data-theme='dark']` 覆盖变量，不覆盖组件规则
 
 主要变量：

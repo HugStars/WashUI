@@ -1,0 +1,110 @@
+.wa_loading {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--wa_z_toast) - 1);
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: #00000059;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .18s ease, visibility .18s ease;
+}
+
+.wa_loading.on {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+html.wa_loading_active {
+    overflow: hidden;
+    scrollbar-gutter: stable;
+    overscroll-behavior: none;
+}
+
+.wa_loading_box {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+    min-width: 120px;
+    max-width: min(280px, 80vw);
+    padding: 20px 24px;
+    border: 1px solid var(--wa_color_border);
+    border-radius: var(--wa_radius_popover);
+    background: var(--wa_color_dialog);
+    box-shadow: var(--wa_shadow_dialog);
+    color: var(--wa_color_text);
+    text-align: center;
+    transform: scale(.96);
+    transition: transform .18s var(--wa_ease_out);
+}
+
+.wa_loading.on .wa_loading_box {
+    transform: scale(1);
+}
+
+.wa_loading_ring {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--wa_color_line_strong);
+    border-top-color: var(--wa_color_text);
+    border-radius: 50%;
+    animation: wa_loading_spin .8s linear infinite;
+}
+
+.wa_loading_icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    color: var(--wa_color_text);
+}
+
+.wa_loading_icon[hidden],
+.wa_loading_ring[hidden] {
+    display: none;
+}
+
+.wa_loading_icon svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.wa_loading_icon.spin {
+    animation: wa_loading_spin 1s linear infinite;
+}
+
+.wa_loading_text {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--wa_color_text_muted);
+}
+
+.wa_loading_text:empty {
+    display: none;
+}
+
+@keyframes wa_loading_spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .wa_loading_ring,
+    .wa_loading_icon.spin {
+        animation-duration: 2.4s;
+    }
+
+    .wa_loading_box {
+        transition: none;
+    }
+}
