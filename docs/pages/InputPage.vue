@@ -22,10 +22,10 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="尺寸、类型与状态" description="size 支持 md / sm；其余原生属性会透传到 input。">
+        <DemoBlock title="尺寸、类型与状态" description="默认小尺寸，传 size=md 可放大；其余原生属性会透传到 input。">
             <div class="doc_grid">
                 <AppInput v-model="token" label="密钥" type="password" placeholder="请输入密钥" clearable />
-                <AppInput v-model="small" label="小尺寸" size="sm" placeholder="sm" />
+                <AppInput v-model="small" label="中尺寸" size="md" placeholder="md" />
                 <AppInput model-value="只读内容" label="只读" readonly />
                 <AppInput model-value="禁用内容" label="禁用" disabled />
             </div>
@@ -56,7 +56,7 @@ const propsRows = [
     { name: 'hint', type: 'string', default: "''", desc: '提示文案' },
     { name: 'error', type: 'string', default: "''", desc: '错误文案，优先于 hint' },
     { name: 'type', type: 'string', default: 'text', desc: '原生 input type' },
-    { name: 'size', type: 'string', default: 'md', desc: 'md | sm' },
+    { name: 'size', type: 'string', default: 'sm', desc: '默认 sm，可选 md' },
     { name: 'clearable', type: 'boolean', default: 'false', desc: '显示清空按钮' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用' },
     { name: 'readonly', type: 'boolean', default: 'false', desc: '只读' },

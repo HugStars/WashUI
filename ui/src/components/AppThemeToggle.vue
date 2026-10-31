@@ -16,7 +16,7 @@ import AppIcon from './AppIcon.vue'
 const props = defineProps({
     size: {
         type: String,
-        default: 'md',
+        default: 'sm',
         allows: ['md', 'sm'],
     },
 })
