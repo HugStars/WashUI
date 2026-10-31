@@ -4,7 +4,7 @@ export const nav = [
     { name: 'components', label: '组件', icon: 'grid' },
     { name: 'layout', label: '布局', icon: 'layout' },
     { name: 'abilities', label: '能力', icon: 'cpu' },
-    { name: 'icons', label: '图标', icon: 'sun' },
+    { name: 'icons', label: '图标', icon: 'icons' },
     { name: 'playground', label: '实验场', icon: 'terminal' },
 ]
 

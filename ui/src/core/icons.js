@@ -87,6 +87,13 @@ export const defaultIcons = {
         ['rect', { x: 3, y: 14, width: 7, height: 7, rx: 1 }],
         ['rect', { x: 14, y: 14, width: 7, height: 7, rx: 1 }],
     ],
+    // 与 grid 相同的四宫格尺寸：每个图形占 7×7，中心对齐
+    icons: [
+        ['circle', { cx: 17.5, cy: 6.5, r: 3.5 }],
+        ['rect', { x: 3, y: 3, width: 7, height: 7, rx: 1 }],
+        ['polygon', { points: '3 21 10 21 6.5 14' }],
+        ['polygon', { points: '17.5 12.7 18.8 15.7 22.1 16 19.6 18.2 20.3 21.4 17.5 19.7 14.7 21.4 15.4 18.2 12.9 16 16.2 15.7 17.5 12.7' }],
+    ],
     sun: [
         ['circle', { cx: 12, cy: 12, r: 4 }],
         ['path', { d: 'M12 2v2' }],
@@ -909,7 +916,7 @@ export const defaultIcons = {
 export const iconGroups = [
     {
         title: '方向与导航',
-        icons: ['home', 'arrow-up', 'arrow-down', 'arrow-left', 'arrow-right', 'chevron-up', 'chevron-down', 'chevron-left', 'chevron', 'caret-up', 'caret-down', 'caret-left', 'caret-right', 'fullscreen', 'fullscreen-exit', 'layout', 'grid'],
+        icons: ['home', 'arrow-up', 'arrow-down', 'arrow-left', 'arrow-right', 'chevron-up', 'chevron-down', 'chevron-left', 'chevron', 'caret-up', 'caret-down', 'caret-left', 'caret-right', 'fullscreen', 'fullscreen-exit', 'layout', 'grid', 'icons'],
     },
     {
         title: '操作与编辑',
