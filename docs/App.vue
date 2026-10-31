@@ -56,8 +56,8 @@ const entry = {
     components: '/components',
     icons: '/icons',
     layout: '/layout',
-    abilities: '/composables',
     playground: '/playground',
+    abilities: '/abilities',
 }
 
 function go(item) {
@@ -141,7 +141,7 @@ function go(item) {
 .doc_component_grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
-    gap: 14px;
+    gap: 12px;
 }
 .doc_component_grid>* {
     min-width: 0;
@@ -153,22 +153,46 @@ function go(item) {
     text-decoration: none;
 }
 .doc_component_link .wa_card {
+    display: flex;
+    flex-direction: column;
     height: 100%;
-    transition: transform var(--wa_duration_base), box-shadow var(--wa_duration_base);
+    padding: 16px 18px;
+    border: 1px solid var(--wa_color_line);
+    border-radius: var(--wa_radius_popover);
+    background: var(--wa_color_canvas);
+    transition: transform var(--wa_duration_base), box-shadow var(--wa_duration_base), border-color var(--wa_duration_base);
+}
+.doc_component_link .wa_card_head {
+    margin-bottom: 10px;
+}
+.doc_component_link .wa_card_title {
+    font-size: 15px;
+}
+.doc_component_link .wa_card_title::before {
+    height: 13px;
 }
 .doc_component_link:hover .wa_card {
     transform: translateY(-2px);
+    border-color: var(--wa_color_line_strong);
     box-shadow: 0 12px 28px #00000012;
 }
 .doc_component_name {
-    font: 12px var(--wa_font_mono);
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: var(--wa_color_soft);
+    font: 11px var(--wa_font_mono);
     color: var(--wa_color_text_subtle);
 }
 .doc_component_go {
     display: block;
-    margin-top: 12px;
+    margin-top: auto;
+    padding-top: 14px;
     font-size: 12px;
     color: var(--wa_color_text_subtle);
+    transition: color var(--wa_duration_fast);
+}
+.doc_component_link:hover .doc_component_go {
+    color: var(--wa_color_accent);
 }
 .doc_code_inline {
     padding: 1px 5px;
@@ -241,7 +265,7 @@ function go(item) {
         display: none;
     }
 
-    .wa_header .wa_page_header h1 {
+    .wa_header .wa_page_header:has(.doc_header_nav) h1 {
         display: none;
     }
 

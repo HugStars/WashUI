@@ -1,5 +1,5 @@
 <template>
-    <DocPage category="反馈" name="toast" title="Toast" description="全局轻提示服务，内容通过 textContent 写入，不解析 HTML。">
+    <DocPage category="服务" name="toast" title="轻提示" description="全局轻提示服务，内容通过 textContent 写入，不解析 HTML。">
         <DemoBlock title="基础类型" description="默认 2200ms 自动关闭。" lang="js" :code="typeCode">
             <div class="doc_row">
                 <AppButton @click="toast('普通提示')">普通</AppButton>

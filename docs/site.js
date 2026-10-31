@@ -1,10 +1,10 @@
 export const nav = [
     { name: 'home', label: '开始', icon: 'home' },
     { name: 'guide', label: '指南', icon: 'edit' },
-    { name: 'components', label: '组件', icon: 'list' },
-    { name: 'icons', label: '图标', icon: 'grid' },
+    { name: 'components', label: '组件', icon: 'grid' },
     { name: 'layout', label: '布局', icon: 'layout' },
-    { name: 'abilities', label: '能力', icon: 'refresh' },
+    { name: 'abilities', label: '能力', icon: 'cpu' },
+    { name: 'icons', label: '图标', icon: 'sun' },
     { name: 'playground', label: '实验场', icon: 'terminal' },
 ]
 
@@ -22,7 +22,9 @@ export const componentGroups = [
             { name: 'card', label: '卡片', component: 'AppCard', page: 'CardPage', path: '/components/card', summary: '内容分组容器，支持标题、额外区与页脚。' },
             { name: 'code', label: '代码', component: 'AppCode', page: 'CodePage', path: '/components/code', summary: '基于 Speed-highlight 的代码块，支持多语言、行号与复制。' },
             { name: 'chip', label: '标记', component: 'AppChip', page: 'ChipPage', path: '/components/chip', summary: '轻量筛选与状态标记。' },
+            { name: 'tabs', label: '标签页', component: 'AppTabs', page: 'TabsPage', path: '/components/tabs', summary: '参考导航实现的滑动标签切换，支持面板与两种外观。' },
             { name: 'stat', label: '统计', component: 'AppStat', page: 'StatPage', path: '/components/stat', summary: '紧凑的指标展示。' },
+            { name: 'number', label: '数字跳动', en: 'Number', component: 'AppNumber', page: 'NumberPage', path: '/components/number', summary: '数字变化时的平滑跳动。' },
             { name: 'empty', label: '空状态', component: 'AppEmpty', page: 'EmptyPage', path: '/components/empty', summary: '无数据时的占位与操作。' },
             { name: 'theme-toggle', label: '主题切换', component: 'AppThemeToggle', page: 'ThemeTogglePage', path: '/components/theme-toggle', summary: '亮暗主题切换，内置太阳与月亮图标。' },
         ],
@@ -38,6 +40,7 @@ export const componentGroups = [
         title: '表单',
         items: [
             { name: 'input', label: '输入框', component: 'AppInput', page: 'InputPage', path: '/components/input', summary: '带标签、提示与校验的输入框。' },
+            { name: 'switch', label: '开关', component: 'AppSwitch', page: 'SwitchPage', path: '/components/switch', summary: '二选一状态切换，支持标签对齐、尺寸与禁用。' },
             { name: 'select', label: '下拉框', component: 'AppSelect', page: 'SelectPage', path: '/components/select', summary: '带标签、分组与校验的下拉选择。' },
             { name: 'select-panel', label: '下拉面板', component: 'AppSelectPanel', page: 'SelectPanelPage', path: '/components/select-panel', summary: '下拉框使用的可复用选项面板。' },
             { name: 'upload', label: '上传', component: 'AppUpload', page: 'UploadPage', path: '/components/upload', summary: '选择、拖拽、校验与文件列表。' },
@@ -50,7 +53,6 @@ export const componentGroups = [
             { name: 'panel', label: '展示框', component: 'AppPanel', page: 'PanelPage', path: '/components/panel', summary: '带色调的状态与信息展示。' },
             { name: 'popover', label: '弹出框', component: 'AppPopover', page: 'PopoverPage', path: '/components/popover', summary: '点击触发、浮层展示内容。' },
             { name: 'dialog', label: '弹框', component: 'AppDialog', page: 'DialogPage', path: '/components/dialog', summary: '受控弹框，含焦点陷阱与移动端手势。' },
-            { name: 'toast', label: 'Toast', component: 'toast', page: 'ToastPage', path: '/components/toast', summary: '全局轻提示服务。' },
         ],
     },
 ]
@@ -69,10 +71,23 @@ export const iconPages = [
     { name: 'icons', label: '图标', en: 'Icons', page: 'IconPage', path: '/icons' },
 ]
 
+export const composablePages = [
+    { name: 'use-theme', label: '主题', en: 'useTheme', page: 'UseThemePage', path: '/composables/theme' },
+    { name: 'use-clipboard', label: '剪贴板', en: 'useClipboard', page: 'UseClipboardPage', path: '/composables/clipboard' },
+    { name: 'use-request', label: '请求', en: 'useRequest', page: 'UseRequestPage', path: '/composables/request' },
+]
+
+export const abilityOverview = { name: 'abilities', label: '能力总览', en: 'Abilities', path: '/abilities' }
+
 export const abilityPages = [
-    { name: 'composables', label: '组合式函数', en: 'Composables', path: '/composables' },
+    ...composablePages,
     { name: 'utils', label: '工具函数', en: 'Utils', path: '/utils' },
     { name: 'tokens', label: '设计变量', en: 'Tokens', path: '/tokens' },
+]
+
+export const servicePages = [
+    { name: 'toast', label: '轻提示', en: 'Toast', page: 'ToastPage', path: '/services/toast' },
+    { name: 'loading', label: '加载', en: 'Loading', page: 'LoadingPage', path: '/services/loading' },
 ]
 
 export function pageLabel(item) {
@@ -94,7 +109,9 @@ export const sections = {
     abilities: {
         title: '能力',
         groups: [
-            { title: '组合式函数', items: [{ name: 'composables', label: '主题 / 剪贴板 / 请求', path: '/composables' }] },
+            { title: '总览', items: [abilityOverview] },
+            { title: '全局服务', items: servicePages },
+            { title: '组合式函数', items: composablePages },
             { title: '工具函数', items: [{ name: 'utils', label: '格式化函数', path: '/utils' }] },
             { title: '设计变量', items: [{ name: 'tokens', label: '颜色 / 圆角 / 层级', path: '/tokens' }] },
         ],
@@ -106,5 +123,7 @@ export const pageNav = [
     ...componentPages,
     ...iconPages,
     ...layoutPages,
+    abilityOverview,
+    ...servicePages,
     ...abilityPages,
 ]

@@ -1,5 +1,5 @@
 import { createAppRouter } from '@wash/ui/router'
-import { componentPages, guidePages, layoutPages } from './site.js'
+import { componentPages, composablePages, guidePages, layoutPages, servicePages } from './site.js'
 
 const pages = import.meta.glob('./pages/*.vue')
 
@@ -33,11 +33,26 @@ export function createDocsRouter() {
                 component: page(item.page),
                 meta: { title: item.label, nav: 'layout', section: 'layout' },
             })),
-            { path: '/composables', name: 'composables', component: page('ComposablesPage'), meta: { title: '组合式函数', nav: 'abilities', section: 'abilities' } },
+            { path: '/abilities', name: 'abilities', component: page('AbilitiesPage'), meta: { title: '能力', nav: 'abilities', section: 'abilities' } },
+            ...servicePages.map(item => ({
+                path: item.path,
+                name: item.name,
+                component: page(item.page),
+                meta: { title: item.label, nav: 'abilities', section: 'abilities' },
+            })),
+            ...composablePages.map(item => ({
+                path: item.path,
+                name: item.name,
+                component: page(item.page),
+                meta: { title: item.label, nav: 'abilities', section: 'abilities' },
+            })),
             { path: '/utils', name: 'utils', component: page('UtilsPage'), meta: { title: '工具函数', nav: 'abilities', section: 'abilities' } },
             { path: '/tokens', name: 'tokens', component: page('TokensPage'), meta: { title: '设计变量', nav: 'abilities', section: 'abilities' } },
+            { path: '/composables', redirect: '/composables/theme' },
             { path: '/guide/layout', redirect: '/layout' },
             { path: '/components/icon', redirect: '/icons' },
+            { path: '/components/toast', redirect: '/services/toast' },
+            { path: '/components/loading', redirect: '/services/loading' },
             { path: '/playground', name: 'playground', component: page('PlaygroundPage'), meta: { title: '实验场', nav: 'playground' } },
             { path: '/:pathMatch(.*)*', redirect: '/' },
         ],
