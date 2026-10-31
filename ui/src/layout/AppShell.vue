@@ -4,33 +4,36 @@
             <div ref="HeaderTarget" class="wa_header_slot"></div>
         </header>
 
-        <nav v-if="nav.length" class="wa_nav" :class="navLayout !== 'auto' && `wa_nav_${navLayout}`" aria-label="主导航">
-            <button v-for="item in VisibleNav" :key="item.name" type="button" class="wa_nav_item"
-                :class="{ on: item.name === active }" :aria-current="item.name === active ? 'page' : undefined"
-                :aria-label="item.label" :title="navLayout === 'icon' ? item.label : undefined"
-                @click="emit('navigate', item)">
+        <nav v-if="nav.length" ref="NavEl" class="wa_nav"
+            :class="[{ slider_ready: SliderReady }, navLayout !== 'auto' && `wa_nav_${navLayout}`]" aria-label="主导航"
+            @pointerdown="OnPressStart" @contextmenu="OnContextMenu">
+            <span class="wa_nav_slider" :class="{ ready: SliderReady }" :style="SliderStyle" aria-hidden="true">
+                <span class="wa_nav_slider_inner" :class="{ bounce: SliderBounce, press: SliderPress }"
+                    @animationend="OnSliderAnimationEnd"></span>
+            </span>
+
+            <button v-for="item in VisibleNav" :key="item.name" :ref="el => SetItemEl(item.name, el)" type="button"
+                class="wa_nav_item" :class="{ on: item.name === active, pressed: PressedKey === item.name }"
+                :aria-current="item.name === active ? 'page' : undefined" :aria-label="item.label"
+                :title="navLayout === 'icon' ? item.label : undefined" @click="emit('navigate', item)">
                 <AppIcon :name="item.icon" :size="20" />
                 <span class="wa_nav_label">{{ item.label }}</span>
             </button>
 
-            <AppPopover v-if="MoreNav.length" v-model:open="MoreOpen" placement="top" :width="140" :offset="-12"
-                role="menu" aria-label="更多导航">
+            <AppPopover v-if="MoreNav.length" v-model:open="MoreOpen" placement="top" :width="168" :offset="-12"
+                :padding="6" role="listbox" aria-label="更多导航">
                 <template #trigger="{ open }">
-                    <button type="button" class="wa_nav_item" :class="{ on: MoreActive || open }"
-                        :aria-current="MoreActive ? 'page' : undefined" aria-label="更多" aria-haspopup="menu"
+                    <button :ref="el => SetItemEl(MORE_KEY, el)" type="button" class="wa_nav_item"
+                        :class="{ on: MoreActive, open, pressed: PressedKey === MORE_KEY }"
+                        :aria-current="MoreActive ? 'page' : undefined" aria-label="更多" aria-haspopup="listbox"
                         :aria-expanded="open" title="更多">
                         <AppIcon name="more" :size="20" />
                         <span class="wa_nav_label">更多</span>
                     </button>
                 </template>
                 <template #default="{ close }">
-                    <div class="wa_nav_more_list">
-                        <button v-for="item in MoreNav" :key="item.name" type="button" class="wa_nav_more_item"
-                            :class="{ on: item.name === active }" role="menuitem" @click="Select(item, close)">
-                            <AppIcon :name="item.icon" :size="18" />
-                            <span>{{ item.label }}</span>
-                        </button>
-                    </div>
+                    <AppSelectPanel :options="MoreOptions" :model-value="active" :check-icon="false"
+                        @select="item => SelectMore(item, close)" />
                 </template>
             </AppPopover>
         </nav>
@@ -46,12 +49,14 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, provide, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, provide, ref, watch } from 'vue'
 import AppIcon from '../components/AppIcon.vue'
 import AppPopover from '../components/AppPopover.vue'
+import AppSelectPanel from '../components/AppSelectPanel.vue'
 import { HEADER_TARGET } from '../core/keys.js'
 
 const MAX_NAV = 4
+const MORE_KEY = Symbol('wash-more')
 
 const props = defineProps({
     nav: {
@@ -78,35 +83,165 @@ const emit = defineEmits(['navigate'])
 const HeaderTarget = ref(null)
 const MoreOpen = ref(false)
 const Media = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(max-width: 860px)') : null
+const TouchMedia = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(hover: none)') : null
 const Mobile = ref(Media?.matches ?? false)
 const HasMore = computed(() => Mobile.value && props.nav.length > MAX_NAV)
 const VisibleNav = computed(() => HasMore.value ? props.nav.slice(0, MAX_NAV - 1) : props.nav)
 const MoreNav = computed(() => HasMore.value ? props.nav.slice(MAX_NAV - 1) : [])
 const MoreActive = computed(() => MoreNav.value.some(item => item.name === props.active))
+const MoreOptions = computed(() => MoreNav.value.map(item => ({
+    label: item.label,
+    value: item.name,
+    icon: item.icon,
+})))
+
+const NavEl = ref(null)
+const ItemEls = new Map()
+const SliderTarget = computed(() => MoreActive.value ? MORE_KEY : props.active)
+const SliderStyle = ref({})
+const SliderReady = ref(false)
+const SliderBounce = ref(false)
+const SliderPress = ref(false)
+const PressedKey = ref(null)
+
+let PressTimer = null
+let BounceFrame = 0
+let NavResizeObserver = null
+
+function SetItemEl(name, el) {
+    if (el) ItemEls.set(name, el)
+    else ItemEls.delete(name)
+}
+
+function UpdateSlider() {
+    const nav = NavEl.value
+    const el = ItemEls.get(SliderTarget.value)
+
+    if (!nav || !el) {
+        SliderReady.value = false
+        return
+    }
+
+    // 用布局尺寸而不是 getBoundingClientRect：后者会被 :hover/:active 的 transform 影响
+    SliderStyle.value = {
+        left: `${el.offsetLeft}px`,
+        top: `${el.offsetTop}px`,
+        width: `${el.offsetWidth}px`,
+        height: `${el.offsetHeight}px`,
+    }
+    SliderReady.value = true
+}
+
+function PlayBounce() {
+    cancelAnimationFrame(BounceFrame)
+    SliderBounce.value = false
+
+    BounceFrame = requestAnimationFrame(() => {
+        BounceFrame = requestAnimationFrame(() => {
+            SliderBounce.value = true
+        })
+    })
+}
+
+function OnSliderAnimationEnd(event) {
+    if (event.target === event.currentTarget) SliderBounce.value = false
+}
+
+function ClearPress() {
+    clearTimeout(PressTimer)
+    PressTimer = null
+    SliderPress.value = false
+    PressedKey.value = null
+}
+
+function OnPressStart(event) {
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+    const item = event.target.closest?.('.wa_nav_item')
+    if (!item) return
+
+    ClearPress()
+
+    for (const [key, el] of ItemEls) {
+        if (el === item) {
+            PressedKey.value = key
+            break
+        }
+    }
+
+    PressTimer = setTimeout(() => {
+        PressTimer = null
+        SliderPress.value = true
+    }, 320)
+}
+
+function OnContextMenu(event) {
+    // 触屏长按会触发 contextmenu，这里只保留导航自己的长按反馈
+    if (Mobile.value || TouchMedia?.matches) event.preventDefault()
+}
 
 function OnMedia(event) {
     Mobile.value = event.matches
 }
 
-onMounted(() => {
+onMounted(async () => {
     Media?.addEventListener('change', OnMedia)
+    window.addEventListener('pointerup', ClearPress)
+    window.addEventListener('pointercancel', ClearPress)
+    window.addEventListener('resize', UpdateSlider)
+
+    if (typeof ResizeObserver !== 'undefined') {
+        NavResizeObserver = new ResizeObserver(UpdateSlider)
+        if (NavEl.value) NavResizeObserver.observe(NavEl.value)
+    }
+
+    await nextTick()
+    UpdateSlider()
+    document.fonts?.ready?.then(UpdateSlider)
 })
 
 onUnmounted(() => {
     Media?.removeEventListener('change', OnMedia)
+    window.removeEventListener('pointerup', ClearPress)
+    window.removeEventListener('pointercancel', ClearPress)
+    window.removeEventListener('resize', UpdateSlider)
+    NavResizeObserver?.disconnect()
+    NavResizeObserver = null
+    cancelAnimationFrame(BounceFrame)
+    clearTimeout(PressTimer)
 })
 
-function Select(item, close) {
+function SelectMore(item, close) {
     close()
-    emit('navigate', item)
+    const target = MoreNav.value.find(nav => nav.name === item.value)
+    if (target) emit('navigate', target)
 }
 
 watch(() => props.active, () => {
     MoreOpen.value = false
 })
 
+watch(SliderTarget, () => {
+    nextTick(() => {
+        UpdateSlider()
+        PlayBounce()
+    })
+})
+
 watch(HasMore, value => {
     if (!value) MoreOpen.value = false
+    nextTick(UpdateSlider)
+})
+
+watch([VisibleNav, () => props.navLayout], () => {
+    nextTick(UpdateSlider)
+})
+
+watch(NavEl, (el, old) => {
+    if (old) NavResizeObserver?.unobserve(old)
+    if (el) {
+        NavResizeObserver?.observe(el)
+        nextTick(UpdateSlider)
+    }
 })
 
 provide(HEADER_TARGET, HeaderTarget)
@@ -150,6 +285,8 @@ provide(HEADER_TARGET, HeaderTarget)
 }
 
 .wa_nav {
+    --wa_nav_item_radius: 14px;
+
     grid-area: nav;
     position: sticky;
     top: 86px;
@@ -168,7 +305,48 @@ provide(HEADER_TARGET, HeaderTarget)
     box-shadow: var(--wa_shadow_nav);
 }
 
+.wa_nav_slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 0;
+    height: 0;
+    border-radius: var(--wa_nav_item_radius);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        left .34s cubic-bezier(.34, 1.56, .64, 1),
+        top .34s cubic-bezier(.34, 1.56, .64, 1),
+        width .34s cubic-bezier(.34, 1.56, .64, 1),
+        height .34s cubic-bezier(.34, 1.56, .64, 1),
+        opacity var(--wa_duration_fast) linear;
+}
+
+.wa_nav_slider.ready {
+    opacity: 1;
+}
+
+.wa_nav_slider_inner {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--wa_color_nav_active);
+    transition: transform var(--wa_duration_base) ease;
+}
+
+.wa_nav_slider_inner.press {
+    transform: scale(.9);
+}
+
+.wa_nav_slider_inner.bounce {
+    animation: wa_nav_slider_bounce .55s cubic-bezier(.22, .61, .36, 1);
+}
+
 .wa_nav_item {
+    position: relative;
+    z-index: 1;
     display: grid;
     flex: none;
     place-items: center;
@@ -176,11 +354,12 @@ provide(HEADER_TARGET, HeaderTarget)
     height: 42px;
     padding: 0;
     border: 0;
-    border-radius: 14px;
+    border-radius: var(--wa_nav_item_radius);
     color: var(--wa_color_text_subtle);
     background: transparent;
     cursor: pointer;
     user-select: none;
+    -webkit-touch-callout: none;
     white-space: nowrap;
     transition: color var(--wa_duration_fast), background var(--wa_duration_fast), transform var(--wa_duration_fast);
 }
@@ -188,18 +367,38 @@ provide(HEADER_TARGET, HeaderTarget)
 .wa_nav_item:hover {
     color: var(--wa_color_text);
     background: var(--wa_color_hover);
-    transform: translateY(-1px);
 }
 
-.wa_nav_item:active {
-    transform: scale(.94);
+@media (hover: hover) {
+    .wa_nav_item:hover {
+        transform: translateY(-1px);
+    }
+}
+
+.wa_nav_item.open {
+    color: var(--wa_color_text);
+    background: var(--wa_color_hover);
 }
 
 .wa_nav_item.on,
 .wa_nav_item.on:hover {
-    color: var(--wa_color_on_nav_active);
-    background: var(--wa_color_nav_active);
+    color: var(--wa_color_text);
     transform: none;
+}
+
+.wa_nav.slider_ready .wa_nav_item.on,
+.wa_nav.slider_ready .wa_nav_item.on:hover {
+    color: var(--wa_color_on_nav_active);
+}
+
+/* 放在 .on 之后并提高特异性：触屏上 hover 背景会保持，不能让它覆盖按下的缩放 */
+.wa_nav_item:active,
+.wa_nav_item.pressed,
+.wa_nav_item.on:active,
+.wa_nav_item.on.pressed,
+.wa_nav_item.open:active,
+.wa_nav_item.open.pressed {
+    transform: scale(.94);
 }
 
 .wa_nav_item:focus-visible {
@@ -294,6 +493,8 @@ provide(HEADER_TARGET, HeaderTarget)
     }
 
     .wa_nav {
+        --wa_nav_item_radius: var(--wa_radius_pill);
+
         position: fixed;
         top: auto;
         right: 14px;
@@ -329,10 +530,6 @@ provide(HEADER_TARGET, HeaderTarget)
         padding: 12px 6px;
         scroll-snap-align: center;
         border-radius: var(--wa_radius_pill);
-    }
-
-    .wa_nav_item:hover {
-        transform: none;
     }
 
     .wa_nav_item svg {
@@ -396,42 +593,33 @@ provide(HEADER_TARGET, HeaderTarget)
     }
 }
 
-.wa_nav_more_list {
-    display: grid;
-    gap: 2px;
-}
+@keyframes wa_nav_slider_bounce {
+    0% {
+        scale: 1 1;
+    }
 
-.wa_nav_more_item {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    width: 100%;
-    padding: 9px 10px;
-    border: 0;
-    border-radius: 9px;
-    color: var(--wa_color_text_muted);
-    background: transparent;
-    font: inherit;
-    font-size: 13px;
-    text-align: left;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: color var(--wa_duration_fast), background var(--wa_duration_fast);
-}
+    30% {
+        scale: 1.25 .75;
+    }
 
-.wa_nav_more_item>svg {
-    flex: none;
-}
+    40% {
+        scale: .75 1.25;
+    }
 
-.wa_nav_more_item:hover {
-    color: var(--wa_color_text);
-    background: var(--wa_color_hover);
-}
+    50% {
+        scale: 1.15 .85;
+    }
 
-.wa_nav_more_item.on,
-.wa_nav_more_item.on:hover {
-    color: var(--wa_color_on_nav_active);
-    background: var(--wa_color_nav_active);
-    font-weight: 600;
+    65% {
+        scale: .95 1.05;
+    }
+
+    75% {
+        scale: 1.05 .95;
+    }
+
+    100% {
+        scale: 1 1;
+    }
 }
 </style>
