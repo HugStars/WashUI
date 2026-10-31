@@ -21,6 +21,10 @@ defineProps({
 }
 
 .wa_chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     height: 34px;
     padding: 0 18px;
     border: 1px solid var(--wa_color_border);
@@ -30,6 +34,7 @@ defineProps({
     background: var(--wa_color_surface);
     cursor: pointer;
     user-select: none;
+    white-space: nowrap;
     transition: background var(--wa_duration_fast), color var(--wa_duration_fast), border-color var(--wa_duration_fast);
 }
 

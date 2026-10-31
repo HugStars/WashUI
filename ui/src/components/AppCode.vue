@@ -16,6 +16,7 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { highlightHTML } from '@speed-highlight/core'
 import { codeLanguageLabel, codeLanguageNames, normalizeCodeLang } from '../core/code_languages.js'
+import { toast } from '../core/toast.js'
 import { useClipboard } from '../composables/useClipboard.js'
 import AppIcon from './AppIcon.vue'
 
@@ -93,8 +94,10 @@ async function Render() {
     }
 }
 
-function Copy() {
-    copy(props.code || '')
+async function Copy() {
+    const ok = await copy(props.code || '')
+    if (ok) toast.success('已复制代码')
+    else toast.danger('复制失败')
 }
 
 onBeforeUnmount(() => {
