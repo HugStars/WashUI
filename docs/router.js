@@ -38,6 +38,7 @@ export function createDocsRouter() {
             { path: '/tokens', name: 'tokens', component: page('TokensPage'), meta: { title: '设计变量', nav: 'abilities', section: 'abilities' } },
             { path: '/guide/layout', redirect: '/layout' },
             { path: '/components/icon', redirect: '/icons' },
+            { path: '/playground', name: 'playground', component: page('PlaygroundPage'), meta: { title: '实验场', nav: 'playground' } },
             { path: '/:pathMatch(.*)*', redirect: '/' },
         ],
         title: to => `${to.meta?.title || '文档'} · WashUI`,

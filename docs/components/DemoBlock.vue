@@ -5,21 +5,28 @@
             <p v-if="description" class="doc_demo_desc">{{ description }}</p>
         </header>
 
-        <div class="doc_demo_view">
-            <slot />
-        </div>
-
-        <div v-if="code" class="doc_demo_code">
-            <div class="doc_demo_bar">
-                <AppButton variant="line" size="sm" :aria-expanded="expanded" @click="expanded = !expanded">
-                    <AppIcon name="chevron" :size="13" class="doc_demo_chevron" :class="{ on: expanded }" />
-                    <span>{{ expanded ? '收起代码' : '查看代码' }}</span>
-                </AppButton>
+        <div class="doc_demo_frame">
+            <div class="doc_demo_view">
+                <slot />
             </div>
 
-            <div class="doc_demo_code_body">
-                <div class="doc_demo_code_inner">
-                    <AppCode plain :code="code" :lang="lang" />
+            <div v-if="code" class="doc_demo_code">
+                <div class="doc_demo_bar">
+                    <button v-if="HasPlayground" type="button" class="doc_demo_toggle" @click="OpenPlayground">
+                        <AppIcon name="terminal" :size="13" />
+                        <span>推送到实验场</span>
+                    </button>
+                    <button type="button" class="doc_demo_toggle" :aria-expanded="expanded"
+                        @click="expanded = !expanded">
+                        <AppIcon name="chevron" :size="13" class="doc_demo_chevron" :class="{ on: expanded }" />
+                        <span>{{ expanded ? '收起代码' : '查看代码' }}</span>
+                    </button>
+                </div>
+
+                <div class="doc_demo_code_body">
+                    <div class="doc_demo_code_inner">
+                        <AppCode :code="code" :lang="lang" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -27,7 +34,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { toast } from '@wash/ui'
+import { OpenInPlayground } from '../playground-bridge.js'
 
 const props = defineProps({
     title: {
@@ -52,9 +61,28 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    /**
+     * 实验场入口：
+     * - false 时不显示按钮
+     * - true 时使用当前示例代码
+     * - 字符串时作为自定义 SFC 代码打开
+     */
+    playground: {
+        type: [Boolean, String],
+        default: true,
+    },
 })
 
 const expanded = ref(props.defaultExpanded)
+const HasPlayground = computed(() => props.playground !== false)
+
+function OpenPlayground() {
+    const source = typeof props.playground === 'string' ? props.playground : props.code
+    OpenInPlayground(source, {
+        onSuccess: () => toast.success('已推送到实验场'),
+        onError: error => toast.danger(error?.message || '推送失败'),
+    })
+}
 </script>
 
 <style>
@@ -84,10 +112,15 @@ const expanded = ref(props.defaultExpanded)
     color: var(--wa_color_text_subtle);
 }
 
+.doc_demo_frame {
+    overflow: hidden;
+    border: 1px solid var(--wa_color_line);
+    border-radius: var(--wa_radius_control);
+    background: var(--wa_color_canvas);
+}
+
 .doc_demo_view {
     padding: 20px;
-    border-radius: var(--wa_radius_control);
-    background: var(--wa_color_soft);
 }
 
 .doc_demo_code {
@@ -98,7 +131,34 @@ const expanded = ref(props.defaultExpanded)
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: 8px 0;
+    gap: 8px;
+    padding: 6px 8px;
+}
+
+.doc_demo_toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border: 0;
+    border-radius: var(--wa_radius_pill);
+    color: var(--wa_color_text_subtle);
+    background: var(--wa_color_field);
+    font: inherit;
+    font-size: 12px;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: color var(--wa_duration_fast), background var(--wa_duration_fast);
+}
+
+.doc_demo_toggle:hover {
+    color: var(--wa_color_text);
+    background: var(--wa_color_active);
+}
+
+.doc_demo_toggle:focus-visible {
+    outline: 2px solid var(--wa_color_accent);
+    outline-offset: 2px;
 }
 
 .doc_demo_chevron {
@@ -125,11 +185,13 @@ const expanded = ref(props.defaultExpanded)
 .doc_demo_code_inner {
     min-height: 0;
     overflow: hidden;
-    transition: padding .25s ease;
 }
 
-.doc_demo.is-expanded .doc_demo_code_inner {
-    padding-bottom: 14px;
+/* 代码块直接铺满分组，不再套一层左右内边距，移动端也有完整宽度 */
+.doc_demo_code_inner .wa_code {
+    border: 0;
+    border-radius: 0;
+    background: var(--wa_color_field);
 }
 
 @media (max-width: 860px) {

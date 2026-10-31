@@ -57,6 +57,7 @@ const entry = {
     icons: '/icons',
     layout: '/layout',
     abilities: '/composables',
+    playground: '/playground',
 }
 
 function go(item) {

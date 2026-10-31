@@ -5,6 +5,7 @@ export const nav = [
     { name: 'icons', label: '图标', icon: 'grid' },
     { name: 'layout', label: '布局', icon: 'layout' },
     { name: 'abilities', label: '能力', icon: 'refresh' },
+    { name: 'playground', label: '实验场', icon: 'terminal' },
 ]
 
 export const guidePages = [
