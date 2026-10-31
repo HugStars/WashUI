@@ -6,7 +6,7 @@
     <Teleport to="body">
         <Transition enter-active-class="wa_popover_enter_active" leave-active-class="wa_popover_leave_active"
             enter-from-class="wa_popover_enter_from" leave-to-class="wa_popover_leave_to" @after-leave="OnAfterLeave">
-            <div v-if="Visible" ref="PanelEl" class="wa_popover_panel" :style="PanelStyle" :role="role"
+            <div v-if="Visible" ref="PanelEl" class="wa_popover_panel" :style="PanelStyles" :role="role"
                 :aria-label="ariaLabel" tabindex="-1">
                 <slot :close="Close" />
             </div>
@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 
 const props = defineProps({
     open: {
@@ -34,6 +34,11 @@ const props = defineProps({
     width: {
         type: [Number, String],
         default: 220,
+    },
+    /** 面板内边距，默认使用 --wa_popover_padding；下拉框会按尺寸传 6/8 */
+    padding: {
+        type: [Number, String],
+        default: null,
     },
     matchTrigger: Boolean,
     role: {
@@ -67,6 +72,14 @@ const PanelStyle = ref({
     width: typeof props.width === 'number' ? `${props.width}px` : props.width,
     visibility: 'hidden',
 })
+
+const PaddingStyle = computed(() => {
+    const value = props.padding
+    if (value == null || value === '') return null
+    return { padding: typeof value === 'number' ? `${value}px` : value }
+})
+
+const PanelStyles = computed(() => [PanelStyle.value, PaddingStyle.value].filter(Boolean))
 
 let Listening = false
 

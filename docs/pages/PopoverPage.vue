@@ -60,6 +60,7 @@ const propsRows = [
     { name: 'placement', type: 'top | bottom | left | right', default: 'top', desc: '浮层方位' },
     { name: 'offset', type: 'number | { x, y }', default: '0', desc: '定位偏移；数字表示 x 偏移，对象可传 x / y' },
     { name: 'width', type: 'number | string', default: '220', desc: '浮层宽度' },
+    { name: 'padding', type: 'number | string', default: 'var(--wa_popover_padding)', desc: '浮层内边距，可跟随内容尺寸传入' },
     { name: 'matchTrigger', type: 'boolean', default: 'false', desc: '浮层宽度跟随触发元素' },
     { name: 'role', type: 'string', default: 'dialog', desc: '浮层 role' },
     { name: 'ariaLabel', type: 'string', default: '弹出内容', desc: '浮层无障碍名称' },

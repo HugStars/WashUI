@@ -1,6 +1,7 @@
 <template>
-    <DocPage category="表单" name="AppSelect" title="下拉框" description="自定义浮层的下拉选择，不使用原生 select；支持标签、提示、校验与分组。">
-        <DemoBlock title="基础" description="v-model 绑定选中值。" :code="baseCode">
+    <DocPage category="表单" name="AppSelect" title="下拉框"
+        description="基于 AppPopover 与 AppSelectPanel 的自定义下拉选择，不使用原生 select。支持 v-model、标签、提示、校验、分组与自定义选中标记。">
+        <DemoBlock title="基础" description="v-model 绑定选中值；选项较多时面板内部滚动，并自动把已选项滚动到中间。" :code="baseCode">
             <div class="doc_grid">
                 <AppSelect v-model="env" label="环境" :options="envOptions" hint="用于区分部署环境" />
                 <AppSelect v-model="empty" label="占位" placeholder="请选择" :options="envOptions" />
@@ -8,16 +9,30 @@
             <p class="wa_hint doc_gap">当前环境：{{ env || '未选择' }}</p>
         </DemoBlock>
 
-        <DemoBlock title="分组" description="groups 会渲染为 optgroup。" :code="groupCode">
+        <DemoBlock title="分组" description="groups 用于分组展示；options 和 groups 可以同时使用。" :code="groupCode">
             <AppSelect v-model="component" label="组件" :groups="groups" hint="按分类选择组件" />
         </DemoBlock>
 
-        <DemoBlock title="尺寸与状态" description="支持小尺寸、错误、禁用。" :code="stateCode">
+        <DemoBlock title="选中标记" description="默认在选中项右侧显示 ✓，check-icon 可关闭、换成自定义字符，或用图标名由内置 AppIcon 渲染。" :code="checkCode">
             <div class="doc_grid">
-                <AppSelect v-model="sm" label="小尺寸" size="sm" :options="envOptions" />
+                <AppSelect v-model="marked" label="默认对勾" :options="envOptions" />
+                <AppSelect v-model="plain" label="不显示对勾" :check-icon="false" :options="envOptions" />
+                <AppSelect v-model="dot" label="自定义字符" check-icon="●" :options="envOptions" />
+                <AppSelect v-model="iconChecked" label="图标名" check-icon="check" :options="envOptions" />
+            </div>
+        </DemoBlock>
+
+        <DemoBlock title="尺寸与状态" description="默认小尺寸，size=md 可放大；支持错误与禁用状态。" :code="stateCode">
+            <div class="doc_grid">
+                <AppSelect v-model="sm" label="默认尺寸" :options="envOptions" />
+                <AppSelect v-model="mdSize" label="中尺寸" size="md" :options="envOptions" />
                 <AppSelect v-model="invalid" label="校验" error="请选择一个环境" :options="envOptions" />
                 <AppSelect model-value="prod" label="禁用" disabled :options="envOptions" />
             </div>
+        </DemoBlock>
+
+        <DemoBlock title="空状态" description="options 为空时面板显示 emptyText。" :code="emptyCode">
+            <AppSelect model-value="" label="空列表" :options="[]" empty-text="暂无可选环境" />
         </DemoBlock>
 
         <template #api>
@@ -35,8 +50,13 @@ import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 const env = ref('prod')
 const empty = ref('')
 const sm = ref('dev')
+const mdSize = ref('dev')
 const invalid = ref('')
 const component = ref('button')
+const marked = ref('stage')
+const plain = ref('dev')
+const dot = ref('dev')
+const iconChecked = ref('dev')
 
 const envOptions = [
     { label: '开发环境', value: 'dev' },
@@ -63,20 +83,23 @@ const groups = [
 ]
 
 const propsRows = [
-    { name: 'modelValue', type: 'string | number', default: "''", desc: '选中值' },
-    { name: 'options', type: 'Array<{ label, value, disabled }>', default: '[]', desc: '普通选项' },
-    { name: 'groups', type: 'Array<{ label, options }>', default: '[]', desc: '分组选项' },
-    { name: 'label', type: 'string', default: "''", desc: '标签' },
-    { name: 'hint', type: 'string', default: "''", desc: '提示文案' },
-    { name: 'error', type: 'string', default: "''", desc: '错误文案，优先于 hint' },
-    { name: 'placeholder', type: 'string', default: "''", desc: '占位选项' },
-    { name: 'size', type: 'md | sm', default: 'md', desc: '尺寸' },
-    { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用' },
+    { name: 'modelValue', type: 'string | number | symbol', default: "''", desc: '选中值，绑定 v-model' },
+    { name: 'options', type: 'Array<{ label, value, disabled, icon }>', default: '[]', desc: '普通选项，icon 配合 iconComponent 使用' },
+    { name: 'groups', type: 'Array<{ label, options }>', default: '[]', desc: '分组选项，组内 options 结构同上' },
+    { name: 'label', type: 'string', default: "''", desc: '触发器标签' },
+    { name: 'hint', type: 'string', default: "''", desc: '无错误时显示的提示文案' },
+    { name: 'error', type: 'string', default: "''", desc: '错误文案，显示时优先于 hint' },
+    { name: 'placeholder', type: 'string', default: "''", desc: '未选中时的占位文本' },
+    { name: 'size', type: 'md | sm', default: 'sm', desc: '默认小尺寸，md 时触发器与面板间距更宽松' },
+    { name: 'checkIcon', type: 'boolean | string', default: 'true', desc: '选中标记：true 显示 ✓，false 关闭，字符串自定义字符或图标名' },
+    { name: 'iconComponent', type: 'Component', default: 'AppIcon', desc: '选项图标与 checkIcon 图标名所用的组件，默认内置 AppIcon，可覆盖' },
+    { name: 'emptyText', type: 'string', default: '暂无选项', desc: '没有可选项时面板的提示文案' },
+    { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用触发器' },
 ]
 
 const eventRows = [
-    { name: 'update:modelValue', type: 'string', desc: '选中值变化' },
-    { name: 'change', type: 'string', desc: '选中值变化' },
+    { name: 'update:modelValue', type: 'string | number | symbol', desc: '选中值变化' },
+    { name: 'change', type: 'string | number | symbol', desc: '选中值变化' },
 ]
 
 const slotRows = [
@@ -103,7 +126,21 @@ const groups = [
     },
 ]`
 
-const stateCode = `<AppSelect v-model="sm" label="小尺寸" size="sm" :options="envOptions" />
+const checkCode = `<AppSelect v-model="value" :options="envOptions" />
+
+// 关闭选中对勾
+<AppSelect v-model="value" :check-icon="false" :options="envOptions" />
+
+// 自定义字符
+<AppSelect v-model="value" check-icon="●" :options="envOptions" />
+
+// 图标名：默认由内置 AppIcon 渲染
+<AppSelect v-model="value" check-icon="check" :options="envOptions" />`
+
+const emptyCode = `<AppSelect v-model="value" label="空列表" :options="[]" empty-text="暂无可选环境" />`
+
+const stateCode = `<AppSelect v-model="value" label="默认尺寸" :options="envOptions" />
+<AppSelect v-model="mdValue" label="中尺寸" size="md" :options="envOptions" />
 <AppSelect v-model="invalid" label="校验" error="请选择一个环境" :options="envOptions" />
 <AppSelect model-value="prod" label="禁用" disabled :options="envOptions" />`
 </script>

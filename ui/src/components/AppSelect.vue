@@ -5,7 +5,7 @@
         </label>
 
         <AppPopover placement="bottom" match-trigger role="listbox" :aria-label="ariaLabel"
-            :disabled="disabled">
+            :padding="PopoverPadding" :disabled="disabled">
             <template #trigger="{ open, toggle }">
                 <button :id="SelectId" v-bind="$attrs" type="button" class="wa_select_trigger"
                     :class="{ on: error, off: disabled, wa_select_sm: size === 'sm' }" :disabled="disabled"
@@ -17,7 +17,8 @@
             </template>
 
             <template #default="{ close }">
-                <AppSelectPanel :groups="groups" :options="options" :model-value="modelValue"
+                <AppSelectPanel :groups="groups" :options="options" :model-value="modelValue" :size="size"
+                    :check-icon="checkIcon" :icon-component="iconComponent" :empty-text="emptyText"
                     @select="item => Choose(item, close)" />
             </template>
         </AppPopover>
@@ -37,7 +38,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = defineProps({
     modelValue: {
-        type: [String, Number],
+        type: [String, Number, Symbol],
         default: '',
     },
     options: {
@@ -66,8 +67,27 @@ const props = defineProps({
     },
     size: {
         type: String,
-        default: 'md',
+        default: 'sm',
         allows: ['md', 'sm'],
+    },
+    /**
+     * 选中对号的呈现方式，透传给下拉面板：
+     * - true（默认）显示 ✓，false 不显示
+     * - 字符串：短字符按文本显示，图标名按 iconComponent 渲染
+     */
+    checkIcon: {
+        type: [Boolean, String],
+        default: true,
+    },
+    /** 图标组件，默认使用内置 AppIcon，可替换为其他图标库 */
+    iconComponent: {
+        type: [Object, Function],
+        default: () => AppIcon,
+    },
+    /** 没有可选项时面板显示的文案 */
+    emptyText: {
+        type: String,
+        default: '暂无选项',
     },
     disabled: Boolean,
 })
@@ -75,6 +95,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'change'])
 
 const SelectId = useId()
+const PopoverPadding = computed(() => props.size === 'sm' ? 6 : 8)
 const AllOptions = computed(() => [
     ...props.groups.flatMap(group => group.options || []),
     ...props.options,
