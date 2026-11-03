@@ -71,13 +71,20 @@ const props = defineProps({
         type: [Boolean, String],
         default: true,
     },
+    // 由构建插件自动生成，包含示例代码所需的脚本变量
+    playgroundCode: {
+        type: String,
+        default: '',
+    },
 })
 
 const expanded = ref(props.defaultExpanded)
 const HasPlayground = computed(() => props.playground !== false)
 
 function OpenPlayground() {
-    const source = typeof props.playground === 'string' ? props.playground : props.code
+    const source = typeof props.playground === 'string'
+        ? props.playground
+        : props.playgroundCode || props.code
     OpenInPlayground(source, {
         onSuccess: () => toast.success('已推送到实验场'),
         onError: error => toast.danger(error?.message || '推送失败'),

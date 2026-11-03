@@ -1,4 +1,5 @@
 import { parse } from 'vue/compiler-sfc'
+import { CollectRelatedDeclarations, ExtractImports } from './sfc-code.js'
 
 const ELEMENT = 1
 const TEXT = 2
@@ -48,12 +49,16 @@ function walk(node, visit) {
     }
 }
 
-function hasCodeProp(node) {
+function hasProp(node, name) {
     return node.props.some((prop) => {
-        if (prop.type === ATTRIBUTE) return prop.name === 'code'
-        if (prop.type === DIRECTIVE) return prop.name === 'bind' && prop.arg?.content === 'code'
+        if (prop.type === ATTRIBUTE) return prop.name === name
+        if (prop.type === DIRECTIVE) return prop.name === 'bind' && prop.arg?.content === name
         return false
     })
+}
+
+function hasCodeProp(node) {
+    return hasProp(node, 'code')
 }
 
 function classAttribute(node) {
@@ -186,17 +191,53 @@ function escapeAttribute(value) {
         .replace(/>/g, '&gt;')
 }
 
+function indentBlock(value) {
+    return String(value || '')
+        .split('\n')
+        .map(line => (line.trim() ? `  ${line}` : ''))
+        .join('\n')
+}
+
+function buildPlaygroundCode(script, template, style) {
+    let declarations = []
+
+    try {
+        declarations = CollectRelatedDeclarations(script, template)
+    } catch {
+        declarations = []
+    }
+
+    const imports = ExtractImports(script).map(item => item.code)
+    const body = [...imports, ...declarations.map(item => item.code)]
+    const sections = []
+
+    if (body.length) {
+        sections.push(`<script setup>\n${body.join('\n\n')}\n</script>`)
+    }
+
+    if (template) {
+        sections.push(`<template>\n${indentBlock(template)}\n</template>`)
+    }
+
+    if (style) {
+        sections.push(`<style>\n${style.trim()}\n</style>`)
+    }
+
+    return sections.join('\n\n')
+}
+
 function injectCode(source, file) {
     if (!source.includes('<DemoBlock')) return null
 
     const { descriptor, errors } = parse(source, { filename: file })
     if (errors.length || !descriptor.template?.ast) return null
 
+    const script = descriptor.scriptSetup?.content || ''
+    const style = descriptor.styles.map(item => item.content).join('\n\n')
     const jobs = []
 
     walk(descriptor.template.ast, (node) => {
         if (!isElement(node) || node.tag !== 'DemoBlock') return
-        if (hasCodeProp(node)) return
 
         const openEnd = findTagEnd(source, node.loc.start.offset)
         if (openEnd === -1) return
@@ -208,9 +249,19 @@ function injectCode(source, file) {
         if (closeStart === -1) return
 
         const base = openEnd + 1
-        const slot = applyCuts(source.slice(base, closeStart), base, collectCuts(node, source))
+        const rawSlot = source.slice(base, closeStart)
+        const displaySlot = applyCuts(rawSlot, base, collectCuts(node, source))
+        const template = normalizeSlot(displaySlot)
+        const playgroundTemplate = normalizeSlot(rawSlot)
+        const playgroundCode = buildPlaygroundCode(script, playgroundTemplate, style)
 
-        jobs.push({ at: openEnd, code: normalizeSlot(slot) })
+        jobs.push({
+            at: openEnd,
+            code: template,
+            playgroundCode,
+            hasCode: hasCodeProp(node),
+            injectPlayground: !hasProp(node, 'playground-code'),
+        })
     })
 
     if (!jobs.length) return null
@@ -219,7 +270,18 @@ function injectCode(source, file) {
 
     let output = source
     for (const job of jobs) {
-        const attribute = ` :code="${escapeAttribute(JSON.stringify(job.code))}"`
+        let attribute = ''
+
+        if (!job.hasCode) {
+            attribute += ` :code="${escapeAttribute(JSON.stringify(job.code))}"`
+        }
+
+        if (job.injectPlayground) {
+            attribute += ` :playground-code="${escapeAttribute(JSON.stringify(job.playgroundCode))}"`
+        }
+
+        if (!attribute) continue
+
         output = output.slice(0, job.at) + attribute + output.slice(job.at)
     }
 
