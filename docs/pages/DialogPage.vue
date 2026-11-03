@@ -7,10 +7,44 @@
                 <AppButton variant="line" @click="form = true">带表单</AppButton>
             </div>
             <p class="wa_hint doc_gap">最近事件：{{ lastEvent }}</p>
+
+            <AppDialog v-model:open="basic" title="接口详情" @close="lastEvent = 'basic close'">
+                <p class="wa_hint">默认标题、关闭按钮、Esc 与遮罩点击。</p>
+                <AppCode :code="sample" lang="json" :max-height="220" />
+                <template #footer>
+                    <AppButton variant="line" @click="basic = false">取消</AppButton>
+                    <AppButton variant="primary" @click="basic = false">确定</AppButton>
+                </template>
+            </AppDialog>
+
+            <AppDialog v-model:open="wide" title="宽弹框" :width="960" @close="lastEvent = 'wide close'">
+                <p class="wa_hint">width 接受数字（px）或字符串，移动端自动限制为 100%。</p>
+                <div class="doc_grid">
+                    <AppStat v-for="item in stats" :key="item.label" :label="item.label" :value="item.value" />
+                </div>
+            </AppDialog>
+
+            <AppDialog v-model:open="form" title="新建配置" @close="lastEvent = 'form close'">
+                <div class="doc_grid">
+                    <AppInput v-model="draft.name" label="名称" placeholder="例如：生产环境" />
+                    <AppInput v-model="draft.endpoint" label="地址" placeholder="https://example.com" />
+                </div>
+                <template #footer>
+                    <AppButton variant="line" @click="form = false">取消</AppButton>
+                    <AppButton variant="primary" @click="submit">保存</AppButton>
+                </template>
+            </AppDialog>
         </DemoBlock>
 
         <DemoBlock title="关闭方式" description="closable、closeOnMask、closeOnEsc 可以分别关闭。" :code="closeCode">
             <AppButton variant="line" @click="locked = true">仅按钮关闭</AppButton>
+
+            <AppDialog v-model:open="locked" title="仅按钮关闭" :closable="false" :close-on-mask="false" :close-on-esc="false">
+                <p>遮罩、Esc 与右上角关闭都已停用。</p>
+                <template #footer>
+                    <AppButton variant="primary" @click="locked = false">我知道了</AppButton>
+                </template>
+            </AppDialog>
         </DemoBlock>
 
         <template #api>
@@ -18,40 +52,6 @@
             <ApiTable title="事件" kind="events" :rows="eventRows" />
             <ApiTable title="插槽" kind="slots" :rows="slotRows" />
         </template>
-
-        <AppDialog v-model:open="basic" title="接口详情" @close="lastEvent = 'basic close'">
-            <p class="wa_hint">默认标题、关闭按钮、Esc 与遮罩点击。</p>
-            <AppCode :code="sample" lang="json" :max-height="220" />
-            <template #footer>
-                <AppButton variant="line" @click="basic = false">取消</AppButton>
-                <AppButton variant="primary" @click="basic = false">确定</AppButton>
-            </template>
-        </AppDialog>
-
-        <AppDialog v-model:open="wide" title="宽弹框" :width="960" @close="lastEvent = 'wide close'">
-            <p class="wa_hint">width 接受数字（px）或字符串，移动端自动限制为 100%。</p>
-            <div class="doc_grid">
-                <AppStat v-for="item in stats" :key="item.label" :label="item.label" :value="item.value" />
-            </div>
-        </AppDialog>
-
-        <AppDialog v-model:open="form" title="新建配置" @close="lastEvent = 'form close'">
-            <div class="doc_grid">
-                <AppInput v-model="draft.name" label="名称" placeholder="例如：生产环境" />
-                <AppInput v-model="draft.endpoint" label="地址" placeholder="https://example.com" />
-            </div>
-            <template #footer>
-                <AppButton variant="line" @click="form = false">取消</AppButton>
-                <AppButton variant="primary" @click="submit">保存</AppButton>
-            </template>
-        </AppDialog>
-
-        <AppDialog v-model:open="locked" title="仅按钮关闭" :closable="false" :close-on-mask="false" :close-on-esc="false">
-            <p>遮罩、Esc 与右上角关闭都已停用。</p>
-            <template #footer>
-                <AppButton variant="primary" @click="locked = false">我知道了</AppButton>
-            </template>
-        </AppDialog>
     </DocPage>
 </template>
 
