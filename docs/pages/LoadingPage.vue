@@ -1,16 +1,14 @@
 <template>
     <DocPage category="服务" name="loading" title="加载"
         description="全局加载遮罩服务，支持多任务 id、优先级、实时更新文字与自定义图标，全局只维护一个实例。遮罩支持渐变与磨砂等运行时配置，演示中可通过页面底部控制栏更新、切换或关闭。">
-        <DemoBlock title="基础" description="show 显示，hide 关闭；同一时间只显示优先级最高的任务。" :code="basicCode" lang="js"
-            :playground="false">
+        <DemoBlock title="基础" description="show 显示，hide 关闭；同一时间只显示优先级最高的任务。" :code="basicCode" lang="js">
             <div class="doc_row">
                 <AppButton @click="ShowBasic">显示加载</AppButton>
                 <AppButton variant="line" @click="HideBasic">关闭加载</AppButton>
             </div>
         </DemoBlock>
 
-        <DemoBlock title="更新文字" description="update 可以更新指定 id 的文案、图标与优先级。" :code="updateCode" lang="js"
-            :playground="false">
+        <DemoBlock title="更新文字" description="update 可以更新指定 id 的文案、图标与优先级。" :code="updateCode" lang="js">
             <div class="doc_row">
                 <AppButton @click="ShowUpdate">开始任务</AppButton>
                 <AppButton variant="line" @click="UpdateText">更新文案</AppButton>
@@ -18,8 +16,7 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="多任务与优先级" description="高优先级覆盖低优先级；关闭高优先级后自动回退到低优先级。" :code="priorityCode" lang="js"
-            :playground="false">
+        <DemoBlock title="多任务与优先级" description="高优先级覆盖低优先级；关闭高优先级后自动回退到低优先级。" :code="priorityCode" lang="js">
             <div class="doc_row">
                 <AppButton @click="ShowLow">低优先级</AppButton>
                 <AppButton variant="line" @click="ShowHigh">高优先级</AppButton>
@@ -29,8 +26,7 @@
             <p class="wa_hint doc_gap">当前：{{ info }}</p>
         </DemoBlock>
 
-        <DemoBlock title="自定义图标" description="icon 使用内置图标名，spin 控制图标是否旋转；不传 icon 时显示默认圆环。" :code="iconCode" lang="js"
-            :playground="false">
+        <DemoBlock title="自定义图标" description="icon 使用内置图标名，spin 控制图标是否旋转；不传 icon 时显示默认圆环。" :code="iconCode" lang="js">
             <div class="doc_row">
                 <AppButton @click="ShowRefresh">旋转图标</AppButton>
                 <AppButton variant="line" @click="ShowDatabase">数据库图标</AppButton>
@@ -40,11 +36,11 @@
 
         <h2 class="doc_h2">遮罩外观</h2>
         <p class="doc_text">通过 gradient 开启从顶部透明到底部 #00000059 的渐变背景，通过 blur 设置磨砂模糊半径（px），0 表示关闭。</p>
-        <DemoBlock title="渐变与磨砂" description="遮罩外观随当前显示的 loading 配置变化。" :code="appearanceCode" lang="js"
-            :playground="false">
+        <DemoBlock title="渐变与磨砂" description="遮罩外观随当前显示的 loading 配置变化。" :code="appearanceCode" lang="js">
             <div class="doc_row">
                 <AppButton @click="ShowGradient">渐变 + 磨砂</AppButton>
                 <AppButton variant="line" @click="ShowSolid">纯色遮罩</AppButton>
+                <AppButton variant="line" @click="loading.hide('loading-appearance')">关闭加载</AppButton>
             </div>
         </DemoBlock>
 
