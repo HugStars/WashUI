@@ -92,11 +92,11 @@ function Toggle() {
 }
 
 .wa_switch {
-    --wa_switch_width: 36px;
-    --wa_switch_height: 20px;
-    --wa_switch_pad: 2px;
-    --wa_switch_thumb: 16px;
-    --wa_switch_travel: 16px;
+    --wa_switch_width: 44px;
+    --wa_switch_height: 25px;
+    --wa_switch_pad: 3px;
+    --wa_switch_thumb: 19px;
+    --wa_switch_travel: 19px;
 
     position: relative;
     display: inline-flex;
@@ -108,14 +108,14 @@ function Toggle() {
     border-radius: var(--wa_radius_pill);
     background: var(--wa_color_field);
     cursor: pointer;
-    transition: background var(--wa_duration_base) ease;
+    transition: background var(--wa_duration_fast) ease;
 }
 
 .wa_switch_row.wa_switch_md .wa_switch {
-    --wa_switch_width: 44px;
-    --wa_switch_height: 26px;
-    --wa_switch_thumb: 22px;
-    --wa_switch_travel: 18px;
+    --wa_switch_width: 52px;
+    --wa_switch_height: 30px;
+    --wa_switch_thumb: 24px;
+    --wa_switch_travel: 22px;
 }
 
 .wa_switch_thumb {
@@ -125,9 +125,9 @@ function Toggle() {
     width: var(--wa_switch_thumb);
     height: var(--wa_switch_thumb);
     border-radius: 50%;
-    background: var(--wa_color_dialog);
-    box-shadow: 0 1px 3px #00000024;
-    transition: transform var(--wa_duration_base) var(--wa_ease_out);
+    background: var(--wa_color_text_faint);
+    box-shadow: 0 1px 3px #00000026;
+    transition: transform var(--wa_duration_fast) var(--wa_ease_out), background var(--wa_duration_fast);
 }
 
 .wa_switch.on {
@@ -135,16 +135,13 @@ function Toggle() {
 }
 
 .wa_switch.on .wa_switch_thumb {
+    background: var(--wa_color_on_text);
     transform: translateX(var(--wa_switch_travel));
 }
 
-.wa_switch:hover:not(:disabled) {
-    opacity: .9;
-}
-
 .wa_switch:focus-visible {
-    outline: 2px solid var(--wa_color_text);
-    outline-offset: 3px;
+    outline: 2px solid var(--wa_color_accent);
+    outline-offset: 2px;
 }
 
 .wa_switch:disabled {

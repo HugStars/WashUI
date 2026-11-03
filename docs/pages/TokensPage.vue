@@ -52,7 +52,7 @@ const colors = [
 
 const shapeRows = [
     { name: '--wa_radius_card', desc: '卡片圆角，默认 28px' },
-    { name: '--wa_radius_control', desc: '控件圆角，默认 12px' },
+    { name: '--wa_radius_control', desc: '控件圆角，默认 8px' },
     { name: '--wa_radius_small', desc: '小圆角，默认 10px' },
     { name: '--wa_radius_dialog', desc: '弹框圆角，默认 24px' },
     { name: '--wa_radius_pill', desc: '胶囊圆角' },
