@@ -15,6 +15,7 @@ html {
     -webkit-text-size-adjust: 100%;
     overflow-x: clip;
     scrollbar-gutter: stable;
+    scrollbar-width: none;
 }
 
 body {
@@ -24,6 +25,7 @@ body {
     background: var(--wa_color_canvas);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+
 }
 
 button,

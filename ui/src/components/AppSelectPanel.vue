@@ -1,6 +1,5 @@
 <template>
-    <div ref="PanelEl" class="wa_select_panel"
-        :class="{ wa_select_sm: size === 'sm', has_scrollbar: HasScrollbar }">
+    <div ref="PanelEl" class="wa_select_panel" :class="{ wa_select_sm: size === 'sm', has_scrollbar: HasScrollbar }">
         <div v-for="group in groups" :key="group.label" class="wa_select_group">
             <p v-if="group.label" class="wa_select_group_label">{{ group.label }}</p>
             <button v-for="item in group.options" :key="item.value" type="button" class="wa_select_option"
@@ -184,6 +183,7 @@ const checkRender = computed(() => {
     max-height: min(320px, calc(100vh - 120px));
     overflow-y: auto;
     overscroll-behavior: contain;
+    scrollbar-width: none;
 }
 
 /* 只有出现滚动条时才留出与外侧等宽的内边距，让滚动条在右侧留白中居中 */
