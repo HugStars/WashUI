@@ -3,25 +3,25 @@
         <header class="pg_head">
             <div>
                 <h1 class="pg_title">实时编辑预览</h1>
-                <p class="pg_desc">支持 Vue 模板片段和简单的 <code>&lt;script setup&gt;</code> / <code>&lt;style&gt;</code>；暂不支持 import 与 defineProps。</p>
+                <p class="pg_desc">
+                    左侧按 HTML、JS、CSS 分段编辑，自动组合并预览；不需要书写
+                    <code>&lt;template&gt;</code>、<code>&lt;script setup&gt;</code> 与 <code>&lt;style&gt;</code> 标签。
+                </p>
             </div>
             <div class="pg_actions">
                 <AppButton variant="line" @click="Reset">示例</AppButton>
                 <AppButton variant="line" @click="Clear">清空</AppButton>
+                <AppButton variant="line" @click="loading.clear()">停止加载</AppButton>
                 <AppButton variant="primary" @click="Run">运行</AppButton>
             </div>
         </header>
 
         <div class="pg_body">
-            <section class="pg_pane pg_editor_pane">
-                <div class="pg_bar">
-                    <span>Vue SFC</span>
-                    <span class="wa_hint">{{ code.length }} 字符</span>
-                </div>
-                <div class="pg_editor">
-                    <pre ref="HighlightEl" class="pg_highlight" aria-hidden="true"><code v-html="highlighted"></code></pre>
-                    <textarea ref="TextareaEl" v-model="code" class="pg_textarea" spellcheck="false" wrap="off"
-                        placeholder="粘贴组件代码..." @keydown.tab.prevent="OnTab" @scroll="SyncScroll"></textarea>
+            <section class="pg_editor_column">
+                <div class="pg_editors">
+                    <PlaygroundEditor v-for="editor in editors" :key="editor.key" v-model="parts[editor.key]"
+                        :label="editor.label" :lang="editor.lang" :placeholder="editor.placeholder"
+                        :max="editor.max" />
                 </div>
             </section>
 
@@ -39,47 +39,77 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import { loading } from '@wash/ui'
 import { PLAYGROUND_CHANNEL } from '../playground-bridge.js'
+import { ExtractDeclaredNames, ExtractImportNames, StripImports } from '../sfc-code.js'
+import PlaygroundEditor from '../components/PlaygroundEditor.vue'
 
-const SCRIPT_OPEN = '<' + 'script setup>'
-const SCRIPT_CLOSE = '</' + 'script>'
+const LocalApi = Object.assign({}, ...Object.values(import.meta.glob('../api/*.js', { eager: true })))
 
-const DEFAULT_CODE = `${SCRIPT_OPEN}
-const count = ref(0)
-${SCRIPT_CLOSE}
+const DEFAULT_HTML = `<div class="pg_demo">
+  <AppButton variant="primary" @click="count++">点击了 {{ count }} 次</AppButton>
+  <AppButton variant="line">描边按钮</AppButton>
+  <AppChip active>标记</AppChip>
+  <AppIcon name="home" :size="24" />
+</div>`
 
-<template>
-  <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
-    <AppButton variant="primary" @click="count++">点击了 {{ count }} 次</AppButton>
-    <AppButton variant="line">描边按钮</AppButton>
-    <AppChip active>标记</AppChip>
-    <AppIcon name="home" :size="24" />
-  </div>
-</template>`
+const DEFAULT_JS = `const count = ref(0)`
 
-const code = ref(DEFAULT_CODE)
+const DEFAULT_CSS = `.pg_demo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}`
+
+const editors = [
+    {
+        key: 'html',
+        label: 'HTML',
+        lang: 'html',
+        max: 'fill',
+        placeholder: '在这里写模板，不需要 <template> 包裹',
+    },
+    {
+        key: 'js',
+        label: 'JS',
+        lang: 'js',
+        max: 'half',
+        placeholder: '在这里写 setup 内容，不需要 <script setup> 包裹',
+    },
+    {
+        key: 'css',
+        label: 'CSS',
+        lang: 'css',
+        max: 'third',
+        placeholder: '在这里写样式，不需要 <style> 包裹',
+    },
+]
+
+const parts = reactive({
+    html: DEFAULT_HTML,
+    js: DEFAULT_JS,
+    css: DEFAULT_CSS,
+})
 const error = ref('')
 const warning = ref('')
 const PreviewEl = ref(null)
-const HighlightEl = ref(null)
-const TextareaEl = ref(null)
-const highlighted = ref('')
+let applyingCode = false
 
 let runtimePromise = null
 let previewApp = null
 let renderRun = 0
 let debounceTimer = null
-let highlightRun = 0
-let highlightTimer = null
 let playgroundChannel = null
-let readyTimer = 0
+let readyTimers = []
 
 function LoadRuntime() {
     if (!runtimePromise) {
         runtimePromise = Promise.all([
             import('vue/dist/vue.esm-bundler.js'),
             import('@wash/ui'),
+            import('@wash/ui/utils'),
         ])
     }
     return runtimePromise
@@ -91,8 +121,6 @@ function IsComponent(value) {
     if (typeof value !== 'object') return false
     return Boolean(value.render || value.setup || value.template || value.__name || value.__file)
 }
-
-const SETUP_HELPERS = 'ref, computed, reactive, readonly, shallowRef, shallowReactive, watch, watchEffect, nextTick, onMounted, onUnmounted, onBeforeUnmount, toRef, toRefs, unref, isRef, markRaw, provide, inject, h, defineComponent, useId'
 
 let styleEl = null
 
@@ -124,27 +152,51 @@ function Parse(value) {
     return { template, script, styles }
 }
 
-function BuildSetup(Vue, script) {
+function IsBindingName(name) {
+    return /^[A-Za-z_$][\w$]*$/.test(name) && name !== 'default'
+}
+
+function BuildSetup(Vue, Ui, Utils, script) {
     if (!script) return undefined
 
-    const clean = script
-        .replace(/^\s*import\s+(?:[\s\S]*?\s+from\s+)?['"][^'"]+['"];?\s*$/gm, '')
-        .trim()
+    const imported = ExtractImportNames(script)
+    const clean = StripImports(script).trim()
 
-    if (!clean) return undefined
+    if (!clean && !imported.size) return undefined
 
-    const names = new Set()
+    const declared = ExtractDeclaredNames(clean)
+    const names = new Set([...declared, ...imported])
+    const scope = new Set(declared)
 
-    for (const match of clean.matchAll(/^(?:const|let|var)\s+([A-Za-z_$][\w$]*)/gm)) names.add(match[1])
-    for (const match of clean.matchAll(/^function\s+([A-Za-z_$][\w$]*)/gm)) names.add(match[1])
+    const vueNames = Object.keys(Vue).filter(name => IsBindingName(name) && !scope.has(name))
+    vueNames.forEach(name => scope.add(name))
 
-    const factory = new Function('Vue', `
-const { ${SETUP_HELPERS} } = Vue;
+    const uiNames = Object.keys(Ui).filter(name => IsBindingName(name) && !scope.has(name))
+    uiNames.forEach(name => scope.add(name))
+
+    const utilNames = Object.keys(Utils).filter(name => IsBindingName(name) && !scope.has(name))
+    utilNames.forEach(name => scope.add(name))
+
+    const localNames = Object.keys(LocalApi).filter(name => IsBindingName(name) && !scope.has(name))
+
+    const prelude = [
+        vueNames.length ? `const { ${vueNames.join(', ')} } = __pgVue;` : '',
+        uiNames.length ? `const { ${uiNames.join(', ')} } = __pgUi;` : '',
+        utilNames.length ? `const { ${utilNames.join(', ')} } = __pgUtils;` : '',
+        localNames.length ? `const { ${localNames.join(', ')} } = __pgLocal;` : '',
+    ].filter(Boolean).join('\n')
+
+    const exposed = [...names]
+        .map(name => `${name}: typeof ${name} === 'undefined' ? undefined : ${name}`)
+        .join(', ')
+
+    const factory = new Function('__pgVue', '__pgUi', '__pgUtils', '__pgLocal', `
+${prelude}
 ${clean}
-return { ${[...names].join(', ')} };
+return { ${exposed} };
 `)
 
-    return () => factory(Vue)
+    return () => factory(Vue, Ui, Utils, LocalApi)
 }
 
 function ApplyStyles(styles) {
@@ -158,41 +210,20 @@ function ApplyStyles(styles) {
     document.head.appendChild(styleEl)
 }
 
-function EscapeHtml(value) {
-    return String(value ?? '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-}
+function ApplyCode(source) {
+    applyingCode = true
+    loading.clear()
+    const parsed = Parse(source)
 
-function SyncScroll() {
-    const textarea = TextareaEl.value
-    const pre = HighlightEl.value
-    if (!textarea || !pre) return
-    pre.scrollTop = textarea.scrollTop
-    pre.scrollLeft = textarea.scrollLeft
-}
+    parts.html = parsed.template
+    parts.js = parsed.script
+    parts.css = parsed.styles.join('\n\n').trim()
 
-async function UpdateHighlight() {
-    const id = ++highlightRun
-    const source = code.value
+    nextTick(() => {
+        applyingCode = false
+    })
 
-    try {
-        const [, ui] = await LoadRuntime()
-        const html = await ui.highlightCode(source, 'html', { block: false })
-        if (id !== highlightRun) return
-        highlighted.value = html || EscapeHtml(source)
-    } catch {
-        if (id === highlightRun) highlighted.value = EscapeHtml(source)
-    }
-
-    nextTick(SyncScroll)
-}
-
-function ScheduleHighlight() {
-    highlighted.value = EscapeHtml(code.value)
-    clearTimeout(highlightTimer)
-    highlightTimer = setTimeout(UpdateHighlight, 90)
+    return parsed
 }
 
 function OnChannelMessage(event) {
@@ -200,17 +231,22 @@ function OnChannelMessage(event) {
 
     if (data.type === 'ping') {
         playgroundChannel?.postMessage({ type: 'pong', token: data.token })
-    } else if (data.type === 'code' && data.code) {
-        code.value = data.code
-        error.value = ''
-        warning.value = ''
-        Run()
+        return
     }
+
+    if (data.type !== 'code' || !data.code) return
+
+    ApplyCode(data.code)
+    error.value = ''
+    warning.value = ''
+    Run()
 }
 
 async function Render() {
     const id = ++renderRun
-    const parsed = Parse(code.value)
+    const template = parts.html.trim()
+    const script = parts.js.trim()
+    const style = parts.css.trim()
     const container = PreviewEl.value
 
     if (!container) return
@@ -223,18 +259,19 @@ async function Render() {
     container.innerHTML = ''
     error.value = ''
     warning.value = ''
-    ApplyStyles(parsed.styles)
+    ApplyStyles(style ? [style] : [])
 
-    if (!parsed.template) {
-        if (parsed.script) error.value = '缺少 <template> 或模板片段'
+    if (!template) {
+        if (script) error.value = '缺少 HTML 模板'
         return
     }
 
     let Vue
     let ui
+    let utils
 
     try {
-        ;[Vue, ui] = await LoadRuntime()
+        ;[Vue, ui, utils] = await LoadRuntime()
     } catch (err) {
         error.value = err?.message || String(err)
         return
@@ -244,13 +281,13 @@ async function Render() {
 
     let setup
     try {
-        setup = BuildSetup(Vue, parsed.script)
+        setup = BuildSetup(Vue, ui, utils, script)
     } catch (err) {
         error.value = err?.message || String(err)
         return
     }
 
-    const app = Vue.createApp({ template: parsed.template, setup })
+    const app = Vue.createApp({ template, setup })
 
     for (const [name, value] of Object.entries(ui)) {
         if (IsComponent(value)) app.component(name, value)
@@ -290,53 +327,51 @@ function Run() {
 }
 
 function Clear() {
-    code.value = ''
+    loading.clear()
+    parts.html = ''
+    parts.js = ''
+    parts.css = ''
     Run()
 }
 
 function Reset() {
-    code.value = DEFAULT_CODE
+    loading.clear()
+    parts.html = DEFAULT_HTML
+    parts.js = DEFAULT_JS
+    parts.css = DEFAULT_CSS
     Run()
 }
 
-function OnTab(event) {
-    const el = event.target
-    const start = el.selectionStart
-    const end = el.selectionEnd
+watch(() => [parts.html, parts.js, parts.css], () => {
+    if (applyingCode) return
 
-    code.value = code.value.slice(0, start) + '  ' + code.value.slice(end)
-    nextTick(() => {
-        el.selectionStart = el.selectionEnd = start + 2
-    })
-}
-
-watch(code, () => {
-    ScheduleHighlight()
     clearTimeout(debounceTimer)
     debounceTimer = setTimeout(Render, 350)
 })
 
 onMounted(() => {
-    highlighted.value = EscapeHtml(code.value)
-    UpdateHighlight()
-    Render()
+    document.documentElement.classList.add('wa_playground_active')
 
     if (typeof BroadcastChannel !== 'undefined') {
         playgroundChannel = new BroadcastChannel(PLAYGROUND_CHANNEL)
         playgroundChannel.onmessage = OnChannelMessage
         playgroundChannel.postMessage({ type: 'ready' })
-        readyTimer = setTimeout(() => {
+
+        readyTimers = [500, 1500, 3000, 6000, 10000].map(delay => setTimeout(() => {
             playgroundChannel?.postMessage({ type: 'ready' })
-        }, 600)
+        }, delay))
     }
+
+    Run()
 })
 
 onUnmounted(() => {
     clearTimeout(debounceTimer)
-    clearTimeout(highlightTimer)
-    clearTimeout(readyTimer)
+    readyTimers.forEach(timer => clearTimeout(timer))
+    readyTimers = []
     renderRun++
-    highlightRun++
+    loading.clear()
+    document.documentElement.classList.remove('wa_playground_active')
     playgroundChannel?.close()
     playgroundChannel = null
     previewApp?.unmount()
@@ -350,6 +385,10 @@ onUnmounted(() => {
 .pg {
     display: grid;
     gap: 16px;
+}
+
+html.wa_playground_active .wa_loading.on {
+    pointer-events: none;
 }
 
 .pg_head {
@@ -409,124 +448,21 @@ onUnmounted(() => {
     color: var(--wa_color_text_subtle);
 }
 
-.pg_editor {
-    position: relative;
-    flex: 1;
+.pg_editor_column {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
     min-height: 0;
-    background: var(--wa_color_field);
 }
 
-.pg_editor_pane:focus-within {
-    border-color: var(--wa_color_text);
-}
-
-.pg_textarea:active,
-.pg_textarea:focus,
-.pg_textarea:focus-visible {
-    outline: none;
-    border: 0;
-    box-shadow: none;
-}
-
-.pg_highlight,
-.pg_textarea {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 14px 16px;
-    font: 13px/1.7 var(--wa_font_mono);
-    tab-size: 4;
-    white-space: pre;
-    overflow: auto;
-}
-
-.pg_highlight {
-    overflow: hidden;
-    color: var(--wa_color_text);
-    pointer-events: none;
-    scrollbar-width: none;
-}
-
-.pg_highlight code {
-    font: inherit;
-}
-
-.pg_textarea {
-    border: 0;
-    outline: 0;
-    resize: none;
-    background: transparent;
-    color: transparent;
-    caret-color: var(--wa_color_text);
-    scrollbar-width: none;
-}
-
-.pg_textarea::selection {
-    background: var(--wa_color_active);
-}
-
-.pg_textarea::-webkit-scrollbar,
-.pg_highlight::-webkit-scrollbar {
-    display: none;
-}
-
-.pg_highlight .shj-syn-kwd {
-    color: var(--wa_color_danger);
-}
-
-.pg_highlight .shj-syn-str {
-    color: var(--wa_color_success);
-}
-
-.pg_highlight .shj-syn-num {
-    color: var(--wa_color_warning);
-}
-
-.pg_highlight .shj-syn-cmnt {
-    color: var(--wa_color_text_subtle);
-    font-style: italic;
-}
-
-.pg_highlight .shj-syn-func {
-    color: var(--wa_color_help);
-}
-
-.pg_highlight .shj-syn-type {
-    color: var(--wa_color_accent);
-}
-
-.pg_highlight .shj-syn-var {
-    color: var(--wa_color_text_muted);
-}
-
-.pg_highlight .shj-syn-oper {
-    color: var(--wa_color_text_muted);
-}
-
-.pg_highlight .shj-syn-bool {
-    color: var(--wa_color_warning);
-}
-
-.pg_highlight .shj-syn-class {
-    color: var(--wa_color_warning);
-}
-
-.pg_highlight .shj-syn-section {
-    color: var(--wa_color_help);
-}
-
-.pg_highlight .shj-syn-esc {
-    color: var(--wa_color_warning);
-}
-
-.pg_highlight .shj-syn-insert {
-    color: var(--wa_color_success);
-}
-
-.pg_highlight .shj-syn-deleted {
-    color: var(--wa_color_danger);
+.pg_editors {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 2px;
 }
 
 .pg_canvas {
@@ -565,8 +501,8 @@ onUnmounted(() => {
         min-height: 0;
     }
 
-    .pg_editor {
-        min-height: 320px;
+    .pg_editor_column {
+        height: 560px;
     }
 
     .pg_canvas {
