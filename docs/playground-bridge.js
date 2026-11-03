@@ -68,16 +68,16 @@ export function OpenInPlayground(code, options = {}) {
         ping()
     }, 500)
 
-    setTimeout(ping, 1400)
+    setTimeout(ping, 1200)
+    setTimeout(ping, 2500)
+    setTimeout(ping, 4500)
+    setTimeout(ping, 7000)
+    setTimeout(ping, 10000)
 
     setTimeout(() => {
         if (pending?.token !== token) return
 
         pending = null
-        onError?.(new Error('实验场没有响应'))
-    }, 3000)
-
-    setTimeout(() => {
-        if (pending?.token === token) pending = null
-    }, 10000)
+        onError?.(new Error('实验场没有响应，请手动打开后再试'))
+    }, 15000)
 }
