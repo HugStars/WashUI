@@ -13,7 +13,10 @@
 
             <div class="doc_stack doc_gap">
                 <template v-if="loading">
-                    <AppSkeleton v-for="n in 3" :key="n" :height="54" />
+                    <div v-for="n in 5" :key="n" class="doc_kv_row">
+                        <AppSkeleton :width="120" :height="22" />
+                        <AppSkeleton :width="64" :height="22" />
+                    </div>
                 </template>
                 <template v-else>
                     <div v-for="item in data.items" :key="item.id" class="doc_kv_row">
