@@ -84,6 +84,7 @@ const HeaderTarget = ref(null)
 const MoreOpen = ref(false)
 const Media = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(max-width: 860px)') : null
 const TouchMedia = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(hover: none)') : null
+const ReducedMotion = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null
 const Mobile = ref(Media?.matches ?? false)
 const HasMore = computed(() => Mobile.value && props.nav.length > MAX_NAV)
 const VisibleNav = computed(() => HasMore.value ? props.nav.slice(0, MAX_NAV - 1) : props.nav)
@@ -135,6 +136,8 @@ function UpdateSlider() {
 function PlayBounce() {
     cancelAnimationFrame(BounceFrame)
     SliderBounce.value = false
+
+    if (ReducedMotion?.matches) return
 
     BounceFrame = requestAnimationFrame(() => {
         BounceFrame = requestAnimationFrame(() => {
@@ -316,10 +319,10 @@ provide(HEADER_TARGET, HeaderTarget)
     opacity: 0;
     pointer-events: none;
     transition:
-        left .34s cubic-bezier(.34, 1.56, .64, 1),
-        top .34s cubic-bezier(.34, 1.56, .64, 1),
-        width .34s cubic-bezier(.34, 1.56, .64, 1),
-        height .34s cubic-bezier(.34, 1.56, .64, 1),
+        left .34s cubic-bezier(.3, 1.2, .5, 1),
+        top .34s cubic-bezier(.3, 1.2, .5, 1),
+        width .34s cubic-bezier(.3, 1.2, .5, 1),
+        height .34s cubic-bezier(.3, 1.2, .5, 1),
         opacity var(--wa_duration_fast) linear;
 }
 
@@ -341,7 +344,7 @@ provide(HEADER_TARGET, HeaderTarget)
 }
 
 .wa_nav_slider_inner.bounce {
-    animation: wa_nav_slider_bounce .55s cubic-bezier(.22, .61, .36, 1);
+    animation: wa_nav_slider_bounce .45s cubic-bezier(.22, .61, .36, 1);
 }
 
 .wa_nav_item {
@@ -503,7 +506,7 @@ provide(HEADER_TARGET, HeaderTarget)
         flex-direction: row;
         justify-content: flex-start;
         gap: 6px;
-        padding: 9px;
+        padding: 4px;
         overflow-x: auto;
         overflow-y: hidden;
         scrollbar-width: none;
@@ -598,28 +601,34 @@ provide(HEADER_TARGET, HeaderTarget)
         scale: 1 1;
     }
 
-    30% {
-        scale: 1.25 .75;
+    35% {
+        scale: 1.08 .93;
     }
 
-    40% {
-        scale: .75 1.25;
+    58% {
+        scale: .98 1.02;
     }
 
-    50% {
-        scale: 1.15 .85;
-    }
-
-    65% {
-        scale: .95 1.05;
-    }
-
-    75% {
-        scale: 1.05 .95;
+    78% {
+        scale: 1.015 .99;
     }
 
     100% {
         scale: 1 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_nav_slider {
+        transition: opacity var(--wa_duration_fast) linear;
+    }
+
+    .wa_nav_slider_inner {
+        transition: none;
+    }
+
+    .wa_nav_slider_inner.bounce {
+        animation: none;
     }
 }
 </style>
