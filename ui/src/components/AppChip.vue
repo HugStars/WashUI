@@ -35,12 +35,21 @@ defineProps({
     cursor: pointer;
     user-select: none;
     white-space: nowrap;
-    transition: background var(--wa_duration_fast), color var(--wa_duration_fast), border-color var(--wa_duration_fast);
+    transition:
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        border-color var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_fast) var(--wa_ease_out);
 }
 
 .wa_chip:hover {
     border-color: var(--wa_color_text_faint);
     color: var(--wa_color_text);
+    transform: translateY(-1px);
+}
+
+.wa_chip:active {
+    transform: translateY(0) scale(.96);
 }
 
 .wa_chip.on,
@@ -49,5 +58,21 @@ defineProps({
     color: var(--wa_color_on_text);
     background: var(--wa_color_text);
     font-weight: 600;
+    transform: none;
+}
+
+.wa_chip.on:active {
+    transform: scale(.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_chip {
+        transition: none;
+    }
+
+    .wa_chip:hover,
+    .wa_chip:active {
+        transform: none;
+    }
 }
 </style>

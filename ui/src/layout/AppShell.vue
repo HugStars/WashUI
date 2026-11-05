@@ -319,10 +319,10 @@ provide(HEADER_TARGET, HeaderTarget)
     opacity: 0;
     pointer-events: none;
     transition:
-        left .34s cubic-bezier(.3, 1.2, .5, 1),
-        top .34s cubic-bezier(.3, 1.2, .5, 1),
-        width .34s cubic-bezier(.3, 1.2, .5, 1),
-        height .34s cubic-bezier(.3, 1.2, .5, 1),
+        left .34s var(--wa_ease_spring),
+        top .34s var(--wa_ease_spring),
+        width .34s var(--wa_ease_spring),
+        height .34s var(--wa_ease_spring),
         opacity var(--wa_duration_fast) linear;
 }
 

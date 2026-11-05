@@ -177,7 +177,7 @@ function Choose(item, close) {
     flex: none;
     color: var(--wa_color_text_faint);
     transform: rotate(90deg);
-    transition: transform var(--wa_duration_fast);
+    transition: transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
 .wa_select_trigger[aria-expanded='true'] .wa_select_arrow {

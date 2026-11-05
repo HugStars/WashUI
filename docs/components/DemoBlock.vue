@@ -169,7 +169,7 @@ function OpenPlayground() {
 }
 
 .doc_demo_chevron {
-    transition: transform var(--wa_duration_fast);
+    transition: transform var(--wa_duration_fast) var(--wa_ease_out);
 }
 
 .doc_demo_chevron.on {
@@ -181,7 +181,7 @@ function OpenPlayground() {
     grid-template-rows: 0fr;
     overflow: hidden;
     visibility: hidden;
-    transition: grid-template-rows .25s ease, visibility .25s;
+    transition: grid-template-rows var(--wa_duration_base) var(--wa_ease_out), visibility var(--wa_duration_base);
 }
 
 .doc_demo.is-expanded .doc_demo_code_body {

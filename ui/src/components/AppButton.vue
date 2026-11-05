@@ -56,15 +56,27 @@ const Classes = computed(() => {
     overflow: hidden;
     text-overflow: ellipsis;
     user-select: none;
-    transition: background var(--wa_duration_fast), opacity var(--wa_duration_fast), border-color var(--wa_duration_fast);
+    transition:
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        opacity var(--wa_duration_fast) var(--wa_ease_out),
+        border-color var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_fast) var(--wa_ease_out);
 }
 
 .wa_btn:hover {
     background: var(--wa_color_hover);
 }
 
+.wa_btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
 .wa_btn:active {
     background: var(--wa_color_active);
+}
+
+.wa_btn:active:not(:disabled) {
+    transform: translateY(0) scale(.97);
 }
 
 .wa_btn:disabled {
@@ -137,5 +149,16 @@ const Classes = computed(() => {
 .wa_btn .wa_spinner {
     width: 14px;
     height: 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_btn {
+        transition: none;
+    }
+
+    .wa_btn:hover:not(:disabled),
+    .wa_btn:active:not(:disabled) {
+        transform: none;
+    }
 }
 </style>

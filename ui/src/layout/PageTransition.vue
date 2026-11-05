@@ -8,7 +8,7 @@
 <style>
 .wa_page_enter_active,
 .wa_page_leave_active {
-    transition: opacity .22s ease, transform .22s ease;
+    transition: opacity .22s var(--wa_ease_out), transform .22s var(--wa_ease_out);
 }
 
 .wa_page_enter_from {

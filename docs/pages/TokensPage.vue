@@ -70,6 +70,7 @@ const shapeRows = [
     { name: '--wa_duration_fast', desc: '快速动效时长' },
     { name: '--wa_duration_base', desc: '基础动效时长' },
     { name: '--wa_ease_out', desc: '缓出曲线' },
+    { name: '--wa_ease_spring', desc: '带轻微回弹的缓出曲线' },
     { name: '--wa_body_width', desc: '页面最大宽度' },
     { name: '--wa_font_family', desc: '正文字体' },
     { name: '--wa_font_mono', desc: '等宽字体' },

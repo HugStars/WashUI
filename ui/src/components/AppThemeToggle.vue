@@ -45,7 +45,7 @@ function toggle() {
 
 .wa_theme_toggle .wa_theme_enter_active,
 .wa_theme_toggle .wa_theme_leave_active {
-    transition: opacity .18s ease, transform .18s var(--wa_ease_out);
+    transition: opacity .18s ease, transform .18s var(--wa_ease_spring);
 }
 
 .wa_theme_toggle .wa_theme_enter_from {

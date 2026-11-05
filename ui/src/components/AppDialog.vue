@@ -424,7 +424,7 @@ onUnmounted(() => {
 
 .wa_dialog_enter_active,
 .wa_dialog_leave_active {
-    transition: opacity .18s ease;
+    transition: opacity .18s var(--wa_ease_out);
 }
 
 .wa_dialog_enter_active .wa_dialog,

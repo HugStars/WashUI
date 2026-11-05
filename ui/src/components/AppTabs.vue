@@ -382,10 +382,10 @@ watch(
     opacity: 0;
     pointer-events: none;
     transition:
-        left .34s cubic-bezier(.34, 1.56, .64, 1),
-        top .34s cubic-bezier(.34, 1.56, .64, 1),
-        width .34s cubic-bezier(.34, 1.56, .64, 1),
-        height .34s cubic-bezier(.34, 1.56, .64, 1),
+        left .34s var(--wa_ease_spring),
+        top .34s var(--wa_ease_spring),
+        width .34s var(--wa_ease_spring),
+        height .34s var(--wa_ease_spring),
         opacity var(--wa_duration_fast) linear;
 }
 
@@ -399,7 +399,7 @@ watch(
     height: 100%;
     border-radius: inherit;
     background: var(--wa_color_nav_active);
-    transition: transform var(--wa_duration_base) ease;
+    transition: transform var(--wa_duration_base) var(--wa_ease_out);
 }
 
 .wa_tabs_slider_inner.press {
@@ -407,7 +407,7 @@ watch(
 }
 
 .wa_tabs_slider_inner.bounce {
-    animation: wa_tabs_bounce .55s cubic-bezier(.22, .61, .36, 1);
+    animation: wa_tabs_bounce .45s var(--wa_ease_out);
 }
 
 .wa_tabs_tab {
@@ -428,7 +428,10 @@ watch(
     font-size: var(--wa_tabs_font);
     white-space: nowrap;
     cursor: pointer;
-    transition: color var(--wa_duration_fast), background var(--wa_duration_fast), transform var(--wa_duration_fast);
+    transition:
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_fast) var(--wa_ease_out);
 }
 
 .wa_tabs_md .wa_tabs_tab {
@@ -494,28 +497,35 @@ watch(
         scale: 1 1;
     }
 
-    30% {
-        scale: 1.25 .75;
+    35% {
+        scale: 1.08 .93;
     }
 
-    40% {
-        scale: .75 1.25;
+    58% {
+        scale: .98 1.02;
     }
 
-    50% {
-        scale: 1.15 .85;
-    }
-
-    65% {
-        scale: .95 1.05;
-    }
-
-    75% {
-        scale: 1.05 .95;
+    78% {
+        scale: 1.015 .99;
     }
 
     100% {
         scale: 1 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_tabs_slider {
+        transition: opacity var(--wa_duration_fast) linear;
+    }
+
+    .wa_tabs_slider_inner,
+    .wa_tabs_tab {
+        transition: none;
+    }
+
+    .wa_tabs_slider_inner.bounce {
+        animation: none;
     }
 }
 </style>
