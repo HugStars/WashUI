@@ -382,10 +382,10 @@ watch(
     opacity: 0;
     pointer-events: none;
     transition:
-        left .34s var(--wa_ease_spring),
-        top .34s var(--wa_ease_spring),
-        width .34s var(--wa_ease_spring),
-        height .34s var(--wa_ease_spring),
+        left var(--wa_duration_slow) var(--wa_ease_spring),
+        top var(--wa_duration_slow) var(--wa_ease_spring),
+        width var(--wa_duration_slow) var(--wa_ease_spring),
+        height var(--wa_duration_slow) var(--wa_ease_spring),
         opacity var(--wa_duration_fast) linear;
 }
 
@@ -428,10 +428,11 @@ watch(
     font-size: var(--wa_tabs_font);
     white-space: nowrap;
     cursor: pointer;
+    transform-origin: center;
     transition:
         color var(--wa_duration_fast) var(--wa_ease_out),
         background var(--wa_duration_fast) var(--wa_ease_out),
-        transform var(--wa_duration_fast) var(--wa_ease_out);
+        transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
 .wa_tabs_md .wa_tabs_tab {
@@ -443,9 +444,11 @@ watch(
     min-width: 0;
 }
 
-.wa_tabs_tab:hover {
-    color: var(--wa_color_text);
-    background: var(--wa_color_hover);
+@media (hover: hover) and (pointer: fine) {
+    .wa_tabs_tab:hover {
+        color: var(--wa_color_text);
+        background: var(--wa_color_hover);
+    }
 }
 
 .wa_tabs_tab:disabled {
@@ -526,6 +529,14 @@ watch(
 
     .wa_tabs_slider_inner.bounce {
         animation: none;
+    }
+
+    .wa_tabs_slider_inner.press,
+    .wa_tabs_tab:active,
+    .wa_tabs_tab.pressed,
+    .wa_tabs_tab.on:active,
+    .wa_tabs_tab.on.pressed {
+        transform: none;
     }
 }
 </style>

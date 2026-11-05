@@ -142,11 +142,20 @@ function UpdateMultiple(values) {
     font-size: 14px;
     text-align: left;
     cursor: pointer;
-    transition: border-color var(--wa_duration_fast), box-shadow var(--wa_duration_fast), opacity var(--wa_duration_fast);
+    transition:
+        border-color var(--wa_duration_fast) var(--wa_ease_out),
+        box-shadow var(--wa_duration_fast) var(--wa_ease_out),
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        opacity var(--wa_duration_fast) var(--wa_ease_out);
 }
 
 .wa_select_trigger:hover {
     border-color: var(--wa_color_line_strong);
+}
+
+.wa_select_trigger[aria-expanded='true'] {
+    background: var(--wa_color_hover);
 }
 
 .wa_select_trigger:focus-visible {
@@ -195,5 +204,12 @@ function UpdateMultiple(values) {
 
 .wa_select_trigger[aria-expanded='true'] .wa_select_arrow {
     transform: rotate(-90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_select_trigger,
+    .wa_select_arrow {
+        transition: none;
+    }
 }
 </style>

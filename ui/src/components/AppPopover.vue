@@ -296,11 +296,15 @@ onUnmounted(Unlisten)
 }
 
 .wa_popover_enter_active {
-    transition: opacity .16s linear, transform .3s cubic-bezier(.34, 1.56, .64, 1);
+    transition:
+        opacity var(--wa_duration_base) linear,
+        transform var(--wa_duration_slow) var(--wa_ease_spring);
 }
 
 .wa_popover_leave_active {
-    transition: opacity .12s linear, transform .16s var(--wa_ease_out);
+    transition:
+        opacity var(--wa_duration_fast) linear,
+        transform var(--wa_duration_base) var(--wa_ease_out);
 }
 
 .wa_popover_enter_from {

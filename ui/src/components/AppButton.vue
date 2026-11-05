@@ -56,19 +56,24 @@ const Classes = computed(() => {
     overflow: hidden;
     text-overflow: ellipsis;
     user-select: none;
+    transform-origin: center;
     transition:
         background var(--wa_duration_fast) var(--wa_ease_out),
+        color var(--wa_duration_fast) var(--wa_ease_out),
         opacity var(--wa_duration_fast) var(--wa_ease_out),
         border-color var(--wa_duration_fast) var(--wa_ease_out),
-        transform var(--wa_duration_fast) var(--wa_ease_out);
+        box-shadow var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
 .wa_btn:hover {
     background: var(--wa_color_hover);
 }
 
-.wa_btn:hover:not(:disabled) {
-    transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+    .wa_btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+    }
 }
 
 .wa_btn:active {
@@ -76,7 +81,7 @@ const Classes = computed(() => {
 }
 
 .wa_btn:active:not(:disabled) {
-    transform: translateY(0) scale(.97);
+    transform: translateY(0) scale(.96);
 }
 
 .wa_btn:disabled {
@@ -149,11 +154,30 @@ const Classes = computed(() => {
 .wa_btn .wa_spinner {
     width: 14px;
     height: 14px;
+    animation:
+        wa_spin .8s linear infinite,
+        wa_btn_spinner_in .18s var(--wa_ease_spring) both;
+}
+
+@keyframes wa_btn_spinner_in {
+    from {
+        opacity: 0;
+        scale: .5;
+    }
+
+    to {
+        opacity: 1;
+        scale: 1;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .wa_btn {
         transition: none;
+    }
+
+    .wa_btn .wa_spinner {
+        animation: wa_spin .8s linear infinite;
     }
 
     .wa_btn:hover:not(:disabled),

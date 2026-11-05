@@ -492,12 +492,20 @@ onUnmounted(() => {
     color: var(--wa_color_text_subtle);
     background: transparent;
     cursor: pointer;
-    transition: color var(--wa_duration_fast), background var(--wa_duration_fast);
+    transform-origin: center;
+    transition:
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
 .wa_dialog_close:hover {
     color: var(--wa_color_text);
     background: var(--wa_color_hover);
+}
+
+.wa_dialog_close:active:not(:disabled) {
+    transform: scale(.88);
 }
 
 .wa_dialog_body {
@@ -605,6 +613,7 @@ onUnmounted(() => {
 @media (prefers-reduced-motion: reduce) {
 
     .wa_dialog,
+    .wa_dialog_close,
     .wa_dialog_grabber,
     .wa_dialog_grabber::before,
     .wa_dialog_enter_active,
@@ -612,6 +621,10 @@ onUnmounted(() => {
     .wa_dialog_enter_active .wa_dialog,
     .wa_dialog_leave_active .wa_dialog {
         transition: none;
+    }
+
+    .wa_dialog_close:active:not(:disabled) {
+        transform: none;
     }
 
     .wa_dialog_enter_active .wa_dialog_content,

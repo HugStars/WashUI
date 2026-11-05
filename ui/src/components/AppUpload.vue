@@ -10,8 +10,9 @@
         </button>
         <input ref="InputEl" class="wa_upload_input" type="file" :accept="accept" :multiple="multiple"
             :disabled="disabled" tabindex="-1" aria-hidden="true" @change="OnChange">
-        <ul v-if="modelValue.length" class="wa_upload_list">
-            <li v-for="(file, index) in modelValue" :key="`${file.name}-${file.size}-${index}`" class="wa_upload_item">
+        <TransitionGroup tag="ul" class="wa_upload_list" :class="{ wa_upload_list_show: modelValue.length }"
+            name="wa_upload" appear>
+            <li v-for="(file, index) in modelValue" :key="FileKey(file, index)" class="wa_upload_item">
                 <AppIcon name="file" :size="16" />
                 <span class="wa_upload_name" :title="file.name">{{ file.name }}</span>
                 <span class="wa_upload_size">{{ formatBytes(file.size) }}</span>
@@ -20,7 +21,7 @@
                     <AppIcon name="close" :size="14" />
                 </button>
             </li>
-        </ul>
+        </TransitionGroup>
         <p v-if="error" class="wa_field_error">{{ error }}</p>
         <p v-else-if="hint" class="wa_field_hint">{{ hint }}</p>
     </div>
@@ -68,6 +69,17 @@ const emit = defineEmits(['update:modelValue', 'change', 'reject', 'remove'])
 
 const InputEl = ref(null)
 const Dragging = ref(false)
+const FileKeys = new WeakMap()
+let FileKeySeed = 0
+
+function FileKey(file, index) {
+    if (file && typeof file === 'object') {
+        if (!FileKeys.has(file)) FileKeys.set(file, ++FileKeySeed)
+        return FileKeys.get(file)
+    }
+    return `${index}-${file}`
+}
+
 const HintText = computed(() => {
     const list = []
     if (props.accept) list.push(`类型：${props.accept}`)
@@ -163,7 +175,11 @@ function Remove(index) {
     background: var(--wa_color_soft);
     cursor: pointer;
     text-align: center;
-    transition: border-color var(--wa_duration_fast), background var(--wa_duration_fast), color var(--wa_duration_fast);
+    transition:
+        border-color var(--wa_duration_fast) var(--wa_ease_out),
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
 .wa_upload_zone:hover,
@@ -173,6 +189,10 @@ function Remove(index) {
     background: var(--wa_color_hover);
 }
 
+.wa_upload_zone.on {
+    transform: scale(1.005);
+}
+
 .wa_upload_zone.off {
     opacity: .55;
     cursor: not-allowed;
@@ -180,6 +200,11 @@ function Remove(index) {
 
 .wa_upload_zone>svg {
     color: var(--wa_color_text_muted);
+    transition: transform var(--wa_duration_base) var(--wa_ease_spring);
+}
+
+.wa_upload_zone.on>svg {
+    transform: translateY(-3px) scale(1.06);
 }
 
 .wa_upload_title {
@@ -200,10 +225,41 @@ function Remove(index) {
 }
 
 .wa_upload_list {
+    position: relative;
     display: grid;
     gap: 6px;
-    margin-top: 2px;
     list-style: none;
+}
+
+.wa_upload_list_show {
+    margin-top: 2px;
+}
+
+.wa_upload-enter-active,
+.wa_upload-leave-active {
+    transition:
+        opacity var(--wa_duration_base) var(--wa_ease_out),
+        transform var(--wa_duration_base) var(--wa_ease_out);
+}
+
+.wa_upload-enter-from {
+    opacity: 0;
+    transform: translateY(-4px) scale(.98);
+}
+
+.wa_upload-leave-to {
+    opacity: 0;
+    transform: translateX(10px);
+}
+
+.wa_upload-leave-active {
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+.wa_upload-move {
+    transition: transform var(--wa_duration_base) var(--wa_ease_out);
 }
 
 .wa_upload_item {
@@ -249,6 +305,11 @@ function Remove(index) {
     color: var(--wa_color_text_faint);
     background: transparent;
     cursor: pointer;
+    transform-origin: center;
+    transition:
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
 .wa_upload_remove:hover {
@@ -256,8 +317,32 @@ function Remove(index) {
     background: var(--wa_color_danger_soft);
 }
 
+.wa_upload_remove:active:not(:disabled) {
+    transform: scale(.86);
+}
+
 .wa_upload_remove:disabled {
     opacity: .4;
     cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_upload_zone,
+    .wa_upload_zone>svg,
+    .wa_upload_remove,
+    .wa_upload-enter-active,
+    .wa_upload-leave-active,
+    .wa_upload-move {
+        transition: none;
+    }
+
+    .wa_upload_zone.on {
+        transform: none;
+    }
+
+    .wa_upload_zone.on>svg,
+    .wa_upload_remove:active:not(:disabled) {
+        transform: none;
+    }
 }
 </style>

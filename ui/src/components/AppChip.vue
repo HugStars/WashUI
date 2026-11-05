@@ -35,21 +35,24 @@ defineProps({
     cursor: pointer;
     user-select: none;
     white-space: nowrap;
+    transform-origin: center;
     transition:
         background var(--wa_duration_fast) var(--wa_ease_out),
         color var(--wa_duration_fast) var(--wa_ease_out),
         border-color var(--wa_duration_fast) var(--wa_ease_out),
-        transform var(--wa_duration_fast) var(--wa_ease_out);
+        transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
-.wa_chip:hover {
-    border-color: var(--wa_color_text_faint);
-    color: var(--wa_color_text);
-    transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+    .wa_chip:hover {
+        border-color: var(--wa_color_text_faint);
+        color: var(--wa_color_text);
+        transform: translateY(-1px);
+    }
 }
 
 .wa_chip:active {
-    transform: translateY(0) scale(.96);
+    transform: translateY(0) scale(.94);
 }
 
 .wa_chip.on,
@@ -62,7 +65,7 @@ defineProps({
 }
 
 .wa_chip.on:active {
-    transform: scale(.96);
+    transform: scale(.94);
 }
 
 @media (prefers-reduced-motion: reduce) {

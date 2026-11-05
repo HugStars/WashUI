@@ -10,10 +10,13 @@
             <input :id="InputId" ref="InputEl" v-bind="$attrs" class="wa_input_control" :type="type"
                 :value="modelValue ?? ''" :disabled="disabled" :readonly="readonly"
                 :aria-invalid="error ? 'true' : undefined" :aria-describedby="DescribedBy" @input="OnInput">
-            <button v-if="clearable && modelValue" type="button" class="wa_input_clear" aria-label="清空"
-                :disabled="disabled || readonly" @click="Clear">
-                <AppIcon name="close" :size="14" />
-            </button>
+            <Transition enter-active-class="wa_input_clear_enter_active"
+                leave-active-class="wa_input_clear_leave_active">
+                <button v-if="clearable && modelValue" type="button" class="wa_input_clear" aria-label="清空"
+                    :disabled="disabled || readonly" @click="Clear">
+                    <AppIcon name="close" :size="14" />
+                </button>
+            </Transition>
             <span v-if="$slots.suffix" class="wa_input_affix">
                 <slot name="suffix" />
             </span>
@@ -172,11 +175,41 @@ function Clear() {
     color: var(--wa_color_text_faint);
     background: var(--wa_color_soft);
     cursor: pointer;
+    transform-origin: center;
+    transition:
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
 .wa_input_clear:hover {
     color: var(--wa_color_text);
     background: var(--wa_color_hover);
+}
+
+.wa_input_clear:active:not(:disabled) {
+    transform: scale(.86);
+}
+
+.wa_input_clear_enter_active,
+.wa_input_clear_leave_active {
+    transition:
+        opacity .12s var(--wa_ease_out),
+        transform .16s var(--wa_ease_spring);
+}
+
+.wa_input_clear_enter_from,
+.wa_input_clear_leave_to {
+    opacity: 0;
+    transform: scale(.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_input_clear,
+    .wa_input_clear_enter_active,
+    .wa_input_clear_leave_active {
+        transition: none;
+    }
 }
 
 .wa_input_clear:disabled {

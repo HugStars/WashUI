@@ -139,4 +139,10 @@ function ToggleDialog() {
 .wa_check_menu_arrow.on {
     transform: rotate(-90deg);
 }
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_check_menu_arrow {
+        transition: none;
+    }
+}
 </style>

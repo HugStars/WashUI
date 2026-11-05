@@ -184,11 +184,22 @@ watch(() => props.modelValue, value => {
     background: transparent;
     font-size: 12px;
     cursor: pointer;
+    transform-origin: center;
+    transition:
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
-.wa_editor_btn:hover {
-    color: var(--wa_color_text);
-    background: var(--wa_color_hover);
+@media (hover: hover) and (pointer: fine) {
+    .wa_editor_btn:hover {
+        color: var(--wa_color_text);
+        background: var(--wa_color_hover);
+    }
+}
+
+.wa_editor_btn:active:not(:disabled) {
+    transform: scale(.94);
 }
 
 .wa_editor_btn.on {
@@ -199,6 +210,17 @@ watch(() => props.modelValue, value => {
 .wa_editor_btn:disabled {
     opacity: .4;
     cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_editor,
+    .wa_editor_btn {
+        transition: none;
+    }
+
+    .wa_editor_btn:active:not(:disabled) {
+        transform: none;
+    }
 }
 
 .wa_editor_body {

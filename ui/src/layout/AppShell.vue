@@ -319,10 +319,10 @@ provide(HEADER_TARGET, HeaderTarget)
     opacity: 0;
     pointer-events: none;
     transition:
-        left .34s var(--wa_ease_spring),
-        top .34s var(--wa_ease_spring),
-        width .34s var(--wa_ease_spring),
-        height .34s var(--wa_ease_spring),
+        left var(--wa_duration_slow) var(--wa_ease_spring),
+        top var(--wa_duration_slow) var(--wa_ease_spring),
+        width var(--wa_duration_slow) var(--wa_ease_spring),
+        height var(--wa_duration_slow) var(--wa_ease_spring),
         opacity var(--wa_duration_fast) linear;
 }
 
@@ -336,7 +336,7 @@ provide(HEADER_TARGET, HeaderTarget)
     height: 100%;
     border-radius: inherit;
     background: var(--wa_color_nav_active);
-    transition: transform var(--wa_duration_base) ease;
+    transition: transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
 .wa_nav_slider_inner.press {
@@ -364,7 +364,11 @@ provide(HEADER_TARGET, HeaderTarget)
     user-select: none;
     -webkit-touch-callout: none;
     white-space: nowrap;
-    transition: color var(--wa_duration_fast), background var(--wa_duration_fast), transform var(--wa_duration_fast);
+    transform-origin: center;
+    transition:
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
 .wa_nav_item:hover {
@@ -629,6 +633,13 @@ provide(HEADER_TARGET, HeaderTarget)
 
     .wa_nav_slider_inner.bounce {
         animation: none;
+    }
+
+    .wa_nav_item:active,
+    .wa_nav_item.pressed,
+    .wa_nav_item.on.pressed,
+    .wa_nav_item.open.pressed {
+        transform: none;
     }
 }
 </style>

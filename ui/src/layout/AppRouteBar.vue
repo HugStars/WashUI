@@ -32,7 +32,9 @@ const Loading = computed(() => props.loading ?? routeLoading.value)
     transform-origin: left;
     opacity: 0;
     pointer-events: none;
-    transition: opacity .2s ease, transform .2s ease;
+    transition:
+        opacity var(--wa_duration_base) var(--wa_ease_out),
+        transform var(--wa_duration_base) var(--wa_ease_out);
 }
 
 .wa_route_bar.on {

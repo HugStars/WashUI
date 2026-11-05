@@ -291,6 +291,19 @@ const checkRender = computed(() => {
     height: 1em;
     font-size: 12px;
     line-height: 1;
+    animation: wa_select_check_in .18s var(--wa_ease_spring) both;
+}
+
+@keyframes wa_select_check_in {
+    from {
+        opacity: 0;
+        transform: scale(.5);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .wa_select_check svg {
@@ -319,6 +332,16 @@ const checkRender = computed(() => {
 
     .wa_select_panel.has_scrollbar {
         padding-right: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_select_option {
+        transition: none;
+    }
+
+    .wa_select_check {
+        animation: none;
     }
 }
 </style>

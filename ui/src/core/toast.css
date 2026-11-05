@@ -28,13 +28,21 @@
     font-size: 13.5px;
     line-height: 1.5;
     word-break: break-all;
-    transition: background-color .22s ease, box-shadow .22s ease, scale .18s var(--wa_ease_out);
-    animation: wa_toast_in .2s var(--wa_ease_out) both;
+    transition:
+        background-color var(--wa_duration_base) var(--wa_ease_out),
+        box-shadow var(--wa_duration_base) var(--wa_ease_out),
+        scale var(--wa_duration_fast) var(--wa_ease_out);
+    animation: wa_toast_in var(--wa_duration_base) var(--wa_ease_out) both;
 }
 
 .wa_toast_item>i {
     transform-origin: center;
-    transition: width .22s ease, height .22s ease, border-width .22s ease, background-color .22s ease, border-color .22s ease;
+    transition:
+        width var(--wa_duration_base) var(--wa_ease_out),
+        height var(--wa_duration_base) var(--wa_ease_out),
+        border-width var(--wa_duration_base) var(--wa_ease_out),
+        background-color var(--wa_duration_base) var(--wa_ease_out),
+        border-color var(--wa_duration_base) var(--wa_ease_out);
 }
 
 .wa_toast_dot {
@@ -73,15 +81,15 @@
 }
 
 .wa_toast_item_updated>span {
-    animation: wa_toast_text .24s ease;
+    animation: wa_toast_text var(--wa_duration_base) var(--wa_ease_out);
 }
 
 .wa_toast_item_updated>i {
-    animation: wa_toast_icon .34s var(--wa_ease_out);
+    animation: wa_toast_icon var(--wa_duration_slow) var(--wa_ease_out);
 }
 
 .wa_toast_item_leave {
-    animation: wa_toast_out .2s ease both;
+    animation: wa_toast_out var(--wa_duration_base) var(--wa_ease_out) both;
 }
 
 @keyframes wa_toast_in {

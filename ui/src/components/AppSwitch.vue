@@ -112,8 +112,18 @@ function Toggle() {
     box-shadow: inset 0 0 0 2px var(--wa_color_text_subtle);
     cursor: pointer;
     transition:
-        background-color 67ms linear,
-        box-shadow 67ms linear;
+        background-color var(--wa_duration_fast) var(--wa_ease_out),
+        box-shadow var(--wa_duration_fast) var(--wa_ease_out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .wa_switch:hover:not(:disabled) {
+        box-shadow: inset 0 0 0 2px var(--wa_color_text_muted);
+    }
+
+    .wa_switch.on:hover:not(:disabled) {
+        box-shadow: inset 0 0 0 2px transparent;
+    }
 }
 
 .wa_switch_row.wa_switch_md .wa_switch {
@@ -136,10 +146,10 @@ function Toggle() {
     translate: 0 0;
     scale: var(--wa_switch_thumb_off);
     transition:
-        translate 300ms cubic-bezier(.175, .885, .32, 1.275),
-        scale 250ms cubic-bezier(.2, 0, 0, 1),
-        background-color 67ms linear,
-        box-shadow 67ms linear;
+        translate var(--wa_duration_slow) var(--wa_ease_spring),
+        scale var(--wa_duration_base) var(--wa_ease_out),
+        background-color var(--wa_duration_fast) var(--wa_ease_out),
+        box-shadow var(--wa_duration_fast) var(--wa_ease_out);
 }
 
 .wa_switch.on {
@@ -156,8 +166,8 @@ function Toggle() {
 
 .wa_switch:active:not(:disabled) .wa_switch_thumb {
     scale: var(--wa_switch_thumb_pressed);
-    transition-duration: 100ms;
-    transition-timing-function: linear;
+    transition-duration: var(--wa_duration_fast);
+    transition-timing-function: var(--wa_ease_out);
 }
 
 .wa_switch.on:active:not(:disabled) .wa_switch_thumb {

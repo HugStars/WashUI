@@ -61,7 +61,10 @@
 
     --wa_duration_fast: .15s;
     --wa_duration_base: .2s;
+    --wa_duration_slow: .34s;
     --wa_ease_out: cubic-bezier(.2, .9, .3, 1);
+    --wa_ease_in: cubic-bezier(.4, 0, 1, 1);
+    --wa_ease_in_out: cubic-bezier(.4, 0, .2, 1);
     --wa_ease_spring: cubic-bezier(.3, 1.2, .5, 1);
 
     --wa_z_header: 6;

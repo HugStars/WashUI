@@ -168,7 +168,12 @@ watch(
     background: transparent;
     cursor: pointer;
     opacity: 0;
-    transition: opacity var(--wa_duration_fast), color var(--wa_duration_fast), background var(--wa_duration_fast);
+    transform-origin: center;
+    transition:
+        opacity var(--wa_duration_fast) var(--wa_ease_out),
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
 .wa_code:hover .wa_code_copy,
@@ -182,8 +187,28 @@ watch(
     background: var(--wa_color_hover);
 }
 
+.wa_code_copy:active:not(:disabled) {
+    transform: scale(.86);
+}
+
 .wa_code_copy.on {
     color: var(--wa_color_success);
+}
+
+.wa_code_copy.on svg {
+    animation: wa_code_check_in .24s var(--wa_ease_spring) both;
+}
+
+@keyframes wa_code_check_in {
+    from {
+        opacity: 0;
+        transform: scale(.4) rotate(-24deg);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+    }
 }
 
 .wa_code_copy:focus-visible {
@@ -343,5 +368,19 @@ watch(
     font-size: 12px;
     color: var(--wa_color_text);
     white-space: pre;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_code_copy {
+        transition: none;
+    }
+
+    .wa_code_copy:active:not(:disabled) {
+        transform: none;
+    }
+
+    .wa_code_copy.on svg {
+        animation: none;
+    }
 }
 </style>
