@@ -23,9 +23,13 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="尺寸、类型与状态" description="默认小尺寸，传 size=md 可放大；其余原生属性会透传到 input。">
+        <DemoBlock title="尺寸、类型与状态"
+            description="默认小尺寸，传 size=md 可放大；其余原生属性会透传到 input。密码输入建议放在 form 中，避免浏览器密码管理器警告。">
             <div class="doc_grid">
-                <AppInput v-model="token" label="密钥" type="password" placeholder="请输入密钥" clearable />
+                <form class="doc_form_reset" @submit.prevent>
+                    <AppInput v-model="token" label="密钥" type="password" placeholder="请输入密钥"
+                        autocomplete="new-password" clearable />
+                </form>
                 <AppInput v-model="small" label="中尺寸" size="md" placeholder="md" />
                 <AppInput model-value="只读内容" label="只读" readonly />
                 <AppInput model-value="禁用内容" label="禁用" disabled />
@@ -104,3 +108,9 @@ const slotRows = [
     { name: 'suffix', type: '—', desc: '输入框后缀' },
 ]
 </script>
+
+<style>
+.doc_form_reset {
+    display: contents;
+}
+</style>
