@@ -27,6 +27,8 @@
             description="默认小尺寸，传 size=md 可放大；其余原生属性会透传到 input。密码输入建议放在 form 中，避免浏览器密码管理器警告。">
             <div class="doc_grid">
                 <form class="doc_form_reset" @submit.prevent>
+                    <!-- 隐藏的用户名字段：满足浏览器对密码表单可访问性的检查 -->
+                    <input type="text" name="username" autocomplete="username" hidden />
                     <AppInput v-model="token" label="密钥" type="password" placeholder="请输入密钥"
                         autocomplete="new-password" clearable />
                 </form>
