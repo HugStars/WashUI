@@ -25,7 +25,11 @@ const props = defineProps({
     placement: {
         type: String,
         default: 'top',
-        allows: ['top', 'bottom', 'left', 'right'],
+        allows: [
+            'top', 'top-left', 'top-right',
+            'bottom', 'bottom-left', 'bottom-right',
+            'left', 'right',
+        ],
     },
     offset: {
         type: [Number, Object],
@@ -61,6 +65,35 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:open', 'open', 'close'])
+
+const PLACEMENTS = new Set([
+    'top', 'top-left', 'top-right',
+    'bottom', 'bottom-left', 'bottom-right',
+    'left', 'right',
+])
+
+const PLACEMENT_ALIASES = {
+    'top-start': 'top-left',
+    'top-end': 'top-right',
+    'bottom-start': 'bottom-left',
+    'bottom-end': 'bottom-right',
+}
+
+const PLACEMENT_ORIGINS = {
+    top: 'bottom center',
+    'top-left': 'bottom left',
+    'top-right': 'bottom right',
+    bottom: 'top center',
+    'bottom-left': 'top left',
+    'bottom-right': 'top right',
+    left: 'right center',
+    right: 'left center',
+}
+
+function NormalizePlacement(value) {
+    const next = PLACEMENT_ALIASES[value] || value
+    return PLACEMENTS.has(next) ? next : 'top'
+}
 
 const Visible = ref(props.open)
 const TriggerEl = ref(null)
@@ -110,25 +143,32 @@ function Position() {
         ? { x: 0, y: props.offset }
         : { x: 0, y: 0, ...(props.offset || {}) }
     const gap = 8
-    let placement = props.placement
+    let placement = NormalizePlacement(props.placement)
     let left = 0
     let top = 0
 
-    if (placement === 'top' && rect.top - height - gap < edge) placement = 'bottom'
-    else if (placement === 'bottom' && rect.bottom + height + gap > window.innerHeight - edge) placement = 'top'
+    if (placement.startsWith('top') && rect.top - height - gap < edge) {
+        placement = placement.replace('top', 'bottom')
+    } else if (placement.startsWith('bottom') && rect.bottom + height + gap > window.innerHeight - edge) {
+        placement = placement.replace('bottom', 'top')
+    } else if (placement === 'left' && rect.left - width - gap < edge) {
+        placement = 'right'
+    } else if (placement === 'right' && rect.right + width + gap > window.innerWidth - edge) {
+        placement = 'left'
+    }
 
-    if (placement === 'bottom') {
-        left = rect.left + rect.width / 2 - width / 2
-        top = rect.bottom + gap
+    if (placement.startsWith('top') || placement.startsWith('bottom')) {
+        top = placement.startsWith('top') ? rect.top - height - gap : rect.bottom + gap
+
+        if (placement.endsWith('left')) left = rect.left
+        else if (placement.endsWith('right')) left = rect.right - width
+        else left = rect.left + rect.width / 2 - width / 2
     } else if (placement === 'left') {
         left = rect.left - width - gap
         top = rect.top + rect.height / 2 - height / 2
-    } else if (placement === 'right') {
+    } else {
         left = rect.right + gap
         top = rect.top + rect.height / 2 - height / 2
-    } else {
-        left = rect.left + rect.width / 2 - width / 2
-        top = rect.top - height - gap
     }
 
     left += offset.x
@@ -137,19 +177,11 @@ function Position() {
     left = Math.min(Math.max(edge, left), Math.max(edge, window.innerWidth - width - edge))
     top = Math.min(Math.max(edge, top), Math.max(edge, window.innerHeight - height - edge))
 
-    const origin = placement === 'bottom'
-        ? 'top center'
-        : placement === 'top'
-            ? 'bottom center'
-            : placement === 'left'
-                ? 'right center'
-                : 'left center'
-
     PanelStyle.value = {
         ...PanelStyle.value,
         left: `${left}px`,
         top: `${top}px`,
-        transformOrigin: origin,
+        transformOrigin: PLACEMENT_ORIGINS[placement],
         visibility: 'visible',
     }
 }

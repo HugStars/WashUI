@@ -16,20 +16,20 @@
             </AppPopover>
         </DemoBlock>
 
-        <DemoBlock title="方位" description="placement 支持 top / bottom / left / right，空间不足时会自动翻转。">
-            <div class="doc_row">
-                <AppChip v-for="item in placements" :key="item" :active="placement === item"
-                    @click="placement = item">
-                    {{ item }}
-                </AppChip>
-            </div>
-            <div class="doc_row doc_gap">
-                <AppPopover :placement="placement" :width="200">
-                    <template #trigger="{ open }">
-                        <AppButton size="sm" :aria-expanded="open">当前：{{ placement }}</AppButton>
-                    </template>
-                    <p class="wa_hint">浮层方位：{{ placement }}</p>
-                </AppPopover>
+        <DemoBlock title="方位"
+            description="placement 支持 8 种方位：top-left / top / top-right / left / right / bottom-left / bottom / bottom-right，空间不足时会自动翻转。">
+            <div class="doc_popover_grid">
+                <template v-for="cell in placementCells" :key="cell.key">
+                    <AppPopover v-if="cell.placement" :placement="cell.placement" :width="200">
+                        <template #trigger="{ open }">
+                            <AppButton class="doc_popover_btn" size="sm" :aria-expanded="open">
+                                {{ cell.placement }}
+                            </AppButton>
+                        </template>
+                        <p class="wa_hint">浮层方位：{{ cell.placement }}</p>
+                    </AppPopover>
+                    <span v-else aria-hidden="true"></span>
+                </template>
             </div>
         </DemoBlock>
 
@@ -47,8 +47,18 @@ import { toast } from '@wash/ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const actions = ['查看详情', '复制链接', '删除记录']
-const placements = ['top', 'bottom', 'left', 'right']
-const placement = ref('bottom')
+
+const placementCells = [
+    { key: 'tl', placement: 'top-left' },
+    { key: 't', placement: 'top' },
+    { key: 'tr', placement: 'top-right' },
+    { key: 'l', placement: 'left' },
+    { key: 'center', placement: '' },      // 中间留空
+    { key: 'r', placement: 'right' },
+    { key: 'bl', placement: 'bottom-left' },
+    { key: 'b', placement: 'bottom' },
+    { key: 'br', placement: 'bottom-right' },
+]
 
 function choose(item, close) {
     close()
@@ -57,7 +67,7 @@ function choose(item, close) {
 
 const propsRows = [
     { name: 'open', type: 'boolean', default: 'false', desc: '是否打开，支持 v-model:open' },
-    { name: 'placement', type: 'top | bottom | left | right', default: 'top', desc: '浮层方位' },
+    { name: 'placement', type: 'top | top-left | top-right | bottom | bottom-left | bottom-right | left | right', default: 'top', desc: '浮层方位' },
     { name: 'offset', type: 'number | { x, y }', default: '0', desc: '定位偏移；数字表示 x 偏移，对象可传 x / y' },
     { name: 'width', type: 'number | string', default: '220', desc: '浮层宽度' },
     { name: 'padding', type: 'number | string', default: 'var(--wa_popover_padding)', desc: '浮层内边距，可跟随内容尺寸传入' },
@@ -85,5 +95,20 @@ const slotRows = [
 .doc_popover_list {
     display: grid;
     gap: 6px;
+}
+
+.doc_popover_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    max-width: 380px;
+}
+
+.doc_popover_grid > * {
+    width: 100%;
+}
+
+.doc_popover_btn {
+    width: 100%;
 }
 </style>
