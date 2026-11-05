@@ -3,8 +3,8 @@
         <Transition appear enter-active-class="wa_dialog_enter_active" leave-active-class="wa_dialog_leave_active"
             enter-from-class="wa_dialog_enter_from" leave-to-class="wa_dialog_leave_to" @after-leave="OnAfterLeave">
             <div v-if="Visible" class="wa_dialog_mask" @click.self="OnMaskClick">
-                <div ref="PanelEl" class="wa_dialog" role="dialog" aria-modal="true"
-                    :aria-labelledby="HasHead ? TitleId : undefined"
+                <div ref="PanelEl" class="wa_dialog" :class="{ wa_dialog_dragging: Dragging }" role="dialog"
+                    aria-modal="true" :aria-labelledby="HasHead ? TitleId : undefined"
                     :aria-label="HasHead ? undefined : (ariaLabel || '对话框')"
                     :aria-describedby="describedBy || undefined" :style="PanelStyle" tabindex="-1"
                     @pointerdown="OnPointerDown" @pointermove="OnPointerMove" @pointerup="OnPointerEnd"
@@ -22,11 +22,18 @@
                         <AppIcon name="close" :size="17" />
                     </button>
 
-                    <div class="wa_dialog_body">
-                        <slot />
+                    <div ref="BodyEl" class="wa_dialog_body" @touchstart="OnBodyTouchStart"
+                        @touchmove="OnBodyTouchMove" @touchend="OnBodyTouchEnd" @touchcancel="OnBodyTouchCancel">
+                        <div class="wa_dialog_content">
+                            <slot />
+                            <footer v-if="$slots.footer && FooterInContent"
+                                class="wa_dialog_foot wa_dialog_foot_in_content">
+                                <slot name="footer" />
+                            </footer>
+                        </div>
                     </div>
 
-                    <footer v-if="$slots.footer" class="wa_dialog_foot">
+                    <footer v-if="$slots.footer && !FooterInContent" class="wa_dialog_foot">
                         <slot name="footer" />
                     </footer>
                 </div>
@@ -131,6 +138,17 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    /** bar：移动端操作栏固定在底部；content：操作栏放进内容区随内容滚动 */
+    footerPlacement: {
+        type: String,
+        default: 'bar',
+        allows: ['bar', 'content'],
+    },
+    /** 移动端弹框高度，数字按 px 处理 */
+    mobileHeight: {
+        type: [Number, String],
+        default: 'min(60vh, 720px)',
+    },
 })
 
 const emit = defineEmits(['update:open', 'close'])
@@ -141,14 +159,19 @@ const Uid = Symbol('wa_dialog')
 
 const Visible = ref(props.open)
 const PanelEl = ref(null)
+const BodyEl = ref(null)
 const DragY = ref(0)
 const Dragging = ref(false)
 
 const HasHead = computed(() => Boolean(props.title || slots.title))
+const FooterInContent = computed(() => props.footerPlacement === 'content')
 const PanelStyle = computed(() => {
     const style = {
         width: typeof props.width === 'number' ? `${props.width}px` : props.width,
         '--wa_drag_y': `${DragY.value}px`,
+        '--wa_dialog_mobile_height': typeof props.mobileHeight === 'number'
+            ? `${props.mobileHeight}px`
+            : props.mobileHeight,
     }
     if (Dragging.value) style.transition = 'none'
     return style
@@ -159,6 +182,9 @@ let Locked = false
 
 let StartY = 0
 let PointerId = null
+let TouchId = null
+let TouchStartY = 0
+let TouchPulling = false
 
 function Focusables() {
     const root = PanelEl.value
@@ -254,7 +280,7 @@ function OnMaskClick() {
 }
 
 function OnAfterLeave() {
-    DragY.value = 0
+    ResetBodyDrag()
     Deactivate()
     emit('close')
 }
@@ -292,6 +318,68 @@ function OnPointerCancel() {
     DragY.value = 0
 }
 
+function ResetBodyDrag() {
+    TouchId = null
+    TouchStartY = 0
+    TouchPulling = false
+    Dragging.value = false
+    DragY.value = 0
+}
+
+function OnBodyTouchStart(event) {
+    if (!props.gesture || event.touches.length !== 1) return
+
+    const body = BodyEl.value
+    if (!body || body.scrollTop > 0) return
+
+    ResetBodyDrag()
+    TouchId = event.touches[0].identifier
+    TouchStartY = event.touches[0].clientY
+}
+
+function OnBodyTouchMove(event) {
+    if (TouchId === null) return
+
+    const touch = [...event.touches].find(item => item.identifier === TouchId)
+    if (!touch) return
+
+    const body = BodyEl.value
+    if (!body || body.scrollTop > 0) {
+        ResetBodyDrag()
+        return
+    }
+
+    const distance = touch.clientY - TouchStartY
+    if (distance <= 0) {
+        if (TouchPulling) ResetBodyDrag()
+        return
+    }
+
+    if (!TouchPulling && distance < 4) return
+
+    event.preventDefault()
+    TouchPulling = true
+    Dragging.value = true
+    DragY.value = distance
+}
+
+function OnBodyTouchEnd() {
+    if (TouchId === null) return
+
+    const close = DragY.value > DRAG_CLOSE
+    TouchId = null
+    TouchStartY = 0
+    TouchPulling = false
+    Dragging.value = false
+
+    if (close) RequestClose()
+    else DragY.value = 0
+}
+
+function OnBodyTouchCancel() {
+    ResetBodyDrag()
+}
+
 watch(() => props.open, (open) => {
     Visible.value = open
     if (typeof document === 'undefined') return
@@ -300,10 +388,15 @@ watch(() => props.open, (open) => {
         DragY.value = 0
         Dragging.value = false
         PointerId = null
+        TouchId = null
+        TouchStartY = 0
+        TouchPulling = false
         Activate()
     } else {
         Dragging.value = false
         PointerId = null
+        TouchId = null
+        TouchPulling = false
         document.removeEventListener('keydown', OnKeydown)
     }
 }, { immediate: true })
@@ -356,7 +449,7 @@ onUnmounted(() => {
     box-shadow: var(--wa_shadow_dialog);
     touch-action: pan-y;
     transform: translateY(var(--wa_drag_y, 0px));
-    transition: transform var(--wa_duration_base) var(--wa_ease_out);
+    transition: transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
 .wa_dialog:focus {
@@ -411,6 +504,11 @@ onUnmounted(() => {
     min-width: 0;
 }
 
+.wa_dialog_content {
+    min-width: 0;
+    transform-origin: center top;
+}
+
 .wa_dialog_foot {
     display: flex;
     justify-content: flex-end;
@@ -418,18 +516,48 @@ onUnmounted(() => {
     padding-top: 2px;
 }
 
+.wa_dialog_foot_in_content {
+    margin-top: 18px;
+    padding-top: 12px;
+}
+
 .wa_dialog_grabber {
     display: none;
 }
 
-.wa_dialog_enter_active,
-.wa_dialog_leave_active {
-    transition: opacity .18s var(--wa_ease_out);
+.wa_dialog_grabber::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    width: 38px;
+    height: 4px;
+    margin-left: -19px;
+    border-radius: var(--wa_radius_pill);
+    background: var(--wa_color_line_strong);
+    transition: transform var(--wa_duration_fast) var(--wa_ease_out), background var(--wa_duration_fast);
+    transform-origin: center;
 }
 
-.wa_dialog_enter_active .wa_dialog,
+.wa_dialog_dragging .wa_dialog_grabber::before {
+    transform: scale(.8, .65);
+    background: var(--wa_color_text_faint);
+}
+
+.wa_dialog_enter_active {
+    transition: opacity .32s var(--wa_ease_out);
+}
+
+.wa_dialog_leave_active {
+    transition: opacity .24s var(--wa_ease_out);
+}
+
+.wa_dialog_enter_active .wa_dialog {
+    transition: opacity .2s var(--wa_ease_out), transform .32s var(--wa_ease_spring);
+}
+
 .wa_dialog_leave_active .wa_dialog {
-    transition: opacity .2s ease, transform .2s var(--wa_ease_out);
+    transition: opacity .16s var(--wa_ease_out), transform .22s var(--wa_ease_out);
 }
 
 .wa_dialog_enter_from,
@@ -437,19 +565,58 @@ onUnmounted(() => {
     opacity: 0;
 }
 
-.wa_dialog_enter_from .wa_dialog,
+.wa_dialog_enter_from .wa_dialog {
+    opacity: 0;
+    transform: translateY(14px) scale(.94);
+}
+
 .wa_dialog_leave_to .wa_dialog {
     opacity: 0;
-    transform: translateY(12px) scale(.97);
+    transform: translateY(8px) scale(.98);
+}
+
+.wa_dialog_enter_active .wa_dialog_content {
+    animation: wa_dialog_content_in .3s var(--wa_ease_out) both;
+}
+
+.wa_dialog_leave_active .wa_dialog_content {
+    animation: wa_dialog_content_out .24s var(--wa_ease_out) both;
+}
+
+@keyframes wa_dialog_content_in {
+    from {
+        opacity: 0;
+        transform: scaleY(1.2);
+    }
+
+    to {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+
+@keyframes wa_dialog_content_out {
+    to {
+        opacity: 0;
+        transform: scaleY(.96);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
 
+    .wa_dialog,
+    .wa_dialog_grabber,
+    .wa_dialog_grabber::before,
     .wa_dialog_enter_active,
     .wa_dialog_leave_active,
     .wa_dialog_enter_active .wa_dialog,
     .wa_dialog_leave_active .wa_dialog {
         transition: none;
+    }
+
+    .wa_dialog_enter_active .wa_dialog_content,
+    .wa_dialog_leave_active .wa_dialog_content {
+        animation: none;
     }
 }
 
@@ -464,9 +631,21 @@ onUnmounted(() => {
 
     .wa_dialog {
         width: 100%;
-        max-height: 70vh;
-        padding: 22px 20px calc(22px + env(safe-area-inset-bottom));
+        height: var(--wa_dialog_mobile_height, min(60vh, 720px));
+        max-height: calc(100vh - 12px - env(safe-area-inset-top));
+        padding: 20px 20px calc(12px + env(safe-area-inset-bottom));
         border-radius: var(--wa_radius_dialog) var(--wa_radius_dialog) 0 0;
+        gap: 0;
+        overflow: hidden;
+        transition: transform var(--wa_duration_base) var(--wa_ease_out);
+    }
+
+    .wa_dialog_enter_active .wa_dialog {
+        animation: wa_dialog_sheet_in .3s cubic-bezier(.22, 1, .36, 1) both;
+    }
+
+    .wa_dialog_leave_active .wa_dialog {
+        animation: wa_dialog_sheet_out .24s cubic-bezier(.4, 0, 1, 1) both;
     }
 
     .wa_dialog_enter_from .wa_dialog,
@@ -477,17 +656,85 @@ onUnmounted(() => {
     .wa_dialog_grabber {
         display: block;
         position: absolute;
-        top: 8px;
+        top: 0;
         left: 50%;
-        width: 38px;
-        height: 4px;
-        margin-left: -19px;
-        border-radius: var(--wa_radius_pill);
-        background: var(--wa_color_line_strong);
+        width: 72px;
+        height: 24px;
+        margin-left: -36px;
+        background: transparent;
     }
 
     .wa_dialog_head {
-        padding-top: 6px;
+        flex: none;
+        padding: 4px 44px 12px 0;
+    }
+
+    .wa_dialog_title {
+        padding-right: 0;
+    }
+
+    .wa_dialog_close {
+        top: 20px;
+        right: 16px;
+    }
+
+    .wa_dialog_body {
+        flex: 1;
+        min-height: 0;
+        padding: 16px 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        touch-action: pan-y;
+    }
+
+    .wa_dialog_foot {
+        flex: none;
+        padding-top: 12px;
+    }
+
+    .wa_dialog_foot_in_content {
+        margin-top: 16px;
+    }
+}
+
+@keyframes wa_dialog_sheet_in {
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes wa_dialog_sheet_out {
+    from {
+        opacity: 1;
+        transform: translateY(var(--wa_drag_y, 0px));
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_dialog {
+        transition: none;
+    }
+
+    .wa_dialog_enter_active .wa_dialog,
+    .wa_dialog_leave_active .wa_dialog {
+        transition: none;
+        animation: none;
+    }
+
+    .wa_dialog_enter_active .wa_dialog_content,
+    .wa_dialog_leave_active .wa_dialog_content {
+        animation: none;
     }
 }
 </style>

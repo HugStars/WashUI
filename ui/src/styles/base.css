@@ -133,18 +133,18 @@ svg {
     color: var(--wa_color_text_faint);
 }
 
-:where(.wa_card, .wa_panel_body, .wa_dialog_body)> :where(p, ul, ol, blockquote, pre, table, figure) {
+:where(.wa_card, .wa_panel_body, .wa_dialog_body, .wa_dialog_content)> :where(p, ul, ol, blockquote, pre, table, figure) {
     margin-bottom: 12px;
 }
 
-:where(.wa_card, .wa_panel_body, .wa_dialog_body)> :where(h1, h2, h3, h4) {
+:where(.wa_card, .wa_panel_body, .wa_dialog_body, .wa_dialog_content)> :where(h1, h2, h3, h4) {
     margin-bottom: 8px;
 }
 
-:where(.wa_card, .wa_panel_body, .wa_dialog_body)> :last-child {
+:where(.wa_card, .wa_panel_body, .wa_dialog_body, .wa_dialog_content)> :last-child {
     margin-bottom: 0;
 }
 
-:where(.wa_card, .wa_panel_body, .wa_dialog_body) :where(ul, ol) {
+:where(.wa_card, .wa_panel_body, .wa_dialog_body, .wa_dialog_content) :where(ul, ol) {
     padding-left: 20px;
 }

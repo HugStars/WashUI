@@ -36,13 +36,58 @@
             </AppDialog>
         </DemoBlock>
 
-        <DemoBlock title="关闭方式" description="closable、closeOnMask、closeOnEsc 可以分别关闭。" :code="closeCode">
+        <DemoBlock title="关闭方式" description="closable、closeOnMask、closeOnEsc、gesture 可以分别关闭。" :code="closeCode">
             <AppButton variant="line" @click="locked = true">仅按钮关闭</AppButton>
 
-            <AppDialog v-model:open="locked" title="仅按钮关闭" :closable="false" :close-on-mask="false" :close-on-esc="false">
-                <p>遮罩、Esc 与右上角关闭都已停用。</p>
+            <AppDialog v-model:open="locked" title="仅按钮关闭" :closable="false" :close-on-mask="false"
+                :close-on-esc="false" :gesture="false">
+                <p>遮罩、Esc、右上角关闭与下拉关闭都已停用。</p>
                 <template #footer>
                     <AppButton variant="primary" @click="locked = false">我知道了</AppButton>
+                </template>
+            </AppDialog>
+        </DemoBlock>
+
+        <DemoBlock title="无标题、无关闭按钮"
+            description="不传 title，并设置 closable=false 时，不渲染标题栏和右上角关闭按钮；移动端仍可通过下拉关闭。">
+            <AppButton variant="line" @click="plainDialog = true">无标题弹框</AppButton>
+
+            <AppDialog v-model:open="plainDialog" :closable="false" aria-label="无标题弹框">
+                <p>这个弹框没有标题栏，也没有右上角关闭按钮。</p>
+                <template #footer>
+                    <AppButton variant="primary" @click="plainDialog = false">关闭</AppButton>
+                </template>
+            </AppDialog>
+        </DemoBlock>
+
+        <DemoBlock title="操作栏位置"
+            description="默认 footer-placement=bar，操作栏固定在底部；footer-placement=content 时按钮放进内容区，需要滚动到底部才显示。移动端弹框高度固定，内容区独立滚动。">
+            <div class="doc_row">
+                <AppButton variant="line" @click="barDialog = true">底部操作栏</AppButton>
+                <AppButton variant="line" @click="contentDialog = true">内容内操作</AppButton>
+            </div>
+
+            <AppDialog v-model:open="barDialog" title="底部操作栏" footer-placement="bar">
+                <div class="doc_dialog_scroll">
+                    <p v-for="n in 16" :key="n" class="doc_text">
+                        第 {{ n }} 段内容。移动端弹框高度固定，内容区独立滚动；操作栏固定在底部，任何时候都能操作。
+                    </p>
+                </div>
+                <template #footer>
+                    <AppButton variant="line" @click="barDialog = false">取消</AppButton>
+                    <AppButton variant="primary" @click="barDialog = false">确认</AppButton>
+                </template>
+            </AppDialog>
+
+            <AppDialog v-model:open="contentDialog" title="内容内操作" footer-placement="content">
+                <div class="doc_dialog_scroll">
+                    <p v-for="n in 16" :key="n" class="doc_text">
+                        第 {{ n }} 段内容。操作栏在内容末尾，需要滚动到底部才能看到取消和确认按钮。
+                    </p>
+                </div>
+                <template #footer>
+                    <AppButton variant="line" @click="contentDialog = false">取消</AppButton>
+                    <AppButton variant="primary" @click="contentDialog = false">确认</AppButton>
                 </template>
             </AppDialog>
         </DemoBlock>
@@ -64,6 +109,9 @@ const basic = ref(false)
 const wide = ref(false)
 const form = ref(false)
 const locked = ref(false)
+const plainDialog = ref(false)
+const barDialog = ref(false)
+const contentDialog = ref(false)
 const lastEvent = ref('无')
 const draft = reactive({ name: '', endpoint: '' })
 
@@ -97,6 +145,8 @@ const propsRows = [
     { name: 'closeOnMask', type: 'boolean', default: 'true', desc: '点击遮罩关闭' },
     { name: 'closeOnEsc', type: 'boolean', default: 'true', desc: 'Esc 关闭' },
     { name: 'gesture', type: 'boolean', default: 'true', desc: '移动端下拉关闭' },
+    { name: 'footerPlacement', type: 'bar | content', default: 'bar', desc: '移动端操作栏固定在底部，或放进内容区随内容滚动' },
+    { name: 'mobileHeight', type: 'number | string', default: 'min(60vh, 720px)', desc: '移动端弹框高度，数字按 px 处理' },
 ]
 
 const eventRows = [
@@ -119,7 +169,18 @@ const baseCode = `<AppDialog v-model:open="open" title="接口详情">
 </AppDialog>`
 
 const closeCode = `<AppDialog v-model:open="open" title="仅按钮关闭"
-    :closable="false" :close-on-mask="false" :close-on-esc="false">
-    <p>遮罩、Esc 与右上角关闭都已停用。</p>
+    :closable="false" :close-on-mask="false" :close-on-esc="false" :gesture="false">
+    <p>遮罩、Esc、右上角关闭与下拉关闭都已停用。</p>
 </AppDialog>`
 </script>
+
+<style>
+.doc_dialog_scroll {
+    display: grid;
+    gap: 10px;
+}
+
+.doc_dialog_scroll .doc_text {
+    margin: 0;
+}
+</style>

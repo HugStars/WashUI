@@ -304,4 +304,21 @@ const checkRender = computed(() => {
     font-size: 12px;
     color: var(--wa_color_text_faint);
 }
+
+/* 移动端不显示滚动条，也就不需要给滚动条预留右侧内边距 */
+@media (max-width: 860px) {
+    .wa_select_panel {
+        scrollbar-width: none;
+    }
+
+    .wa_select_panel::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+    }
+
+    .wa_select_panel.has_scrollbar {
+        padding-right: 0;
+    }
+}
 </style>
