@@ -32,6 +32,12 @@ export const componentGroups = [
         ],
     },
     {
+        title: '数据',
+        items: [
+            { name: 'pagination', label: '分页', component: 'AppPagination', page: 'PaginationPage', path: '/components/pagination', summary: '受控页码与每页条数，可独立组合到任意列表。' },
+        ],
+    },
+    {
         title: '表单',
         items: [
             { name: 'input', label: '输入框', component: 'AppInput', page: 'InputPage', path: '/components/input', summary: '带标签、提示与校验的输入框。' },
