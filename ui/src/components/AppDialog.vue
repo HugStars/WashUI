@@ -1,6 +1,7 @@
 <template>
     <Teleport to="body">
-        <Transition appear enter-active-class="wa_dialog_enter_active" leave-active-class="wa_dialog_leave_active"
+        <Transition appear :duration="{ enter: 320, leave: 240 }"
+            enter-active-class="wa_dialog_enter_active" leave-active-class="wa_dialog_leave_active"
             enter-from-class="wa_dialog_enter_from" leave-to-class="wa_dialog_leave_to" @after-leave="OnAfterLeave">
             <div v-if="Visible" class="wa_dialog_mask" :class="{ wa_dialog_frosted: frosted }"
                 @click.self="OnMaskClick">
@@ -432,10 +433,17 @@ onUnmounted(() => {
     align-items: center;
     justify-content: center;
     padding: 40px;
-    background: #0000006b;
 }
 
-.wa_dialog_mask.wa_dialog_frosted {
+.wa_dialog_mask::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #0000006b;
+    pointer-events: none;
+}
+
+.wa_dialog_mask.wa_dialog_frosted::before {
     background: #00000033;
 }
 
@@ -449,6 +457,7 @@ onUnmounted(() => {
 
 .wa_dialog {
     position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     gap: 18px;
@@ -565,29 +574,29 @@ onUnmounted(() => {
     background: var(--wa_color_text_faint);
 }
 
-.wa_dialog_enter_active {
+.wa_dialog_enter_active::before {
     transition: opacity .32s var(--wa_ease_out);
 }
 
-.wa_dialog_leave_active {
+.wa_dialog_leave_active::before {
     transition: opacity .24s var(--wa_ease_out);
 }
 
 .wa_dialog_enter_active .wa_dialog {
-    transition: opacity .2s var(--wa_ease_out), transform .32s var(--wa_ease_spring);
+    /* 不要给带 backdrop-filter 的面板做 opacity 过渡，Chromium 会丢掉模糊 */
+    transition: transform .32s var(--wa_ease_spring);
 }
 
 .wa_dialog_leave_active .wa_dialog {
     transition: opacity .16s var(--wa_ease_out), transform .22s var(--wa_ease_out);
 }
 
-.wa_dialog_enter_from,
-.wa_dialog_leave_to {
+.wa_dialog_enter_from::before,
+.wa_dialog_leave_to::before {
     opacity: 0;
 }
 
 .wa_dialog_enter_from .wa_dialog {
-    opacity: 0;
     transform: translateY(14px) scale(.94);
 }
 
@@ -606,12 +615,10 @@ onUnmounted(() => {
 
 @keyframes wa_dialog_content_in {
     from {
-        opacity: 0;
         transform: scaleY(1.2);
     }
 
     to {
-        opacity: 1;
         transform: scaleY(1);
     }
 }
@@ -629,8 +636,8 @@ onUnmounted(() => {
     .wa_dialog_close,
     .wa_dialog_grabber,
     .wa_dialog_grabber::before,
-    .wa_dialog_enter_active,
-    .wa_dialog_leave_active,
+    .wa_dialog_enter_active::before,
+    .wa_dialog_leave_active::before,
     .wa_dialog_enter_active .wa_dialog,
     .wa_dialog_leave_active .wa_dialog {
         transition: none;
@@ -650,10 +657,13 @@ onUnmounted(() => {
     .wa_dialog_mask {
         align-items: flex-end;
         padding: 0;
+    }
+
+    .wa_dialog_mask::before {
         background: linear-gradient(180deg, #00000000 0%, #00000040 35%, #000000a6 100%);
     }
 
-    .wa_dialog_mask.wa_dialog_frosted {
+    .wa_dialog_mask.wa_dialog_frosted::before {
         background: linear-gradient(180deg, #00000000 0%, #00000026 35%, #00000066 100%);
     }
 
@@ -727,12 +737,10 @@ onUnmounted(() => {
 
 @keyframes wa_dialog_sheet_in {
     from {
-        opacity: 0;
         transform: translateY(100%);
     }
 
     to {
-        opacity: 1;
         transform: translateY(0);
     }
 }
