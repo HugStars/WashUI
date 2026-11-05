@@ -48,4 +48,9 @@ onUnmounted(() => {
 .wa_page_bar_header {
     width: 100%;
 }
+
+/* 标题栏已提供栏间距与底部内边距，取消透明 tabs 列表的上下内边距，避免叠加 */
+.wa_page_bar_header .wa_tabs_transparent .wa_tabs_list {
+    padding-block: 0;
+}
 </style>

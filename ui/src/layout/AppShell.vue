@@ -510,6 +510,11 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
         padding: 16px 14px 12px;
     }
 
+    .wa_header:has(.wa_header_bar > *) {
+        /* 有操作栏时收紧底部内边距，避免与 tabs 自身留白叠加 */
+        padding-bottom: 8px;
+    }
+
     .wa_nav {
         --wa_nav_item_radius: var(--wa_radius_pill);
 
