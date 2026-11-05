@@ -491,7 +491,7 @@ provide(HEADER_TARGET, HeaderTarget)
 @media (max-width: 860px) {
     .wa_shell {
         display: block;
-        padding: 0 14px calc(18px + 78px + env(safe-area-inset-bottom));
+        padding: 0 14px calc(18px + 68px + env(safe-area-inset-bottom));
     }
 
     .wa_header {
