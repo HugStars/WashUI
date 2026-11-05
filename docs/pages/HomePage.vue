@@ -124,7 +124,7 @@ const features = [
 
 .doc_feature_grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(175px, 100%), 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 14px;
 }
 
@@ -178,6 +178,10 @@ const features = [
 }
 
 @media (max-width: 860px) {
+
+    .doc_feature_grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
     .doc_hero {
         padding: 24px 20px;
