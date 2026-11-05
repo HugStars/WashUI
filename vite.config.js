@@ -8,10 +8,30 @@ function resolvePath(value) {
     return fileURLToPath(new URL(value, import.meta.url))
 }
 
+// /components 是页面路由，但 docs/components 同时是源码目录。
+// 开发服务器刷新时会优先命中目录下的 index.js，这里强制回落到 SPA 入口。
+function docsRouteFallback() {
+    return {
+        name: 'docs-route-fallback',
+        configureServer(server) {
+            server.middlewares.use((req, _res, next) => {
+                const [pathname, query] = (req.url || '').split('?')
+
+                if (pathname === '/components' || pathname === '/components/') {
+                    req.url = `/index.html${query ? `?${query}` : ''}`
+                }
+
+                next()
+            })
+        },
+    }
+}
+
 export default defineConfig({
     root: resolvePath('./docs'),
     appType: 'spa',
     plugins: [
+        docsRouteFallback(),
         demoBlockAutoCode(),
         vue(),
     ],
