@@ -1,17 +1,22 @@
 <template>
     <div class="wa_check_group" :class="[
         `wa_check_group_${direction}`,
-        { 'wa_check_group_right': direction === 'vertical' && align === 'right' },
+        {
+            'wa_check_group_right': direction === 'vertical' && align === 'right',
+            'wa_check_group_between': direction === 'vertical' && IsBetween,
+        },
     ]" role="group" :aria-label="ariaLabel">
         <slot />
 
         <AppCheckItem v-for="item in options" :key="item.value" :model-value="IsChecked(item.value)"
-            :label="item.label" :label-position="labelPosition" :disabled="disabled || item.disabled"
+            :label="item.label" :label-position="labelPosition" :size="size"
+            :between="direction === 'vertical' && IsBetween" :disabled="disabled || item.disabled"
             @change="checked => Toggle(item.value, checked)" />
     </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import AppCheckItem from './AppCheckItem.vue'
 
 const props = defineProps({
@@ -40,16 +45,23 @@ const props = defineProps({
     align: {
         type: String,
         default: 'left',
-        allows: ['left', 'right'],
+        allows: ['left', 'right', 'between', 'space-between'],
     },
     ariaLabel: {
         type: String,
         default: '复选框组',
     },
+    /** 复选框尺寸，数字按 px 处理 */
+    size: {
+        type: [Number, String],
+        default: 20,
+    },
     disabled: Boolean,
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
+
+const IsBetween = computed(() => props.align === 'between' || props.align === 'space-between')
 
 function IsChecked(value) {
     return Array.isArray(props.modelValue) && props.modelValue.includes(value)
@@ -92,6 +104,15 @@ function Toggle(value, checked) {
 
 .wa_check_group_vertical.wa_check_group_right {
     align-items: flex-end;
+}
+
+.wa_check_group_vertical.wa_check_group_between {
+    align-items: stretch;
+}
+
+.wa_check_group_vertical.wa_check_group_between .wa_check_row {
+    width: 100%;
+    justify-content: space-between;
 }
 
 .wa_check_group_vertical .wa_check_label {

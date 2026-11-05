@@ -42,7 +42,7 @@ export const defaultIcons = {
         ['path', { d: 'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1' }],
     ],
     check: [
-        ['polyline', { points: '20 6 9 17 4 12' }],
+        ['polyline', { points: '4 12 9 17 20 6' }],
     ],
     refresh: [
         ['path', { d: 'M21 12a9 9 0 1 1-2.64-6.36' }],
