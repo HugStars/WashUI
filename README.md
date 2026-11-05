@@ -1,17 +1,17 @@
 # WashUI
 
-WashUI 的 Vue 3 设计系统与文档站。仓库：<https://github.com/HugStars/WashUI>
+WashUI 是一个 Vue 3 设计系统与文档站，仓库：<https://github.com/HugStars/WashUI>。
 
-仓库由两部分组成：
+它由两部分组成：
 
-- `ui/`：`@wash/ui` 库，包含设计变量、组件、布局、主题、Toast、路由与工具
-- `docs/`：基于本库实现的文档站，根目录的 Vite 配置直接指向 `docs/`
+- `ui/`：`@wash/ui` 库，包含设计变量、组件、布局、主题、Toast、路由状态与工具
+- `docs/`：基于本库实现的文档站，根目录 Vite 配置直接指向 `docs/`
 
 ## 技术栈
 
 pnpm workspace · Vue 3 · Vite 7 · JavaScript · 纯 CSS 变量
 
-## 启动文档
+## 快速开始
 
 ```bash
 pnpm install
@@ -24,7 +24,7 @@ pnpm dev:docs
 
 同一个 5180 端口只运行一个开发服务。修改包名或依赖后如果出现 `504 (Outdated Optimize Dep)`，先停掉所有 dev server，再执行 `pnpm dev:docs:force`。
 
-## 命令
+### 命令
 
 | 命令 | 说明 |
 | --- | --- |
@@ -37,47 +37,169 @@ pnpm dev:docs
 | `pnpm build` | 等同 `pnpm build:docs` |
 | `pnpm preview` | 等同 `pnpm preview:docs` |
 
+## 设计理念
+
+1. **安静、克制**：主体使用黑白灰，绿色只用于焦点、成功和必要提示；动效服务于反馈，不抢内容。
+2. **变量优先**：颜色、圆角、间距、阴影、动效都来自 CSS 变量，组件不写死主题色。
+3. **组合优于配置**：单个选择项不生成外层容器，分组容器只负责排列和排版；需要布局时显式使用 Group。
+4. **共享核心**：复选框、单选框、面板、下拉多选共用选择列表和状态 composable，避免三套重复实现。
+5. **可中断**：状态动画优先使用 transition，快速切换时能从当前帧反向过渡，不用一次性 keyframe 制造跳变。
+6. **默认无障碍**：role、aria、键盘、焦点环和 `prefers-reduced-motion` 作为组件默认能力。
+7. **可树摇**：所有组件、布局和 composable 都有独立导出，命名导入可由打包器 tree-shake。
+
+## 动效规范
+
+### 时间与曲线
+
+| Token | 值 | 用途 |
+| --- | --- | --- |
+| `--wa_duration_fast` | `.15s` | 颜色、边框、透明度、悬停 |
+| `--wa_duration_base` | `.2s` | 按压、位移、一般状态切换 |
+| `--wa_duration_slow` | `.34s` | 滑块、标签指示器、浮层进入 |
+| `--wa_ease_out` | `cubic-bezier(.2, .9, .3, 1)` | 进入、颜色、淡出 |
+| `--wa_ease_in` | `cubic-bezier(.4, 0, 1, 1)` | 退出 |
+| `--wa_ease_in_out` | `cubic-bezier(.4, 0, .2, 1)` | 可逆位移 |
+| `--wa_ease_spring` | `cubic-bezier(.3, 1.2, .5, 1)` | 按压缩放、滑块、指示器 |
+
+### 交互反馈
+
+- 悬停位移只在鼠标设备生效：
+
+  ```css
+  @media (hover: hover) and (pointer: fine) {
+      .component:hover:not(:disabled) { transform: translateY(-1px); }
+  }
+  ```
+
+- 按压统一为轻微缩小：按钮 `.96`、Chip `.94`、标签 `.94`、图标按钮 `.86`、复选框 `.9`。
+- 焦点统一使用 `2px` accent 外轮廓，或在控件上使用 `3px` focus ring。
+- `disabled` 状态不再触发悬停位移和按压反馈。
+
+### 状态动画
+
+- 可逆状态使用 transition：复选框勾选 / 取消、单选框圆点、开关滑块、标签指示器。
+- 连续动画使用 keyframe：Spinner、Skeleton、RouteBar。
+- 一次性装饰动画使用 keyframe：Toast、Dialog 内容、移动端 sheet。
+- 状态动画必须支持中断：不要用 `forwards` 一次性动画驱动会反复切换的状态。
+- 不要在 `backdrop-filter` 元素本身或它的祖先/子元素上同时做 opacity 入场；Chromium 会丢掉模糊。
+- 浮层、弹框、Toast 的进入退出需要同时覆盖 `prefers-reduced-motion`。
+
+### 无障碍
+
+- 所有动画组件提供 `prefers-reduced-motion: reduce` 分支。
+- Spinner 在减少动态时减速而不是完全停止；Skeleton 停止 shimmer。
+- 动效不能是唯一的信息来源，选中状态同时通过形状、颜色和 `aria-checked` 表达。
+
+## 命名规范
+
+### 组件
+
+- 公共组件：`AppXxx`，例如 `AppButton`、`AppCheckGroup`、`AppChoiceList`。
+- 布局组件：`AppShell`、`PageHeader`、`PageTransition`、`AppRouteBar`。
+- 单个选择项与分组：`AppCheck` / `AppCheckGroup`、`AppRadio` / `AppRadioGroup`。
+- 面板封装：`AppCheckPanel`、`AppRadioPanel`；共享核心为 `AppChoiceList`。
+
+### CSS
+
+- 类名、CSS 变量、动画名统一 `wa_` 前缀，使用下划线拼接：`.wa_btn`、`.wa_check_group`、`--wa_duration_fast`。
+- 状态类统一 `.on`；选中、展开、激活都用 `.on`。
+- 修饰类使用 `wa_<组件>_<修饰>`，例如 `.wa_btn_primary`、`.wa_tabs_plain`。
+- 子元素使用 `wa_<组件>_<部分>`，例如 `.wa_dialog_head`、`.wa_check_mark`。
+- 不使用 `!important`；组件样式写在各自 SFC 的 `<style>` 中，构建时抽取到 `dist/style.css`。
+
+### JavaScript
+
+- 组合式函数：`useXxx`，例如 `useTheme`、`useClipboard`、`useRequest`、`useChoiceGroup`。
+- 内部工厂：`createXxx`，例如 `createChoiceGroup`、`createAppRouter`。
+- 常量、Symbol key 使用大驼峰；事件名使用 kebab-case 或 Vue 事件名。
+
+## Props 约定
+
+| 约定 | 说明 |
+| --- | --- |
+| `modelValue` | 所有受控组件的第一模型；`v-model` 默认绑定它 |
+| `options` | `Array<{ label, value, disabled?, icon? }>` |
+| `groups` | `Array<{ label, options }>`，用于分组面板 |
+| `size` | 控件类用 `sm \| md`；选择项用数字（px）或 CSS 长度 |
+| `direction` | `horizontal \| vertical`，用于选择组排列 |
+| `align` | `left \| right \| between \| space-between`，纵向选择组对齐 |
+| `labelPosition` | `before \| after` |
+| `disabled` | 禁用整个组件或整组 |
+| `ariaLabel` | 无可见标签时的无障碍名称 |
+| `emptyText` | 空列表文案 |
+| `placeholder` | 未选择时的占位文本 |
+| `hint` / `error` | 表单提示与错误；错误优先 |
+
+## 事件约定
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `update:modelValue` | 当前模型 | 所有 v-model 组件 |
+| `change` | 当前模型 | 与 `update:modelValue` 同步，便于业务监听 |
+| `update:open` / `open` / `close` | `boolean` / 无 | Popover、Dialog |
+| `select` | `item` | SelectPanel 选中项 |
+| `reject` | `{ file, reason }` | Upload 拒绝文件 |
+| `remove` | `file, index` | Upload 移除文件 |
+| `change` | `theme` | ThemeToggle 切换主题 |
+
 ## 目录
 
 ```text
 WashUI/
-├─ ui/                     @wash/ui 库
+├─ ui/                          @wash/ui 库
 │  ├─ src/
-│  │  ├─ components/       基础、加载、表单与反馈组件
-│  │  ├─ layout/           AppShell、PageHeader、AppRouteBar、PageTransition
-│  │  ├─ composables/      useClipboard、useRequest
-│  │  ├─ core/             图标、主题、Toast、路由状态、插件与代码语言
-│  │  ├─ router/           createAppRouter
-│  │  ├─ styles/           base、form、index 共享样式
-│  │  ├─ utils/            格式化函数
-│  │  └─ index.js          主入口
-│  ├─ tokens.css           CSS 变量与暗色主题
-│  ├─ tokens.js            图表配色、断点与层级
-│  ├─ vite.config.js       库构建配置
+│  │  ├─ components/            基础、加载、表单、反馈组件
+│  │  │  ├─ AppCheck.vue        单个复选框
+│  │  │  ├─ AppCheckGroup.vue   复选框分组 / 排版
+│  │  │  ├─ AppRadio.vue        单个单选框
+│  │  │  ├─ AppRadioGroup.vue   单选框分组 / 排版
+│  │  │  ├─ AppChoiceList.vue   选择列表共享核心
+│  │  │  ├─ AppCheckPanel.vue   多选面板薄封装
+│  │  │  └─ AppRadioPanel.vue   单选面板薄封装
+│  │  ├─ layout/                AppShell、PageHeader、AppRouteBar、PageTransition
+│  │  ├─ composables/           useClipboard、useRequest、useChoiceGroup、useChoiceSummary
+│  │  ├─ core/                  图标、主题、Toast、Loading、路由状态、插件
+│  │  ├─ router/                createAppRouter
+│  │  ├─ styles/                base、form、choice、loading、index
+│  │  ├─ utils/                 格式化函数
+│  │  └─ index.js               主入口
+│  ├─ tokens.css                CSS 变量与暗色主题
+│  ├─ tokens.js                 图表配色、断点与层级
 │  └─ package.json
-├─ docs/                   文档站
-│  ├─ pages/               指南、组件、布局与能力页面
-│  ├─ components/          DocPage、DemoBlock、ApiTable（样式在 SFC）
-│  ├─ pages/               文档页面（样式在 SFC）
-│  ├─ site.js              导航与页面注册数据
-│  ├─ router.js            文档路由
-│  ├─ App.vue              文档壳层
-│  ├─ main.js              文档入口
-│  └─ index.html
-├─ vite.config.js          文档站 Vite 配置（root: docs）
+├─ docs/                        文档站
+│  ├─ pages/                    指南、组件、布局与能力页面
+│  ├─ components/               DocPage、DemoBlock、ApiTable
+│  ├─ site.js                   导航与页面注册
+│  ├─ router.js                 文档路由
+│  ├─ App.vue                   文档壳层
+│  └─ main.js                   文档入口
+├─ vite.config.js               文档站 Vite 配置
 ├─ pnpm-workspace.yaml
 └─ package.json
 ```
 
-## 文档结构
+## 选择类组件模型
 
-文档页由 `docs/site.js` 驱动：
+| 组件 | v-model | 用途 |
+| --- | --- | --- |
+| `AppCheck` | `boolean` | 单个复选框；不生成外层容器 |
+| `AppCheckGroup` | `Array` | 一组复选框；负责方向、对齐、标签位置 |
+| `AppRadio` | `boolean` | 单个单选框；不生成外层容器 |
+| `AppRadioGroup` | 标量 | 一组单选框；负责方向和排版 |
+| `AppChoiceList` | `Array` / 标量 | 复选框 / 单选框共享的列表核心 |
+| `AppCheckPanel` | `Array` | `AppChoiceList` 的多选薄封装 |
+| `AppRadioPanel` | 标量 | `AppChoiceList` 的单选薄封装 |
 
-- 指南、组件、布局、能力分别对应 `sections` 与 `nav`
-- 组件页与布局页集中在 `componentGroups`、`layoutPages`
-- 新增页面时，在 `docs/pages/` 创建 `.vue` 文件，并在 `site.js` 注册；`router.js` 会自动生成路由
+单个 `AppCheck` / `AppRadio` 放进任意父容器即可；需要等宽、纵向、左右对齐时使用对应的 Group。Group 只负责布局，不改变选项本身的视觉。
 
-组件与布局在目录、导航和文档中都分开：`ui/src/components/` 是 UI 组件，`ui/src/layout/` 是页面结构。
+## 从旧版迁移
+
+- 旧 `AppCheck`（数组 + `options` + 布局）改为 `AppCheckGroup`。
+- 旧 `AppCheckItem`（单个复选框）改为 `AppCheck`；在 Group 中使用时必须提供 `value`。
+- 旧 `AppCheck` 的 `v-model` 布尔值现在对应单个 `AppCheck`，数组对应 `AppCheckGroup`。
+- 多选面板继续使用 `AppCheckPanel`；新增 `AppRadioPanel` 和共享核心 `AppChoiceList`。
+- `useCheckSummary` 更名为 `useChoiceSummary`；选择分组状态使用 `useChoiceGroup`。
+- 旧的 `AppCheckItem` 导出已移除，请直接使用 `AppCheck`。
 
 ## 主题与 tokens
 
@@ -102,22 +224,61 @@ app.use(createUi({
 
 ## 按需引入
 
-组件与布局提供独立子路径入口，构建后保留独立 JS 模块：
-
 ```js
 import AppButton from '@wash/ui/components/AppButton'
-import AppShell from '@wash/ui/layout/AppShell'
+import { AppCheck, AppCheckGroup } from '@wash/ui'
 import '@wash/ui/style.css'
 ```
 
-也可以从主入口命名导入，由打包器 tree-shake。`createUi()` 会全量注册所有组件；不使用它时手动注册即可。样式统一抽取为 `dist/style.css`。
+`createUi()` 会全量注册所有组件；不使用它时手动注册即可。样式统一抽取为 `dist/style.css`。
 
-## 命名
+## 组件状态
 
-- CSS 类名、CSS 变量与动画名统一 `wa_` 前缀，使用下划线拼接
-- 状态类统一使用 `.on`
-- 组件样式只引用变量和修饰类，不使用 `!important`
-- 组件与布局样式写在各自 SFC 的 `<style>` 中，构建时统一抽取为 `dist/style.css`
+### 已完成
+
+| 分类 | 组件 |
+| --- | --- |
+| 基础 | AppButton、AppCard、AppCode、AppChip、AppTabs、AppStat、AppNumber、AppEmpty、AppThemeToggle |
+| 加载 | AppSpinner、AppSkeleton |
+| 表单 | AppInput、AppSwitch、AppCheck、AppCheckGroup、AppRadio、AppRadioGroup、AppSelect、AppSelectPanel、AppChoiceList、AppCheckPanel、AppRadioPanel、AppUpload、AppEditor |
+| 反馈 | AppPanel、AppPopover、AppDialog、AppCheckMenu、Toast、Loading |
+| 布局 | AppShell、AppRouteBar、PageTransition、PageHeader |
+| 能力 | useTheme、useClipboard、useRequest、useChoiceGroup、useChoiceSummary |
+| 基础能力 | 图标、tokens、代码高亮、主题切换 |
+
+### 进行中
+
+- README 与设计规范重构
+- 选择类组件 API 收敛与文档迁移
+- Check / Radio / ChoiceList 文档与示例补齐
+- 动效中断、反向过渡、reduced-motion 持续校准
+
+### 计划中
+
+| 分类 | 计划 |
+| --- | --- |
+| 表单 | AppForm / AppFormItem、Slider、Rate、ColorPicker、DatePicker、TimePicker、Cascader、Transfer |
+| 数据展示 | AppTable、AppTree、AppTreeSelect、AppVirtualList、AppVirtualTable |
+| 反馈与导航 | AppDrawer、AppNotification、AppTour、AppTooltip、AppMenu、AppDropdown、Command |
+| 工程与质量 | 单元测试、视觉回归、SSR / Nuxt 适配、i18n、完整无障碍审计、发布流水线 |
+
+完整路线图见文档站 **指南 → 路线图**。
+
+## TODO
+
+- [x] 复选框拆分为 `AppCheck` + `AppCheckGroup`
+- [x] 新增 `AppRadio` + `AppRadioGroup`
+- [x] 抽取 `AppChoiceList`、`useChoiceGroup`
+- [x] `AppCheck` 支持 indeterminate
+- [x] `AppRadio` 复用复选框的尺寸、标签、排版和动效节奏
+- [x] 统一组件按压、悬停、reduced-motion 规范
+- [x] 重写 README 设计、动效、命名、事件、Props 规范
+- [x] 新增 Roadmap、Radio、ChoiceList 文档页
+- [ ] 迁移旧 `AppCheck` 分组 API 的存量示例
+- [ ] 补齐 ChoiceList 更多自定义触发器示例
+- [ ] 为 Radio / RadioGroup 增加浏览器回归用例
+- [ ] 形成正式的版本迁移指南
+- [ ] 按路线图实现 Form、Table、Tree 等计划组件
 
 ## 构建与发布
 
@@ -129,6 +290,9 @@ pnpm publish --registry=https://你的私有源地址
 
 `ui/package.json` 的 `files` 只包含 `dist`、`tokens.css`、`tokens.js` 与 `README.md`，文档不会发布。发布前需要在私有源拥有 `@wash` 作用域。
 
-## 说明
+## 提交约定
 
-当前仓库只完成了代码改造，未执行依赖安装与构建。首次运行前先执行 `pnpm install`；`node_modules` 与 `dist` 已被忽略。
+- `feat(ui): ...` 新组件或新能力
+- `fix(ui): ...` 修复行为、动画或样式
+- `docs: ...` 文档站或 README
+- 一个提交只做一类事情；涉及公共 API 时同步更新 README、文档页和路线图。

@@ -14,9 +14,13 @@
     "packageManager": "pnpm@12.14.0",
     "scripts": {
         "dev": "vite",
+        "dev:docs": "vite",
+        "dev:docs:force": "vite --force",
         "build": "vite build",
+        "build:docs": "vite build",
         "build:ui": "pnpm --filter @wash/ui build",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "preview:docs": "vite preview"
     },
     "dependencies": {
         "@wash/ui": "workspace:*",
