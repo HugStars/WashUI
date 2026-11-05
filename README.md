@@ -101,7 +101,7 @@ pnpm dev:docs
 ### 组件
 
 - 公共组件：`AppXxx`，例如 `AppButton`、`AppCheckGroup`、`AppChoiceList`。
-- 布局组件：`AppShell`、`PageHeader`、`PageTransition`、`AppRouteBar`。
+- 布局组件：`AppShell`、`PageHeader`、`PageBar`、`PageTransition`、`AppRouteBar`。
 - 单个选择项与分组：`AppCheck` / `AppCheckGroup`、`AppRadio` / `AppRadioGroup`。
 - 面板封装：`AppCheckPanel`、`AppRadioPanel`；共享核心为 `AppChoiceList`。
 
@@ -192,7 +192,7 @@ WashUI/
 │  │  │  ├─ AppChoiceList.vue   选择列表共享核心
 │  │  │  ├─ AppCheckPanel.vue   多选面板薄封装
 │  │  │  └─ AppRadioPanel.vue   单选面板薄封装
-│  │  ├─ layout/                AppShell、PageHeader、AppRouteBar、PageTransition
+│  │  ├─ layout/                AppShell、PageHeader、PageBar、AppRouteBar、PageTransition
 │  │  ├─ composables/           useClipboard、useRequest、useChoiceGroup、useChoiceSummary
 │  │  ├─ core/                  图标、主题、Toast、Loading、路由状态、插件
 │  │  ├─ router/                createAppRouter
@@ -278,7 +278,7 @@ import '@wash/ui/style.css'
 | 加载 | AppSpinner、AppSkeleton |
 | 表单 | AppInput、AppTextarea、AppSwitch、AppCheck、AppCheckGroup、AppRadio、AppRadioGroup、AppSelect、AppSelectPanel、AppChoiceList、AppCheckPanel、AppRadioPanel、AppUpload |
 | 反馈 | AppPanel、AppPopover、AppDialog、AppCheckMenu、Toast、Loading |
-| 布局 | AppShell、AppRouteBar、PageTransition、PageHeader |
+| 布局 | AppShell、AppRouteBar、PageTransition、PageHeader、PageBar |
 | 能力 | useTheme、useClipboard、useRequest、useChoiceGroup、useChoiceSummary、useValidation |
 | 基础能力 | 图标、tokens、代码高亮、主题切换 |
 

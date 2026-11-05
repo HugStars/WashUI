@@ -2,6 +2,7 @@
     <div class="wa_shell">
         <header class="wa_header">
             <div ref="HeaderTarget" class="wa_header_slot"></div>
+            <div ref="HeaderBarTarget" class="wa_header_bar"></div>
         </header>
 
         <nav v-if="nav.length" ref="NavEl" class="wa_nav"
@@ -53,7 +54,7 @@ import { computed, nextTick, onMounted, onUnmounted, provide, ref, watch } from 
 import AppIcon from '../components/AppIcon.vue'
 import AppPopover from '../components/AppPopover.vue'
 import AppSelectPanel from '../components/AppSelectPanel.vue'
-import { HEADER_TARGET } from '../core/keys.js'
+import { HEADER_BAR_TARGET, HEADER_TARGET } from '../core/keys.js'
 
 const MAX_NAV = 4
 const MORE_KEY = Symbol('wash-more')
@@ -81,6 +82,7 @@ const props = defineProps({
 const emit = defineEmits(['navigate'])
 
 const HeaderTarget = ref(null)
+const HeaderBarTarget = ref(null)
 const MoreOpen = ref(false)
 const Media = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(max-width: 860px)') : null
 const TouchMedia = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(hover: none)') : null
@@ -248,6 +250,7 @@ watch(NavEl, (el, old) => {
 })
 
 provide(HEADER_TARGET, HeaderTarget)
+provide(HEADER_BAR_TARGET, HeaderBarTarget)
 </script>
 
 <style>
@@ -285,6 +288,14 @@ provide(HEADER_TARGET, HeaderTarget)
 
 .wa_header_slot {
     min-width: 0;
+}
+
+.wa_header_bar {
+    margin-top: 8px;
+}
+
+.wa_header_bar:empty {
+    display: none;
 }
 
 .wa_nav {

@@ -67,6 +67,7 @@ export const layoutPages = [
     { name: 'route-bar', label: '路由进度条', component: 'AppRouteBar', page: 'RouteBarPage', path: '/layout/route-bar', summary: '固定在顶部的路由加载进度条。' },
     { name: 'shell', label: '壳层', component: 'AppShell', page: 'ShellPage', path: '/layout/shell', summary: '页面骨架、导航与页脚。' },
     { name: 'page-header', label: '页面标题', component: 'PageHeader', page: 'PageHeaderPage', path: '/layout/page-header', summary: '投递到壳层顶部栏的标题。' },
+    { name: 'page-bar', label: '页面操作栏', component: 'PageBar', page: 'PageBarPage', path: '/layout/page-bar', summary: '桌面端留在页面中，移动端投递到顶部标题栏。' },
     { name: 'page-transition', label: '页面过渡', component: 'PageTransition', page: 'PageTransitionPage', path: '/layout/page-transition', summary: '路由切换的 out-in 过渡。' },
 ]
 

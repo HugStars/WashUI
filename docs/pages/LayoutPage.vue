@@ -1,5 +1,5 @@
 <template>
-    <DocPage category="布局" title="布局概览" description="布局负责页面骨架，与业务组件分开：AppShell、PageHeader、AppRouteBar 与 PageTransition。">
+    <DocPage category="布局" title="布局概览" description="布局负责页面骨架，与业务组件分开：AppShell、PageHeader、PageBar、AppRouteBar 与 PageTransition。">
         <div class="doc_component_grid">
             <RouterLink v-for="item in entries" :key="item.name" :to="item.path" class="doc_component_link">
                 <AppCard :title="item.label" compact>
@@ -28,6 +28,14 @@
             <li>PageHeader 必须放在 AppShell 内，会自动投递到顶部栏。</li>
             <li>不要把它放进被 PageTransition 包裹的页面组件，out-in 会先卸载旧页面，标题会短暂消失。</li>
             <li>标题跟随路由时放在 meta.title；依赖页面内部状态的操作需要把状态提升到布局层。</li>
+        </ul>
+
+        <h2 class="doc_h2">页面操作栏</h2>
+        <AppCode :code="barCode" lang="html" />
+        <ul class="doc_list doc_gap">
+            <li>桌面端留在页面中书写的位置，移动端自动投递到顶部标题栏下方。</li>
+            <li>与标题栏共用磨砂背景，PageBar 不再单独添加背景或模糊。</li>
+            <li>内容通过默认插槽提供，可以是透明 AppTabs、按钮组或筛选器。</li>
         </ul>
 
         <h2 class="doc_h2">页面过渡</h2>
@@ -82,6 +90,10 @@ const headerCode = `<PageHeader :title="route.meta.title">
         <AppButton size="sm" variant="line">操作</AppButton>
     </template>
 </PageHeader>`
+
+const barCode = `<PageBar>
+    <AppTabs v-model="tab" transparent :items="tabs" />
+</PageBar>`
 
 const transitionCode = `<RouterView v-slot="{ Component }">
     <PageTransition>
