@@ -1,6 +1,6 @@
 <template>
     <DocPage category="导航" name="AppTabs" title="标签页"
-        description="参考 AppShell 导航实现的标签切换组件，选中背景会滑动并带弹性反馈。支持两种外观、透明背景、尺寸与可选面板。">
+        description="参考 AppShell 导航实现的标签切换组件，选中背景会滑动并带弹性反馈。支持两种外观、透明背景、尺寸与可选面板；fill 或 overflow=more 时标签等宽铺满。">
         <DemoBlock title="基础" description="v-model 绑定选中项的 name；写入默认插槽时渲染面板，插槽可拿到当前项。">
             <AppTabs v-model="tab" :items="tabs">
                 <template #default="{ active, item }">
@@ -33,11 +33,11 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="等宽铺满" description="fill 让每个标签等宽并填满可用宽度。">
+        <DemoBlock title="等宽铺满" description="fill 让每个标签等宽并填满可用宽度；overflow=more 时也会默认开启。">
             <AppTabs v-model="fillTab" fill :items="tabs" />
         </DemoBlock>
 
-        <DemoBlock title="元素过多" description="overflow=scroll（默认）横向滚动；overflow=more 会把超出 max 的标签收进“更多”按钮。">
+        <DemoBlock title="元素过多" description="overflow=scroll（默认）横向滚动；overflow=more 会把超出 max 的标签收进“更多”按钮，可见标签默认等宽铺满。">
             <div class="doc_tabs_stack">
                 <AppTabs v-model="scrollTab" :items="manyTabs" />
                 <AppTabs v-model="moreTab" overflow="more" :max="4" :items="manyTabs" />
@@ -97,8 +97,8 @@ const propsRows = [
     { name: 'variant', type: 'nav | plain', default: 'nav', desc: 'nav 带外框，plain 无边框、无外框、无阴影' },
     { name: 'transparent', type: 'boolean', default: 'false', desc: '去掉磨砂、背景、边框和阴影' },
     { name: 'size', type: 'sm | md', default: 'sm', desc: '标签尺寸' },
-    { name: 'fill', type: 'boolean', default: 'false', desc: '标签等宽铺满' },
-    { name: 'overflow', type: 'scroll | more', default: 'scroll', desc: '元素过多时横向滚动，或收进“更多”按钮' },
+    { name: 'fill', type: 'boolean', default: 'false', desc: '标签等宽铺满；overflow=more 时默认开启' },
+    { name: 'overflow', type: 'scroll | more', default: 'scroll', desc: '元素过多时横向滚动，或收进“更多”按钮；more 模式下可见标签等宽铺满' },
     { name: 'max', type: 'number', default: '4', desc: 'overflow=more 时最多显示的标签数（含“更多”）' },
     { name: 'ariaLabel', type: 'string', default: '标签页', desc: '标签栏无障碍名称' },
 ]

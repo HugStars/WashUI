@@ -2,7 +2,8 @@
     <Teleport to="body">
         <Transition appear enter-active-class="wa_dialog_enter_active" leave-active-class="wa_dialog_leave_active"
             enter-from-class="wa_dialog_enter_from" leave-to-class="wa_dialog_leave_to" @after-leave="OnAfterLeave">
-            <div v-if="Visible" class="wa_dialog_mask" @click.self="OnMaskClick">
+            <div v-if="Visible" class="wa_dialog_mask" :class="{ wa_dialog_frosted: frosted }"
+                @click.self="OnMaskClick">
                 <div ref="PanelEl" class="wa_dialog" :class="{ wa_dialog_dragging: Dragging }" role="dialog"
                     aria-modal="true" :aria-labelledby="HasHead ? TitleId : undefined"
                     :aria-label="HasHead ? undefined : (ariaLabel || '对话框')"
@@ -144,6 +145,8 @@ const props = defineProps({
         default: 'bar',
         allows: ['bar', 'content'],
     },
+    /** 开启后弹框面板使用与 AppPopover 一致的磨砂玻璃背景 */
+    frosted: Boolean,
     /** 移动端弹框高度，数字按 px 处理 */
     mobileHeight: {
         type: [Number, String],
@@ -434,6 +437,18 @@ onUnmounted(() => {
     backdrop-filter: blur(8px);
 }
 
+.wa_dialog_mask.wa_dialog_frosted {
+    background: #00000033;
+    -webkit-backdrop-filter: blur(var(--wa_blur));
+    backdrop-filter: blur(var(--wa_blur));
+}
+
+.wa_dialog_frosted .wa_dialog {
+    border-color: var(--wa_color_border);
+    background: var(--wa_color_glass);
+    background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
+}
+
 .wa_dialog {
     position: relative;
     display: flex;
@@ -640,6 +655,12 @@ onUnmounted(() => {
         background: linear-gradient(180deg, #00000000 0%, #00000040 35%, #000000a6 100%);
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
+    }
+
+    .wa_dialog_mask.wa_dialog_frosted {
+        background: linear-gradient(180deg, #00000000 0%, #00000026 35%, #00000066 100%);
+        -webkit-backdrop-filter: blur(var(--wa_blur));
+        backdrop-filter: blur(var(--wa_blur));
     }
 
     .wa_dialog {

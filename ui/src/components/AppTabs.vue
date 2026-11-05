@@ -4,7 +4,7 @@
         {
             wa_tabs_md: size === 'md',
             wa_tabs_transparent: transparent,
-            wa_tabs_fill: fill,
+            wa_tabs_fill: ShouldFill,
         },
     ]">
         <div ref="ListEl" class="wa_tabs_list" :class="{ ready: SliderReady }" role="tablist" :aria-label="ariaLabel"
@@ -109,6 +109,7 @@ const HasPanel = computed(() => !!slots.default)
 const ActiveIndex = computed(() => props.items.findIndex(item => item.name === props.modelValue))
 const ActiveItem = computed(() => props.items[ActiveIndex.value] || null)
 const IconSize = computed(() => props.size === 'md' ? 17 : 16)
+const ShouldFill = computed(() => props.fill || props.overflow === 'more')
 const TabId = index => `${uid}-tab-${index}`
 
 const Limit = computed(() => Math.max(2, props.max))

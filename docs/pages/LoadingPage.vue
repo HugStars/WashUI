@@ -36,9 +36,9 @@
 
         <h2 class="doc_h2">遮罩外观</h2>
         <p class="doc_text">通过 gradient 开启从顶部透明到底部 #00000059 的渐变背景，通过 blur 设置磨砂模糊半径（px），0 表示关闭。</p>
-        <DemoBlock title="渐变与磨砂" description="遮罩外观随当前显示的 loading 配置变化。" :code="appearanceCode" lang="js">
+        <DemoBlock title="磨砂遮罩" description="blur 使用 2px 的磨砂模糊；gradient 仍可用于需要渐变背景的场景。" :code="appearanceCode" lang="js">
             <div class="doc_row">
-                <AppButton @click="ShowGradient">渐变 + 磨砂</AppButton>
+                <AppButton @click="ShowFrosted">磨砂 2px</AppButton>
                 <AppButton variant="line" @click="ShowSolid">纯色遮罩</AppButton>
                 <AppButton variant="line" @click="loading.hide('loading-appearance')">关闭加载</AppButton>
             </div>
@@ -100,12 +100,10 @@ loading.hide('refresh')
 loading.hide('sync')`
 
 const appearanceCode = `loading.show('save', '保存中...', {
-    gradient: true,
-    blur: 10,
+    blur: 2,
 })
 
 loading.update('save', {
-    gradient: false,
     blur: 0,
 })`
 
@@ -178,8 +176,8 @@ function HideIcons() {
     RefreshInfo()
 }
 
-function ShowGradient() {
-    loading.show('loading-appearance', '渐变磨砂...', { gradient: true, blur: 10 })
+function ShowFrosted() {
+    loading.show('loading-appearance', '磨砂 2px...', { blur: 2 })
     RefreshInfo()
 }
 

@@ -48,6 +48,17 @@
             </AppDialog>
         </DemoBlock>
 
+        <DemoBlock title="磨砂背景" description="frosted 让弹框面板使用与 AppPopover 一致的磨砂玻璃背景，遮罩同时变轻。">
+            <AppButton variant="line" @click="frostedDialog = true">磨砂弹框</AppButton>
+
+            <AppDialog v-model:open="frostedDialog" title="磨砂弹框" frosted>
+                <p class="wa_hint">frosted 复用 AppPopover 的玻璃背景与 blur 半径，背后的页面会被模糊。</p>
+                <template #footer>
+                    <AppButton variant="primary" @click="frostedDialog = false">关闭</AppButton>
+                </template>
+            </AppDialog>
+        </DemoBlock>
+
         <DemoBlock title="无标题、无关闭按钮"
             description="不传 title，并设置 closable=false 时，不渲染标题栏和右上角关闭按钮；移动端仍可通过下拉关闭。">
             <AppButton variant="line" @click="plainDialog = true">无标题弹框</AppButton>
@@ -109,6 +120,7 @@ const basic = ref(false)
 const wide = ref(false)
 const form = ref(false)
 const locked = ref(false)
+const frostedDialog = ref(false)
 const plainDialog = ref(false)
 const barDialog = ref(false)
 const contentDialog = ref(false)
@@ -145,6 +157,7 @@ const propsRows = [
     { name: 'closeOnMask', type: 'boolean', default: 'true', desc: '点击遮罩关闭' },
     { name: 'closeOnEsc', type: 'boolean', default: 'true', desc: 'Esc 关闭' },
     { name: 'gesture', type: 'boolean', default: 'true', desc: '移动端下拉关闭' },
+    { name: 'frosted', type: 'boolean', default: 'false', desc: '面板使用与 AppPopover 一致的磨砂玻璃背景' },
     { name: 'footerPlacement', type: 'bar | content', default: 'bar', desc: '移动端操作栏固定在底部，或放进内容区随内容滚动' },
     { name: 'mobileHeight', type: 'number | string', default: 'min(60vh, 720px)', desc: '移动端弹框高度，数字按 px 处理' },
 ]
