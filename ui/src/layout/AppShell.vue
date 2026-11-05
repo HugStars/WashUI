@@ -515,7 +515,7 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
         --wa_header_pad_x: 14px;
 
         margin-inline: -14px;
-        padding: 16px var(--wa_header_pad_x) 12px;
+        padding: calc(16px + env(safe-area-inset-top)) var(--wa_header_pad_x) 12px;
     }
 
     .wa_header:has(.wa_header_bar > *) {
