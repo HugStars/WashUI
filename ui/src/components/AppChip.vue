@@ -1,5 +1,5 @@
 <template>
-    <button type="button" class="wa_chip" :class="{ on: active }">
+    <button type="button" class="wa_chip" :class="{ on: active, wa_frosted: frosted }">
         <slot>{{ text }}</slot>
     </button>
 </template>
@@ -11,6 +11,8 @@ defineProps({
         type: String,
         default: '',
     },
+    /** 白色磨砂半透明表面，与 AppPopover 面板一致 */
+    frosted: Boolean,
 })
 </script>
 

@@ -8,8 +8,8 @@
             :padding="PopoverPadding" :disabled="disabled">
             <template #trigger="{ open, toggle }">
                 <button :id="SelectId" v-bind="$attrs" type="button" class="wa_select_trigger"
-                    :class="{ on: error, off: disabled, wa_select_sm: size === 'sm' }" :disabled="disabled"
-                    :aria-invalid="error ? 'true' : undefined" :aria-describedby="DescribedBy"
+                    :class="{ on: error, off: disabled, wa_select_sm: size === 'sm', wa_frosted: frosted }"
+                    :disabled="disabled" :aria-invalid="error ? 'true' : undefined" :aria-describedby="DescribedBy"
                     :aria-haspopup="multiple ? 'dialog' : 'listbox'" :aria-expanded="open"
                     @keydown.down.prevent="toggle" @keydown.up.prevent="toggle">
                     <span class="wa_select_value"
@@ -97,6 +97,8 @@ const props = defineProps({
         default: '暂无选项',
     },
     multiple: Boolean,
+    /** 白色磨砂半透明表面，与 AppPopover 面板一致 */
+    frosted: Boolean,
     disabled: Boolean,
 })
 

@@ -41,6 +41,15 @@
             </div>
         </DemoBlock>
 
+        <DemoBlock title="磨砂" description="frosted 让触发器使用与 AppPopover 一致的玻璃表面与模糊。">
+            <div class="doc_frosted_stage">
+                <div class="doc_grid">
+                    <AppSelect v-model="frostedSingle" label="磨砂下拉" :options="envOptions" frosted />
+                    <AppSelect v-model="frostedMultiple" multiple label="磨砂多选" :options="envOptions" frosted />
+                </div>
+            </div>
+        </DemoBlock>
+
         <DemoBlock title="空状态" description="options 为空时面板显示 emptyText。" :code="emptyCode">
             <AppSelect model-value="" label="空列表" :options="[]" empty-text="暂无可选环境" />
         </DemoBlock>
@@ -61,6 +70,8 @@ const env = ref('prod')
 const empty = ref('')
 const multi = ref(['email'])
 const multiGrouped = ref(['button', 'input'])
+const frostedSingle = ref('prod')
+const frostedMultiple = ref(['dev'])
 const sm = ref('dev')
 const mdSize = ref('dev')
 const invalid = ref('')
@@ -113,6 +124,7 @@ const propsRows = [
     { name: 'checkIcon', type: 'boolean | string', default: 'true', desc: '选中标记：true 显示 ✓，false 关闭，字符串自定义字符或图标名；多选时忽略' },
     { name: 'iconComponent', type: 'Component', default: 'AppIcon', desc: '选项图标与 checkIcon 图标名所用的组件，默认内置 AppIcon，可覆盖' },
     { name: 'emptyText', type: 'string', default: '暂无选项', desc: '没有可选项时面板的提示文案' },
+    { name: 'frosted', type: 'boolean', default: 'false', desc: '触发器使用白色磨砂半透明表面，与 AppPopover 一致' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用触发器' },
 ]
 

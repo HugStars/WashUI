@@ -76,6 +76,16 @@ function go(item) {
     font-size: 12px;
     color: var(--wa_color_text_faint);
 }
+
+.doc_frosted_stage {
+    padding: 18px;
+    border-radius: var(--wa_radius_card);
+    background:
+        radial-gradient(circle at 18% 20%, #7c3aed66, transparent 42%),
+        radial-gradient(circle at 82% 28%, #06b6d466, transparent 42%),
+        radial-gradient(circle at 50% 88%, #f59e0b66, transparent 46%),
+        var(--wa_color_soft);
+}
 .doc_stack {
     display: grid;
     grid-template-columns: minmax(0, 1fr);

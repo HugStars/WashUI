@@ -1,0 +1,42 @@
+/* 白色磨砂半透明表面：与 AppPopover 面板共用玻璃变量 */
+.wa_btn.wa_frosted,
+.wa_chip.wa_frosted:not(.on),
+.wa_input.wa_frosted,
+.wa_select_trigger.wa_frosted,
+.wa_card.wa_frosted {
+    background: var(--wa_color_glass);
+    background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
+    -webkit-backdrop-filter: blur(var(--wa_blur));
+    backdrop-filter: blur(var(--wa_blur));
+}
+
+.wa_btn.wa_frosted {
+    color: var(--wa_color_text);
+}
+
+.wa_card.wa_frosted {
+    border: 1px solid var(--wa_color_border);
+}
+
+.wa_input.wa_frosted:not(.on),
+.wa_select_trigger.wa_frosted:not(.on) {
+    border-color: var(--wa_color_border);
+}
+
+.wa_input.wa_frosted:not(.on):focus-within,
+.wa_select_trigger.wa_frosted:not(.on):focus-visible {
+    border-color: var(--wa_color_text);
+}
+
+/* hover 只微调玻璃色，保持磨砂存在 */
+.wa_btn.wa_frosted:hover:not(:disabled),
+.wa_chip.wa_frosted:not(.on):hover,
+.wa_input.wa_frosted:hover,
+.wa_select_trigger.wa_frosted:hover {
+    background: var(--wa_color_glass);
+    background: linear-gradient(to bottom, color-mix(in srgb, var(--wa_color_glass) 92%, var(--wa_color_text) 8%), color-mix(in srgb, var(--wa_color_glass) 64%, var(--wa_color_text) 8%));
+}
+
+.wa_select_trigger.wa_frosted[aria-expanded='true'] {
+    background: color-mix(in srgb, var(--wa_color_glass) 88%, var(--wa_color_text) 12%);
+}

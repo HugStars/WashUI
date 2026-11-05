@@ -47,6 +47,12 @@ pnpm dev:docs
 6. **默认无障碍**：role、aria、键盘、焦点环和 `prefers-reduced-motion` 作为组件默认能力。
 7. **可树摇**：所有组件、布局和 composable 都有独立导出，命名导入可由打包器 tree-shake。
 
+### 磨砂表面
+
+- `frosted` 统一使用 `--wa_color_glass` + `--wa_blur`，与 `AppPopover` 面板一致。
+- 已支持 Button、Select、Input、Chip、Card；Dialog 的 `frosted` 作用于面板，遮罩只负责变暗，不参与模糊。
+- 磨砂元素本身及其祖先不要同时做 opacity 入场，避免 Chromium 丢掉 `backdrop-filter`。
+
 ## 动效规范
 
 ### 时间与曲线
@@ -129,6 +135,7 @@ pnpm dev:docs
 | `emptyText` | 空列表文案 |
 | `placeholder` | 未选择时的占位文本 |
 | `hint` / `error` | 表单提示与错误；错误优先 |
+| `frosted` | 白色磨砂半透明表面，与 AppPopover 的玻璃面板一致；Button、Input、Select、Chip、Card 支持 |
 
 ## 事件约定
 

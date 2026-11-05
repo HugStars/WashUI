@@ -26,6 +26,8 @@ const props = defineProps({
         allows: ['button', 'submit', 'reset'],
     },
     loading: Boolean,
+    /** 白色磨砂半透明表面，与 AppPopover 面板一致 */
+    frosted: Boolean,
     disabled: Boolean,
 })
 
@@ -34,6 +36,7 @@ const Classes = computed(() => {
     if (props.variant !== 'default') list.push(`wa_btn_${props.variant}`)
     if (props.size === 'sm') list.push('wa_btn_sm')
     if (props.loading) list.push('wa_btn_loading')
+    if (props.frosted) list.push('wa_frosted')
     return list
 })
 </script>

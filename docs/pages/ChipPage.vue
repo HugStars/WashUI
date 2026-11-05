@@ -20,6 +20,15 @@
             </div>
         </DemoBlock>
 
+        <DemoBlock title="磨砂" description="frosted 使用与 AppPopover 一致的玻璃表面。">
+            <div class="doc_frosted_stage">
+                <div class="doc_row">
+                    <AppChip frosted>磨砂标记</AppChip>
+                    <AppChip frosted>筛选</AppChip>
+                </div>
+            </div>
+        </DemoBlock>
+
         <template #api>
             <ApiTable :rows="propsRows" />
             <ApiTable title="事件" kind="events" :rows="eventRows" />
@@ -30,6 +39,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { AppChip } from '@wash/ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const filter = ref('all')
@@ -43,6 +53,7 @@ const filters = [
 const propsRows = [
     { name: 'active', type: 'boolean', default: 'false', desc: '选中状态' },
     { name: 'text', type: 'string', default: "''", desc: '文本内容；默认插槽优先' },
+    { name: 'frosted', type: 'boolean', default: 'false', desc: '白色磨砂半透明表面，与 AppPopover 一致' },
 ]
 
 const eventRows = [

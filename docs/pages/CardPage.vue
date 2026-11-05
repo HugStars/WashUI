@@ -28,6 +28,14 @@
             </AppCard>
         </DemoBlock>
 
+        <DemoBlock title="磨砂" description="frosted 使用与 AppPopover 一致的玻璃表面与模糊。">
+            <div class="doc_frosted_stage">
+                <AppCard frosted title="磨砂卡片">
+                    <p>背后的页面会被模糊，卡片呈现半透明玻璃效果。</p>
+                </AppCard>
+            </div>
+        </DemoBlock>
+
         <template #api>
             <ApiTable :rows="propsRows" />
             <ApiTable title="插槽" kind="slots" :rows="slotRows" />
@@ -41,6 +49,7 @@ import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 const propsRows = [
     { name: 'title', type: 'string', default: "''", desc: '标题文案；也可以使用 title 插槽' },
     { name: 'compact', type: 'boolean', default: 'false', desc: '使用紧凑内边距' },
+    { name: 'frosted', type: 'boolean', default: 'false', desc: '白色磨砂半透明表面，与 AppPopover 一致' },
 ]
 
 const slotRows = [

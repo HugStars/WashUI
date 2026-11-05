@@ -1,5 +1,5 @@
 <template>
-    <section class="wa_card" :class="{ wa_card_compact: compact }">
+    <section class="wa_card" :class="{ wa_card_compact: compact, wa_frosted: frosted }">
         <header v-if="title || $slots.title || $slots.extra" class="wa_card_head">
             <h2 v-if="title || $slots.title" class="wa_card_title">
                 <slot name="title">{{ title }}</slot>
@@ -22,6 +22,8 @@ defineProps({
         default: '',
     },
     compact: Boolean,
+    /** 白色磨砂半透明表面，与 AppPopover 面板一致 */
+    frosted: Boolean,
 })
 </script>
 

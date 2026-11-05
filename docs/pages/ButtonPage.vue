@@ -22,6 +22,18 @@
             </div>
         </DemoBlock>
 
+        <DemoBlock title="磨砂" description="frosted 使用与 AppPopover 相同的白色磨砂半透明表面。">
+            <div class="doc_frosted_stage">
+                <div class="doc_row">
+                    <AppButton frosted>磨砂按钮</AppButton>
+                    <AppButton frosted variant="line">磨砂描边</AppButton>
+                    <AppButton frosted variant="icon" aria-label="刷新">
+                        <AppIcon name="refresh" :size="17" />
+                    </AppButton>
+                </div>
+            </div>
+        </DemoBlock>
+
         <DemoBlock title="加载与禁用" description="loading 时自动禁用并显示加载圈。">
             <div class="doc_row">
                 <AppButton variant="primary" :loading="saving" @click="save">
@@ -62,6 +74,7 @@ const propsRows = [
     { name: 'size', type: 'md | sm', default: 'sm', desc: '尺寸' },
     { name: 'type', type: 'button | submit | reset', default: 'button', desc: '原生 button type' },
     { name: 'loading', type: 'boolean', default: 'false', desc: '加载中，自动禁用' },
+    { name: 'frosted', type: 'boolean', default: 'false', desc: '白色磨砂半透明表面，与 AppPopover 一致' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用' },
 ]
 

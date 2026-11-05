@@ -3,7 +3,8 @@
         <label v-if="label || $slots.label" class="wa_field_label" :for="InputId">
             <slot name="label">{{ label }}</slot>
         </label>
-        <div class="wa_input" :class="{ on: error, off: disabled, wa_input_sm: size === 'sm' }">
+        <div class="wa_input"
+            :class="{ on: error, off: disabled, wa_input_sm: size === 'sm', wa_frosted: frosted }">
             <span v-if="$slots.prefix" class="wa_input_affix">
                 <slot name="prefix" />
             </span>
@@ -66,6 +67,8 @@ const props = defineProps({
     clearable: Boolean,
     disabled: Boolean,
     readonly: Boolean,
+    /** 白色磨砂半透明表面，与 AppPopover 面板一致 */
+    frosted: Boolean,
 })
 
 const emit = defineEmits(['update:modelValue', 'clear'])

@@ -31,6 +31,15 @@
             </div>
         </DemoBlock>
 
+        <DemoBlock title="磨砂" description="frosted 使用与 AppPopover 一致的玻璃表面与模糊。">
+            <div class="doc_frosted_stage">
+                <div class="doc_grid">
+                    <AppInput v-model="frostedValue" label="磨砂输入框" placeholder="输入内容" clearable frosted />
+                    <AppInput v-model="frostedValue" label="磨砂 + 校验" error="示例错误" frosted />
+                </div>
+            </div>
+        </DemoBlock>
+
         <template #api>
             <ApiTable :rows="propsRows" />
             <ApiTable title="事件" kind="events" :rows="eventRows" />
@@ -49,6 +58,7 @@ const endpoint = ref('')
 const timeout = ref('3000')
 const token = ref('')
 const small = ref('')
+const frostedValue = ref('')
 
 const propsRows = [
     { name: 'modelValue', type: 'string | number', default: "''", desc: '输入值' },
@@ -58,6 +68,7 @@ const propsRows = [
     { name: 'type', type: 'string', default: 'text', desc: '原生 input type' },
     { name: 'size', type: 'string', default: 'sm', desc: '默认 sm，可选 md' },
     { name: 'clearable', type: 'boolean', default: 'false', desc: '显示清空按钮' },
+    { name: 'frosted', type: 'boolean', default: 'false', desc: '白色磨砂半透明表面，与 AppPopover 一致' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用' },
     { name: 'readonly', type: 'boolean', default: 'false', desc: '只读' },
 ]
