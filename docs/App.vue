@@ -62,7 +62,7 @@ const entry = {
 
 function go(item) {
     const path = entry[item.name]
-    if (path && route.path !== path) router.push(path)
+    if (path && route.path !== path) router.navigate(path)
 }
 </script>
 

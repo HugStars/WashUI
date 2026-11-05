@@ -72,6 +72,6 @@ const navCode = `const nav = [
 ]
 
 function go(item) {
-    if (route.name !== item.name) router.push({ name: item.name })
+    if (route.name !== item.name) router.navigate({ name: item.name })
 }`
 </script>

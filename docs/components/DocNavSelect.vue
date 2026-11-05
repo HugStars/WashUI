@@ -27,7 +27,7 @@ const Groups = computed(() => {
 function Go(value) {
     const items = section.value?.groups.flatMap(group => group.items) || []
     const item = items.find(entry => entry.name === value)
-    if (item && item.path !== route.path) router.push(item.path)
+    if (item && item.path !== route.path) router.navigate(item.path)
 }
 </script>
 

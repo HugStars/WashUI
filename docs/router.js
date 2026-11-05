@@ -56,6 +56,7 @@ export function createDocsRouter() {
             { path: '/playground', name: 'playground', component: page('PlaygroundPage'), meta: { title: '实验场', nav: 'playground' } },
             { path: '/:pathMatch(.*)*', redirect: '/' },
         ],
+        home: 'home',
         title: to => `${to.meta?.title || '文档'} · WashUI`,
         onNavigate(to) {
             console.info('[wash-ui]', to.fullPath)
