@@ -277,10 +277,11 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
     grid-area: header;
     position: sticky;
     top: 0;
+    --wa_header_pad_x: 24px;
     z-index: var(--wa_z_header);
     min-height: 68px;
     margin: 0 -24px 18px;
-    padding: 16px 24px 12px;
+    padding: 16px var(--wa_header_pad_x) 12px;
     background: linear-gradient(to bottom, var(--wa_color_canvas), transparent);
     -webkit-backdrop-filter: blur(var(--wa_blur));
     backdrop-filter: blur(var(--wa_blur));
@@ -296,6 +297,11 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
 
 .wa_header_bar:empty {
     display: none;
+}
+
+/* bleed 时让操作栏抵消 header 的左右内边距，横向铺满 */
+.wa_header_bar:has(> .wa_page_bar_bleed) {
+    margin-inline: calc(var(--wa_header_pad_x) * -1);
 }
 
 .wa_nav {
@@ -506,8 +512,10 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
     }
 
     .wa_header {
+        --wa_header_pad_x: 14px;
+
         margin-inline: -14px;
-        padding: 16px 14px 12px;
+        padding: 16px var(--wa_header_pad_x) 12px;
     }
 
     .wa_header:has(.wa_header_bar > *) {

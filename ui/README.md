@@ -184,12 +184,12 @@ app.use(createUi({
 | --- | --- | --- | --- |
 | `AppRouteBar` | `loading` | 无 | 无 |
 | `AppShell` | `nav`、`active`、`loading`、`navLayout` | `navigate` | 默认、`footer` |
-| `PageBar` | 无 | 无 | 默认 |
+| `PageBar` | `bleed` | 无 | 默认 |
 | `PageHeader` | `title` | 无 | 默认、`center`、`actions` |
 | `PageTransition` | 无 | 无 | 默认 |
 
 `navLayout`：`auto`（默认，桌面仅图标、移动端图标+文本）、`inline`、`stacked`、`icon`、`text`。
-`PageBar` 桌面端在原位置渲染，移动端（≤860px）自动投递到 `AppShell` 顶部标题栏下方，共用标题栏的磨砂背景。
+`PageBar` 桌面端在原位置渲染，移动端（≤860px）自动投递到 `AppShell` 顶部标题栏下方，共用标题栏的磨砂背景；`bleed` 会在移动端抵消标题栏的左右内边距，让内容横向铺满。
 `AppShell` 的 `loading` 不传时自动跟随 `routeLoading`。
 
 `AppShell` 已内置 `AppRouteBar`。自定义布局时可以单独放到应用根部：
