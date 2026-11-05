@@ -34,6 +34,7 @@ export const componentGroups = [
     {
         title: '数据',
         items: [
+            { name: 'table', label: '表格', component: 'AppTable', page: 'TablePage', path: '/components/table', summary: '配置驱动的数据表格，支持排序、行选择、固定列与自定义单元格。' },
             { name: 'pagination', label: '分页', component: 'AppPagination', page: 'PaginationPage', path: '/components/pagination', summary: '受控页码与每页条数，可独立组合到任意列表。' },
         ],
     },
