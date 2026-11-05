@@ -52,6 +52,7 @@ export const componentGroups = [
             { name: 'panel', label: '展示框', component: 'AppPanel', page: 'PanelPage', path: '/components/panel', summary: '带色调的状态与信息展示。' },
             { name: 'popover', label: '弹出框', component: 'AppPopover', page: 'PopoverPage', path: '/components/popover', summary: '点击触发、浮层展示内容。' },
             { name: 'dialog', label: '弹框', component: 'AppDialog', page: 'DialogPage', path: '/components/dialog', summary: '受控弹框，含焦点陷阱与移动端手势。' },
+            { name: 'tooltip', label: '文字提示', component: 'AppTooltip', page: 'TooltipPage', path: '/components/tooltip', summary: '模拟浏览器 title 的悬停提示，磨砂面板、紧凑行高。' },
         ],
     },
     {
