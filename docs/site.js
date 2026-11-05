@@ -23,6 +23,7 @@ export const componentGroups = [
             { name: 'card', label: '卡片', component: 'AppCard', page: 'CardPage', path: '/components/card', summary: '内容分组容器，支持标题、额外区与页脚。' },
             { name: 'code', label: '代码', component: 'AppCode', page: 'CodePage', path: '/components/code', summary: '基于 Speed-highlight 的代码块，支持多语言、行号与复制。' },
             { name: 'chip', label: '标记', component: 'AppChip', page: 'ChipPage', path: '/components/chip', summary: '轻量筛选与状态标记。' },
+            { name: 'tag', label: '标签', component: 'AppTag', page: 'TagPage', path: '/components/tag', summary: '静态属性与状态标签，支持色调、磨砂与展开动画。' },
             { name: 'tabs', label: '标签页', component: 'AppTabs', page: 'TabsPage', path: '/components/tabs', summary: '参考导航实现的滑动标签切换，支持面板与两种外观。' },
             { name: 'stat', label: '统计', component: 'AppStat', page: 'StatPage', path: '/components/stat', summary: '紧凑的指标展示。' },
             { name: 'number', label: '数字跳动', component: 'AppNumber', page: 'NumberPage', path: '/components/number', summary: '数字变化时的平滑跳动。' },
