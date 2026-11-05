@@ -4,20 +4,25 @@
             <slot name="label">{{ label }}</slot>
         </label>
 
-        <AppPopover placement="bottom" match-trigger role="listbox" :aria-label="ariaLabel"
+        <AppPopover placement="bottom" match-trigger :role="multiple ? 'dialog' : 'listbox'" :aria-label="ariaLabel"
             :padding="PopoverPadding" :disabled="disabled">
             <template #trigger="{ open, toggle }">
                 <button :id="SelectId" v-bind="$attrs" type="button" class="wa_select_trigger"
                     :class="{ on: error, off: disabled, wa_select_sm: size === 'sm' }" :disabled="disabled"
-                    :aria-invalid="error ? 'true' : undefined" :aria-describedby="DescribedBy" aria-haspopup="listbox"
-                    :aria-expanded="open" @keydown.down.prevent="toggle" @keydown.up.prevent="toggle">
-                    <span class="wa_select_value" :class="{ wa_select_placeholder: !Selected }">{{ Shown }}</span>
+                    :aria-invalid="error ? 'true' : undefined" :aria-describedby="DescribedBy"
+                    :aria-haspopup="multiple ? 'dialog' : 'listbox'" :aria-expanded="open"
+                    @keydown.down.prevent="toggle" @keydown.up.prevent="toggle">
+                    <span class="wa_select_value"
+                        :class="{ wa_select_placeholder: multiple ? !Values.length : !Selected }">{{ Shown }}</span>
                     <AppIcon class="wa_select_arrow" name="chevron" :size="15" />
                 </button>
             </template>
 
             <template #default="{ close }">
-                <AppSelectPanel :groups="groups" :options="options" :model-value="modelValue" :size="size"
+                <AppCheckPanel v-if="multiple" :groups="groups" :options="options" :model-value="Values"
+                    :size="PanelSize" :disabled="disabled" :empty-text="emptyText"
+                    @update:model-value="UpdateMultiple" />
+                <AppSelectPanel v-else :groups="groups" :options="options" :model-value="modelValue" :size="size"
                     :check-icon="checkIcon" :icon-component="iconComponent" :empty-text="emptyText"
                     @select="item => Choose(item, close)" />
             </template>
@@ -30,6 +35,8 @@
 
 <script setup>
 import { computed, useId } from 'vue'
+import { useCheckSummary } from '../composables/useCheckSummary.js'
+import AppCheckPanel from './AppCheckPanel.vue'
 import AppIcon from './AppIcon.vue'
 import AppPopover from './AppPopover.vue'
 import AppSelectPanel from './AppSelectPanel.vue'
@@ -38,7 +45,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = defineProps({
     modelValue: {
-        type: [String, Number, Symbol],
+        type: [String, Number, Symbol, Array],
         default: '',
     },
     options: {
@@ -89,6 +96,7 @@ const props = defineProps({
         type: String,
         default: '暂无选项',
     },
+    multiple: Boolean,
     disabled: Boolean,
 })
 
@@ -96,12 +104,12 @@ const emit = defineEmits(['update:modelValue', 'change'])
 
 const SelectId = useId()
 const PopoverPadding = computed(() => props.size === 'sm' ? 6 : 8)
-const AllOptions = computed(() => [
-    ...props.groups.flatMap(group => group.options || []),
-    ...props.options,
-])
+const PanelSize = computed(() => props.size === 'sm' ? 18 : 20)
+const { AllOptions, Values, Summary } = useCheckSummary(props)
 const Selected = computed(() => AllOptions.value.find(item => item.value === props.modelValue))
-const Shown = computed(() => Selected.value?.label || props.placeholder || '请选择')
+const Shown = computed(() => props.multiple
+    ? Summary.value
+    : Selected.value?.label || props.placeholder || '请选择')
 const ariaLabel = computed(() => props.label || props.placeholder || '选择')
 const DescribedBy = computed(() => (props.error ? `${SelectId}-error` : props.hint ? `${SelectId}-hint` : undefined))
 
@@ -110,6 +118,11 @@ function Choose(item, close) {
     emit('update:modelValue', item.value)
     emit('change', item.value)
     close()
+}
+
+function UpdateMultiple(values) {
+    emit('update:modelValue', values)
+    emit('change', values)
 }
 </script>
 
