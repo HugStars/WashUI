@@ -23,8 +23,8 @@
                 <span>{{ item.label }}</span>
             </button>
 
-            <!-- 与 AppShell 的更多菜单保持 12px 间距，bottom 方位需要 +4 -->
-            <AppPopover v-if="HiddenItems.length" v-model:open="MoreOpen" placement="bottom" :width="180" :offset="4"
+            <!-- 与 AppShell 的更多菜单保持一致：固定 12px 间距，翻转时也不变 -->
+            <AppPopover v-if="HiddenItems.length" v-model:open="MoreOpen" placement="bottom" :width="180" :gap="12"
                 :padding="6" role="listbox" aria-label="更多标签">
                 <template #trigger="{ open }">
                     <button :ref="el => SetTabEl(MORE_KEY, el)" :id="`${uid}-more`" type="button"

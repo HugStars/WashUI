@@ -68,7 +68,8 @@ function choose(item, close) {
 const propsRows = [
     { name: 'open', type: 'boolean', default: 'false', desc: '是否打开，支持 v-model:open' },
     { name: 'placement', type: 'top | top-left | top-right | bottom | bottom-left | bottom-right | left | right', default: 'top', desc: '浮层方位' },
-    { name: 'offset', type: 'number | { x, y }', default: '0', desc: '定位偏移；数字表示 x 偏移，对象可传 x / y' },
+    { name: 'offset', type: 'number | { x, y }', default: '0', desc: '定位偏移；数字表示 y 偏移，对象可传 x / y' },
+    { name: 'gap', type: 'number', default: '8', desc: '浮层与触发器之间的间距，自动翻转时保持一致' },
     { name: 'width', type: 'number | string', default: '220', desc: '浮层宽度' },
     { name: 'padding', type: 'number | string', default: 'var(--wa_popover_padding)', desc: '浮层内边距，可跟随内容尺寸传入' },
     { name: 'matchTrigger', type: 'boolean', default: 'false', desc: '浮层宽度跟随触发元素' },

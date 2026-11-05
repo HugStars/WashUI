@@ -35,6 +35,11 @@ const props = defineProps({
         type: [Number, Object],
         default: 0,
     },
+    /** 面板与触发器之间的间距，自动翻转时保持一致 */
+    gap: {
+        type: Number,
+        default: 8,
+    },
     width: {
         type: [Number, String],
         default: 220,
@@ -142,7 +147,7 @@ function Position() {
     const offset = typeof props.offset === 'number'
         ? { x: 0, y: props.offset }
         : { x: 0, y: 0, ...(props.offset || {}) }
-    const gap = 8
+    const gap = props.gap
     let placement = NormalizePlacement(props.placement)
     let left = 0
     let top = 0
