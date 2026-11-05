@@ -328,7 +328,45 @@ pnpm publish --registry=https://你的私有源地址
 
 ## 提交约定
 
-- `feat(ui): ...` 新组件或新能力
-- `fix(ui): ...` 修复行为、动画或样式
-- `docs: ...` 文档站或 README
+格式：
+
+```text
+<emoji> <type>(<scope>): <subject>
+```
+
+| 类型 | Emoji | 说明 |
+| --- | --- | --- |
+| `feat` | ✨ | 新功能 |
+| `fix` | 🐛 | 修复 bug |
+| `docs` | 📝 | 文档 |
+| `style` | 🎨 | 代码格式 |
+| `refactor` | ♻️ | 重构 |
+| `test` | ✅ | 测试 |
+| `chore` | 🔧 | 配置 / 工具 |
+| `perf` | ⚡️ | 性能优化 |
+| `build` | 📦 | 构建 |
+| `ci` | 👷 | CI 配置 |
+| `revert` | ⏪️ | 回滚 |
+| `wip` | 🚧 | 进行中 |
+| `init` | 🎉 | 初次提交 |
+| `merge` | 🔀 | 合并分支 |
+
+`scope` 写这次改动涉及的具体组件或页面，不写 `ui`、`docs` 这类目录名：
+
+- 组件用 PascalCase：`AppInput`、`AppTextarea`、`AppChoiceList`
+- 文档站页面用页面名：`InputPage`、`TextareaPage`、`RoadmapPage`
+- 多个组件共用同一改动时写共享核心或主线组件，例如 `fix(AppChoiceList)`
+- 工程配置写具体模块：`vite`、`package`、`tokens`
+
 - 一个提交只做一类事情；涉及公共 API 时同步更新 README、文档页和路线图。
+- `subject` 用中文、动词开头、不加句号。
+
+示例：
+
+```text
+✨ feat(AppInput): 增加 rule 校验
+🐛 fix(AppTextarea): 修复横向缩放失效
+📝 docs(InputPage): 补充密码输入示例
+♻️ refactor(AppChoiceList): 抽取共享选中逻辑
+🔧 chore(vite): 增加组件路由回退
+```
