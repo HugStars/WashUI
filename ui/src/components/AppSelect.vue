@@ -35,7 +35,7 @@
 
 <script setup>
 import { computed, useId } from 'vue'
-import { useCheckSummary } from '../composables/useCheckSummary.js'
+import { useChoiceSummary } from '../composables/useChoiceSummary.js'
 import AppCheckPanel from './AppCheckPanel.vue'
 import AppIcon from './AppIcon.vue'
 import AppPopover from './AppPopover.vue'
@@ -105,7 +105,7 @@ const emit = defineEmits(['update:modelValue', 'change'])
 const SelectId = useId()
 const PopoverPadding = computed(() => props.size === 'sm' ? 6 : 8)
 const PanelSize = computed(() => props.size === 'sm' ? 18 : 20)
-const { AllOptions, Values, Summary } = useCheckSummary(props)
+const { AllOptions, Values, Summary } = useChoiceSummary(props)
 const Selected = computed(() => AllOptions.value.find(item => item.value === props.modelValue))
 const Shown = computed(() => props.multiple
     ? Summary.value

@@ -39,7 +39,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useCheckSummary } from '../composables/useCheckSummary.js'
+import { useChoiceSummary } from '../composables/useChoiceSummary.js'
 import AppButton from './AppButton.vue'
 import AppCheckPanel from './AppCheckPanel.vue'
 import AppDialog from './AppDialog.vue'
@@ -96,7 +96,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'change'])
 
 const DialogOpen = ref(false)
-const { Values, Summary } = useCheckSummary(props)
+const { Values, Summary } = useChoiceSummary(props)
 
 function Update(values) {
     emit('update:modelValue', values)

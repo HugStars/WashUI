@@ -12,6 +12,7 @@ export const guidePages = [
     { name: 'install', label: '安装', en: 'Install', page: 'InstallPage', path: '/guide/install' },
     { name: 'quick-start', label: '快速开始', en: 'Quick Start', page: 'QuickStartPage', path: '/guide/quick-start' },
     { name: 'theme', label: '主题', en: 'Theme', page: 'ThemePage', path: '/guide/theme' },
+    { name: 'roadmap', label: '路线图', en: 'Roadmap', page: 'RoadmapPage', path: '/guide/roadmap' },
 ]
 
 export const componentGroups = [
@@ -41,10 +42,12 @@ export const componentGroups = [
         items: [
             { name: 'input', label: '输入框', component: 'AppInput', page: 'InputPage', path: '/components/input', summary: '带标签、提示与校验的输入框。' },
             { name: 'switch', label: '开关', component: 'AppSwitch', page: 'SwitchPage', path: '/components/switch', summary: '二选一状态切换，支持标签对齐、尺寸与禁用。' },
-            { name: 'check', label: '复选框组', component: 'AppCheck', page: 'CheckPage', path: '/components/check', summary: '复选项横向/纵向排列，支持标签前后位置与纵向对齐。' },
+            { name: 'check', label: '复选框', component: 'AppCheck', page: 'CheckPage', path: '/components/check', summary: '单个复选框 + 分组复选框，支持排列、对齐与半选。' },
+            { name: 'radio', label: '单选框', component: 'AppRadio', page: 'RadioPage', path: '/components/radio', summary: '单个单选框 + 分组单选框，排版能力与复选框一致。' },
             { name: 'check-menu', label: '多选菜单', component: 'AppCheckMenu', page: 'CheckMenuPage', path: '/components/check-menu', summary: '按钮触发的多选，支持浮层与弹框两种形态。' },
             { name: 'select', label: '下拉框', component: 'AppSelect', page: 'SelectPage', path: '/components/select', summary: '带标签、分组与校验的下拉选择，支持单选与多选。' },
             { name: 'select-panel', label: '下拉面板', component: 'AppSelectPanel', page: 'SelectPanelPage', path: '/components/select-panel', summary: '下拉框使用的可复用选项面板。' },
+            { name: 'choice-list', label: '选择列表', component: 'AppChoiceList', page: 'ChoiceListPage', path: '/components/choice-list', summary: '复选框 / 单选框共享的列表面板核心。' },
             { name: 'upload', label: '上传', component: 'AppUpload', page: 'UploadPage', path: '/components/upload', summary: '选择、拖拽、校验与文件列表。' },
             { name: 'editor', label: '富文本', component: 'AppEditor', page: 'EditorPage', path: '/components/editor', summary: '基于 contenteditable 的轻量编辑器。' },
         ],

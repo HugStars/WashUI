@@ -1,125 +1,388 @@
 <template>
-    <div class="wa_check_group" :class="[
-        `wa_check_group_${direction}`,
-        {
-            'wa_check_group_right': direction === 'vertical' && align === 'right',
-            'wa_check_group_between': direction === 'vertical' && IsBetween,
-        },
-    ]" role="group" :aria-label="ariaLabel">
-        <slot />
+    <div class="wa_choice_row" :style="BetweenStyle">
+        <label v-if="HasLabel && LabelPosition === 'before'" :id="`${CheckId}-label`" class="wa_choice_label"
+            :for="CheckId">
+            <slot>{{ label }}</slot>
+        </label>
 
-        <AppCheckItem v-for="item in options" :key="item.value" :model-value="IsChecked(item.value)"
-            :label="item.label" :label-position="labelPosition" :size="size"
-            :between="direction === 'vertical' && IsBetween" :disabled="disabled || item.disabled"
-            @change="checked => Toggle(item.value, checked)" />
+        <button :id="CheckId" type="button" class="wa_check"
+            :class="{ on: Checked || Closing || Indeterminate, closing: Closing, drawing: Drawing, mixed: Indeterminate }"
+            role="checkbox" :style="SizeStyle" :aria-checked="Indeterminate ? 'mixed' : Checked"
+            :aria-labelledby="HasLabel ? `${CheckId}-label` : undefined"
+            :aria-label="HasLabel ? undefined : AccessibleLabel" :disabled="Disabled" @click="Toggle">
+            <span class="wa_check_mark" aria-hidden="true">
+                <span class="wa_check_line wa_check_line_a"></span>
+                <span class="wa_check_line wa_check_line_b"></span>
+                <span class="wa_check_dash"></span>
+            </span>
+        </button>
+
+        <label v-if="HasLabel && LabelPosition !== 'before'" :id="`${CheckId}-label`" class="wa_choice_label"
+            :for="CheckId">
+            <slot>{{ label }}</slot>
+        </label>
     </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import AppCheckItem from './AppCheckItem.vue'
+import { computed, onUnmounted, ref, useId, useSlots, watch } from 'vue'
+import { useChoiceItemState } from '../composables/useChoiceGroup.js'
 
 const props = defineProps({
-    modelValue: {
-        type: Array,
-        default: () => [],
+    modelValue: Boolean,
+    /** 在 AppCheckGroup / AppChoiceList 中使用时对应的值 */
+    value: {
+        type: [String, Number, Symbol, Boolean],
+        default: undefined,
     },
-    /** { label, value, disabled? } */
-    options: {
-        type: Array,
-        default: () => [],
-    },
-    /** horizontal：复选项横向排列；vertical：复选项纵向排列 */
-    direction: {
+    label: {
         type: String,
-        default: 'horizontal',
-        allows: ['horizontal', 'vertical'],
+        default: '',
     },
-    /** before：每个标签在复选框前；after：标签在复选框后 */
+    /** before：标签在复选框前；after：标签在复选框后 */
     labelPosition: {
         type: String,
-        default: 'after',
+        default: null,
         allows: ['before', 'after'],
-    },
-    /** 纵向排列时整体靠左或靠右 */
-    align: {
-        type: String,
-        default: 'left',
-        allows: ['left', 'right', 'between', 'space-between'],
     },
     ariaLabel: {
         type: String,
-        default: '复选框组',
+        default: '',
     },
-    /** 复选框尺寸，数字按 px 处理 */
+    /** 复选框尺寸，数字按 px 处理；在分组中默认继承分组尺寸 */
     size: {
         type: [Number, String],
-        default: 20,
+        default: null,
     },
+    /** 半选状态，视觉为横杠 */
+    indeterminate: Boolean,
+    /** 纵向两端对齐时，让标签和复选框分别贴左右两侧 */
+    between: Boolean,
     disabled: Boolean,
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
 
-const IsBetween = computed(() => props.align === 'between' || props.align === 'space-between')
+const slots = useSlots()
+const CheckId = useId()
+const { group, Checked, Disabled, Size, LabelPosition, BetweenStyle } = useChoiceItemState(props, true)
+const HasLabel = computed(() => Boolean(props.label || slots.default))
+const AccessibleLabel = computed(() => props.ariaLabel || props.label || '复选框')
+const Indeterminate = computed(() => props.indeterminate)
+const SizeStyle = computed(() => ({
+    '--wa_check_size': typeof Size.value === 'number' ? `${Size.value}px` : Size.value,
+}))
 
-function IsChecked(value) {
-    return Array.isArray(props.modelValue) && props.modelValue.includes(value)
-}
+// 取消选中时先让 ✓ 变成 ×，再把整个标记缩到 0；动画结束后才移除选中底色
+const ReducedMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false
+const Closing = ref(false)
+const Drawing = ref(false)
+let CloseTimer = 0
+let DrawTimer = 0
 
-function Toggle(value, checked) {
-    if (props.disabled) return
+watch(Checked, (checked, wasChecked) => {
+    clearTimeout(CloseTimer)
+    clearTimeout(DrawTimer)
 
-    const current = Array.isArray(props.modelValue) ? props.modelValue : []
-    const next = checked
-        ? current.includes(value) ? current : [...current, value]
-        : current.filter(item => item !== value)
+    if (checked) {
+        // 从取消动画中途恢复时直接反向过渡，不重新播放“手写”
+        const interrupted = Closing.value
+        Closing.value = false
+        Drawing.value = !interrupted && wasChecked === false && !ReducedMotion
 
-    emit('update:modelValue', next)
-    emit('change', next)
+        if (Drawing.value) {
+            DrawTimer = setTimeout(() => {
+                Drawing.value = false
+            }, 320)
+        }
+        return
+    }
+
+    Drawing.value = false
+
+    if (!wasChecked || ReducedMotion) {
+        Closing.value = false
+        return
+    }
+
+    Closing.value = true
+    CloseTimer = setTimeout(() => {
+        Closing.value = false
+    }, 340)
+})
+
+watch(() => props.indeterminate, mixed => {
+    if (!mixed) return
+    clearTimeout(CloseTimer)
+    clearTimeout(DrawTimer)
+    Closing.value = false
+    Drawing.value = false
+})
+
+onUnmounted(() => {
+    clearTimeout(CloseTimer)
+    clearTimeout(DrawTimer)
+})
+
+function Toggle() {
+    if (Disabled.value) return
+
+    const next = !Checked.value
+    if (group) group.toggle(props.value, next)
+    else {
+        emit('update:modelValue', next)
+        emit('change', next)
+    }
 }
 </script>
 
 <style>
-.wa_check_group {
-    display: flex;
-    gap: 12px 18px;
-    min-width: 0;
-    font-size: 13px;
-    color: var(--wa_color_text);
+.wa_check {
+    --wa_check_border: calc(var(--wa_check_size, 20px) * .1);
+    --wa_check_r: calc(var(--wa_check_size, 20px) * .05);
+
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--wa_check_size, 20px);
+    height: var(--wa_check_size, 20px);
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: calc(var(--wa_check_size, 20px) * .3);
+    box-shadow: inset 0 0 0 var(--wa_check_border) var(--wa_color_line_strong);
+    color: transparent;
+    background: var(--wa_color_field);
+    cursor: pointer;
+    transition:
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        box-shadow var(--wa_duration_fast) var(--wa_ease_out),
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_fast) var(--wa_ease_out);
 }
 
-.wa_check_group_horizontal {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+.wa_check::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--wa_color_text);
+    opacity: 0;
+    transform: scale(.35);
+    pointer-events: none;
+    transition:
+        opacity var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_fast) var(--wa_ease_spring),
+        background var(--wa_duration_fast) var(--wa_ease_out);
 }
 
-.wa_check_group_vertical {
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+.wa_check:hover:not(:disabled) {
+    box-shadow: inset 0 0 0 var(--wa_check_border) var(--wa_color_text_muted);
+    background: var(--wa_color_hover);
 }
 
-.wa_check_group_vertical.wa_check_group_right {
-    align-items: flex-end;
+.wa_check.on {
+    box-shadow: inset 0 0 0 var(--wa_check_border) var(--wa_color_text);
+    color: var(--wa_color_on_text);
+    background: var(--wa_color_text);
 }
 
-.wa_check_group_vertical.wa_check_group_between {
-    align-items: stretch;
+.wa_check.on::before {
+    opacity: 1;
+    transform: scale(1);
 }
 
-.wa_check_group_vertical.wa_check_group_between .wa_check_row {
-    width: 100%;
-    justify-content: space-between;
+.wa_check.on:hover:not(:disabled) {
+    box-shadow: inset 0 0 0 var(--wa_check_border) var(--wa_color_primary_hover);
+    background: var(--wa_color_primary_hover);
 }
 
-.wa_check_group_vertical .wa_check_label {
-    white-space: normal;
+.wa_check.on:hover:not(:disabled)::before {
+    background: var(--wa_color_primary_hover);
 }
 
-.wa_check_group_vertical.wa_check_group_right .wa_check_label {
-    text-align: right;
+.wa_check:active:not(:disabled) {
+    transform: scale(.9);
+}
+
+.wa_check:focus-visible {
+    outline: 2px solid var(--wa_color_accent);
+    outline-offset: 2px;
+}
+
+.wa_check:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.wa_check_mark {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: calc(var(--wa_check_size, 20px) * .7);
+    height: calc(var(--wa_check_size, 20px) * .7);
+    opacity: 0;
+    transform: scale(.9);
+    pointer-events: none;
+    transition:
+        opacity .12s var(--wa_ease_out),
+        transform .14s var(--wa_ease_out);
+}
+
+.wa_check_line {
+    position: absolute;
+    height: calc(var(--wa_check_r) * 2);
+    border-radius: 999px;
+    background: currentColor;
+    opacity: 0;
+    transform-origin: 0 50%;
+}
+
+/* 勾的两段：左下短横 + 右上长横 */
+.wa_check_line_a {
+    left: 16.6667%;
+    top: calc(50% - var(--wa_check_r));
+    width: 0;
+    transform: rotate(45deg);
+}
+
+.wa_check_line_b {
+    left: calc(37.5% - var(--wa_check_r) * .7071);
+    top: calc(70.8333% - var(--wa_check_r) * .2929);
+    width: 0;
+    transform: rotate(-45deg);
+}
+
+/* 半选横杠 */
+.wa_check_dash {
+    position: absolute;
+    top: 50%;
+    left: 22%;
+    right: 22%;
+    height: calc(var(--wa_check_r) * 2);
+    margin-top: calc(var(--wa_check_r) * -1);
+    border-radius: 999px;
+    background: currentColor;
+    opacity: 0;
+    transform: scaleX(.4);
+    transition:
+        opacity .12s var(--wa_ease_out),
+        transform .2s var(--wa_ease_spring);
+}
+
+.wa_check.on .wa_check_line {
+    opacity: 1;
+}
+
+.wa_check.on .wa_check_mark {
+    opacity: 1;
+    transform: scale(1);
+    transition:
+        opacity .12s var(--wa_ease_out),
+        transform .18s var(--wa_ease_spring);
+}
+
+.wa_check.on .wa_check_line_a {
+    width: calc(29.4629% + var(--wa_check_r));
+    transition:
+        left .14s var(--wa_ease_out),
+        top .14s var(--wa_ease_out),
+        width .14s var(--wa_ease_out),
+        opacity .04s var(--wa_ease_out);
+}
+
+.wa_check.on .wa_check_line_b {
+    width: calc(64.8179% + var(--wa_check_r));
+    transition:
+        left .14s var(--wa_ease_out),
+        top .14s var(--wa_ease_out),
+        width .14s var(--wa_ease_out),
+        opacity .04s var(--wa_ease_out);
+}
+
+/* 从空白状态选中时才播放“短横 → 长横”的手写顺序 */
+.wa_check.on.drawing .wa_check_line_a {
+    transition:
+        width .12s var(--wa_ease_out),
+        opacity .04s var(--wa_ease_out);
+}
+
+.wa_check.on.drawing .wa_check_line_b {
+    transition:
+        width .2s var(--wa_ease_out) .1s,
+        opacity .04s var(--wa_ease_out) .08s;
+}
+
+/* 取消选中：两段线分别延展/移动到 × 的位置，再整体缩放渐隐 */
+.wa_check.closing .wa_check_line {
+    transition:
+        left .14s var(--wa_ease_out),
+        top .14s var(--wa_ease_out),
+        width .14s var(--wa_ease_out);
+}
+
+.wa_check.closing .wa_check_line_a {
+    left: 20.8333%;
+    top: calc(20.8333% - var(--wa_check_r));
+    width: 82.4958%;
+}
+
+.wa_check.closing .wa_check_line_b {
+    left: 20.8333%;
+    top: calc(79.1667% - var(--wa_check_r));
+    width: 82.4958%;
+}
+
+/* 半选状态只显示横杠，隐藏勾线 */
+.wa_check.mixed .wa_check_line {
+    opacity: 0;
+}
+
+.wa_check.mixed .wa_check_dash {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+/* 缩放阶段同步让选中底色退场，避免标记消失后再闪一下 */
+.wa_check.on.closing,
+.wa_check.on.closing:hover:not(:disabled) {
+    background: var(--wa_color_field);
+    box-shadow: inset 0 0 0 var(--wa_check_border) var(--wa_color_line_strong);
+    transition:
+        background .16s var(--wa_ease_out) .14s,
+        box-shadow .16s var(--wa_ease_out) .14s;
+}
+
+.wa_check.on.closing::before {
+    opacity: 0;
+    transform: scale(.35);
+    transition:
+        opacity .14s var(--wa_ease_out) .14s,
+        transform .16s var(--wa_ease_out) .14s;
+}
+
+.wa_check.closing .wa_check_mark {
+    opacity: 0;
+    transform: scale(0);
+    transition:
+        opacity .16s var(--wa_ease_out) .14s,
+        transform .16s var(--wa_ease_out) .14s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_check,
+    .wa_check_mark,
+    .wa_check.on .wa_check_line,
+    .wa_check.closing .wa_check_line,
+    .wa_check_dash {
+        transition: none;
+    }
+
+    .wa_check:active:not(:disabled) {
+        transform: none;
+    }
 }
 </style>

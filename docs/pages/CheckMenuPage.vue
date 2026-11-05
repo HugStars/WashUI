@@ -1,6 +1,6 @@
 <template>
     <DocPage category="表单" name="AppCheckMenu" title="多选菜单"
-        description="按钮触发的多选列表，复用 AppCheckPanel 渲染选项与选中动画。mode=popover 展示为浮层，mode=dialog 展示为弹框，适合移动端或需要更大操作区域的场景。">
+        description="按钮触发的多选列表，复用 AppChoiceList / AppCheckPanel 渲染选项与选中动画。mode=popover 展示为浮层，mode=dialog 展示为弹框，适合移动端或需要更大操作区域的场景。">
         <DemoBlock title="浮层多选" description="默认 mode=popover，点击按钮展开面板；选择后面板不会关闭，可以连续勾选。" :code="baseCode">
             <div class="doc_check_menu_row">
                 <AppCheckMenu v-model="basic" :options="options" />

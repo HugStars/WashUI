@@ -1,0 +1,122 @@
+/* 复选框 / 单选框共用的行、标签、分组与列表面板布局 */
+.wa_choice_row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--wa_color_text);
+}
+
+.wa_choice_label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+}
+
+.wa_choice_row:has(.wa_check:disabled) .wa_choice_label,
+.wa_choice_row:has(.wa_radio:disabled) .wa_choice_label {
+    cursor: not-allowed;
+}
+
+.wa_choice_group {
+    display: flex;
+    gap: 12px 18px;
+    min-width: 0;
+    font-size: 13px;
+    color: var(--wa_color_text);
+}
+
+.wa_choice_group_horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.wa_choice_group_vertical {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.wa_choice_group_vertical.wa_choice_group_right {
+    align-items: flex-end;
+}
+
+.wa_choice_group_vertical.wa_choice_group_between {
+    align-items: stretch;
+}
+
+.wa_choice_group_vertical.wa_choice_group_between .wa_choice_row {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.wa_choice_group_vertical .wa_choice_label {
+    white-space: normal;
+}
+
+.wa_choice_group_vertical.wa_choice_group_right .wa_choice_label {
+    text-align: right;
+}
+
+/* 面板 / 下拉复用列表 */
+.wa_choice_list {
+    display: grid;
+    gap: 4px;
+    max-height: min(320px, calc(100vh - 120px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.wa_choice_list_group {
+    display: grid;
+    gap: 4px;
+}
+
+.wa_choice_list_label {
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--wa_color_text_faint);
+}
+
+.wa_choice_list_item {
+    width: 100%;
+    padding: 7px 10px;
+    border-radius: var(--wa_radius_control);
+    transition: background var(--wa_duration_fast) var(--wa_ease_out);
+}
+
+.wa_choice_list_item:hover {
+    background: var(--wa_color_hover);
+}
+
+.wa_choice_list_item .wa_choice_label {
+    flex: 1;
+}
+
+.wa_choice_list_empty {
+    padding: 10px;
+    font-size: 12px;
+    color: var(--wa_color_text_faint);
+}
+
+@media (max-width: 860px) {
+    .wa_choice_list {
+        scrollbar-width: none;
+    }
+
+    .wa_choice_list::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+    }
+}

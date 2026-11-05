@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 
-export function useCheckSummary(props) {
+export function useChoiceSummary(props) {
     const AllOptions = computed(() => [
         ...(props.groups || []).flatMap(group => group.options || []),
         ...(props.options || []),

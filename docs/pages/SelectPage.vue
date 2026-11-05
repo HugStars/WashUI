@@ -10,7 +10,7 @@
         </DemoBlock>
 
         <DemoBlock title="多选"
-            description="multiple 开启多选，v-model 绑定数组；触发器显示首项与总数，面板复用 AppCheckPanel，复选框图标与动画和 AppCheck 一致。"
+            description="multiple 开启多选，v-model 绑定数组；触发器显示首项与总数，面板复用 AppChoiceList / AppCheckPanel，复选框图标与动画和 AppCheck 一致。"
             :code="multipleCode">
             <div class="doc_grid">
                 <AppSelect v-model="multi" multiple label="通知方式" :options="notifyOptions" hint="可同时选择多项" />
