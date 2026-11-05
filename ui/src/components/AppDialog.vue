@@ -433,20 +433,18 @@ onUnmounted(() => {
     justify-content: center;
     padding: 40px;
     background: #0000006b;
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
 }
 
 .wa_dialog_mask.wa_dialog_frosted {
     background: #00000033;
-    -webkit-backdrop-filter: blur(var(--wa_blur));
-    backdrop-filter: blur(var(--wa_blur));
 }
 
 .wa_dialog_frosted .wa_dialog {
     border-color: var(--wa_color_border);
     background: var(--wa_color_glass);
     background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
+    -webkit-backdrop-filter: blur(var(--wa_blur));
+    backdrop-filter: blur(var(--wa_blur));
 }
 
 .wa_dialog {
@@ -653,14 +651,10 @@ onUnmounted(() => {
         align-items: flex-end;
         padding: 0;
         background: linear-gradient(180deg, #00000000 0%, #00000040 35%, #000000a6 100%);
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
     }
 
     .wa_dialog_mask.wa_dialog_frosted {
         background: linear-gradient(180deg, #00000000 0%, #00000026 35%, #00000066 100%);
-        -webkit-backdrop-filter: blur(var(--wa_blur));
-        backdrop-filter: blur(var(--wa_blur));
     }
 
     .wa_dialog {

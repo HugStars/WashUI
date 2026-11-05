@@ -1,6 +1,5 @@
 <template>
-    <DocPage category="表单" name="AppSwitch" title="开关"
-        description="二选一的状态切换。支持标签显隐、标签与开关的两种对齐方式、尺寸与禁用状态。">
+    <DocPage category="表单" name="AppSwitch" title="开关" description="二选一的状态切换。支持标签显隐、标签与开关的两种对齐方式、尺寸与禁用状态。">
         <DemoBlock title="基础" description="v-model 绑定开启状态，点击开关或标签都可以切换。">
             <div class="doc_switch_stack">
                 <AppSwitch v-model="on" label="启用通知" />
@@ -22,10 +21,10 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="尺寸" description="默认 sm，size=md 会放大轨道与滑块。">
+        <DemoBlock title="尺寸" description="默认 sm 为 44×27 紧凑尺寸；size=md 为 52×32，与 Material Web 一致，两者保持相同宽高比例。">
             <div class="doc_row">
-                <AppSwitch v-model="small" label="小尺寸" />
-                <AppSwitch v-model="medium" label="中尺寸" size="md" />
+                <AppSwitch v-model="small" label="默认 sm" />
+                <AppSwitch v-model="medium" label="md 52×32" size="md" />
             </div>
         </DemoBlock>
 
@@ -33,7 +32,7 @@
             <div class="doc_row">
                 <AppSwitch v-model="stateOn" label="已开启" />
                 <AppSwitch v-model="stateOff" label="已关闭" />
-                <AppSwitch v-model="stateDisabled" label="禁用" disabled />
+                <AppSwitch v-model="stateOn" label="禁用" disabled />
             </div>
         </DemoBlock>
 
@@ -72,14 +71,13 @@ const small = ref(true)
 const medium = ref(false)
 const stateOn = ref(true)
 const stateOff = ref(false)
-const stateDisabled = ref(true)
 
 const propsRows = [
     { name: 'modelValue', type: 'boolean', default: 'false', desc: '开启状态，支持 v-model' },
     { name: 'label', type: 'string', default: "''", desc: '标签文本；为空时不渲染标签' },
     { name: 'hideLabel', type: 'boolean', default: 'false', desc: '视觉隐藏标签，但保留无障碍名称' },
     { name: 'align', type: 'inline | between', default: 'inline', desc: 'inline 紧挨；between 标签与开关左右分开' },
-    { name: 'size', type: 'sm | md', default: 'sm', desc: '开关尺寸' },
+    { name: 'size', type: 'sm | md', default: 'sm', desc: 'sm 为 44×27 紧凑尺寸；md 为 52×32（Material Web）' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用开关' },
 ]
 

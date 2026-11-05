@@ -93,10 +93,10 @@ function Toggle() {
 
 .wa_switch {
     --wa_switch_width: 44px;
-    --wa_switch_height: 28px;
-    --wa_switch_pad: 4px;
+    --wa_switch_height: 27px;
+    --wa_switch_pad: 3.5px;
     --wa_switch_thumb: 20px;
-    --wa_switch_travel: 16px;
+    --wa_switch_travel: 17px;
     --wa_switch_thumb_off: .667;
     --wa_switch_thumb_pressed: 1.167;
 
