@@ -20,7 +20,7 @@
                 <span class="wa_nav_label">{{ item.label }}</span>
             </button>
 
-            <AppPopover v-if="MoreNav.length" v-model:open="MoreOpen" placement="top" :width="168" :offset="-12"
+            <AppPopover v-if="MoreNav.length" v-model:open="MoreOpen" placement="top" :width="128" :offset="-4"
                 :padding="6" role="listbox" aria-label="更多导航">
                 <template #trigger="{ open }">
                     <button :ref="el => SetItemEl(MORE_KEY, el)" type="button" class="wa_nav_item"

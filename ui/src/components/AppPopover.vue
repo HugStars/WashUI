@@ -137,10 +137,19 @@ function Position() {
     left = Math.min(Math.max(edge, left), Math.max(edge, window.innerWidth - width - edge))
     top = Math.min(Math.max(edge, top), Math.max(edge, window.innerHeight - height - edge))
 
+    const origin = placement === 'bottom'
+        ? 'top center'
+        : placement === 'top'
+            ? 'bottom center'
+            : placement === 'left'
+                ? 'right center'
+                : 'left center'
+
     PanelStyle.value = {
         ...PanelStyle.value,
         left: `${left}px`,
         top: `${top}px`,
+        transformOrigin: origin,
         visibility: 'visible',
     }
 }
@@ -254,15 +263,22 @@ onUnmounted(Unlisten)
     outline: 0;
 }
 
-.wa_popover_enter_active,
-.wa_popover_leave_active {
-    transition: opacity .18s ease, transform .18s var(--wa_ease_out);
+.wa_popover_enter_active {
+    transition: opacity .16s linear, transform .3s cubic-bezier(.34, 1.56, .64, 1);
 }
 
-.wa_popover_enter_from,
+.wa_popover_leave_active {
+    transition: opacity .12s linear, transform .16s var(--wa_ease_out);
+}
+
+.wa_popover_enter_from {
+    opacity: 0;
+    transform: scale(.88);
+}
+
 .wa_popover_leave_to {
     opacity: 0;
-    transform: translateY(6px) scale(.98);
+    transform: scale(.96);
 }
 
 @media (prefers-reduced-motion: reduce) {
