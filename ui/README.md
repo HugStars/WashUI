@@ -189,7 +189,7 @@ app.use(createUi({
 | `PageTransition` | 无 | 无 | 默认 |
 
 `navLayout`：`auto`（默认，桌面仅图标、移动端图标+文本）、`inline`、`stacked`、`icon`、`text`。
-`PageBar` 桌面端在原位置渲染，移动端（≤860px）自动投递到 `AppShell` 顶部标题栏下方，共用标题栏的磨砂背景；`bleed` 会在移动端抵消标题栏的左右内边距，让内容横向铺满。
+`PageBar` 桌面端在原位置渲染，移动端（≤860px）自动投递到 `AppShell` 顶部标题栏下方，共用标题栏的磨砂背景；`bleed` 会抵消标题栏的左右内边距，并通过 `--wa_page_bar_inset` 把标题栏内边距暴露给插槽内容，`AppTabs` 已内置适配。
 `AppShell` 的 `loading` 不传时自动跟随 `routeLoading`。
 
 `AppShell` 已内置 `AppRouteBar`。自定义布局时可以单独放到应用根部：

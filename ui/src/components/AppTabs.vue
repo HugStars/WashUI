@@ -366,6 +366,9 @@ watch(
 }
 
 .wa_tabs_transparent .wa_tabs_list {
+    /* PageBar 标题栏上下文会注入这两个变量；没有时保持默认 6px */
+    padding-block: var(--wa_page_bar_pad_block, 6px);
+    padding-inline: var(--wa_page_bar_inset, 6px);
     border: 0;
     background: none;
     -webkit-backdrop-filter: none;

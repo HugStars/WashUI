@@ -52,15 +52,11 @@ onUnmounted(() => {
 
 .wa_page_bar_header {
     width: 100%;
+    --wa_page_bar_pad_block: 0px;
 }
 
-/* 标题栏已提供栏间距与底部内边距，取消透明 tabs 列表的上下内边距，避免叠加 */
-.wa_page_bar_header .wa_tabs_transparent .wa_tabs_list {
-    padding-block: 0;
-}
-
-/* bleed 时取消 tabs 列表所有内边距，让标签真正贴边铺满 */
-.wa_page_bar_bleed .wa_tabs_transparent .wa_tabs_list {
-    padding: 0;
+.wa_page_bar_bleed {
+    /* 把标题栏左右内边距暴露给插槽内容，AppTabs 等组件可自行取用 */
+    --wa_page_bar_inset: var(--wa_header_pad_x, 0px);
 }
 </style>
