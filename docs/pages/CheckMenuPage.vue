@@ -12,6 +12,14 @@
             <AppCheckMenu v-model="grouped" :groups="groups" title="选择组件" />
         </DemoBlock>
 
+        <DemoBlock title="弹出对齐" description="align 控制 popover 与触发器的左对齐、居中或右对齐。">
+            <div class="doc_check_menu_row">
+                <AppCheckMenu v-model="alignedLeft" :options="options" align="left" />
+                <AppCheckMenu v-model="alignedCenter" :options="options" align="center" />
+                <AppCheckMenu v-model="alignedRight" :options="options" align="right" />
+            </div>
+        </DemoBlock>
+
         <DemoBlock title="弹框模式"
             description="mode=dialog 时由 AppDialog 承载，底部提供清空与完成；适合移动端、全屏或选项较多的场景。" :code="dialogCode">
             <AppCheckMenu v-model="dialog" mode="dialog" title="选择通知方式" :options="options" />
@@ -74,12 +82,16 @@ const basic = ref(['email'])
 const grouped = ref(['button', 'select'])
 const dialog = ref(['email', 'sms'])
 const custom = ref(['sms'])
+const alignedLeft = ref(['email'])
+const alignedCenter = ref(['sms'])
+const alignedRight = ref(['inbox'])
 
 const propsRows = [
     { name: 'modelValue', type: 'Array', default: '[]', desc: '选中的 value 数组，支持 v-model' },
     { name: 'options', type: 'Array<{ label, value, disabled? }>', default: '[]', desc: '普通选项' },
     { name: 'groups', type: 'Array<{ label, options }>', default: '[]', desc: '分组选项，组内 options 结构同上' },
     { name: 'mode', type: 'popover | dialog', default: 'popover', desc: '浮层菜单或弹框选择' },
+    { name: 'align', type: 'left | center | right', default: 'center', desc: 'popover 与触发器的对齐方式' },
     { name: 'width', type: 'number | string', default: '240', desc: 'popover 模式下的面板宽度' },
     { name: 'size', type: 'number | string', default: '18', desc: '复选框尺寸，数字按 px 处理；边框与勾线粗细按比例缩放' },
     { name: 'title', type: 'string', default: '选择', desc: 'dialog 模式下的弹框标题' },

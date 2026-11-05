@@ -7,6 +7,11 @@
     font-size: 13px;
     line-height: 1.4;
     color: var(--wa_color_text);
+    cursor: pointer;
+}
+
+.wa_choice_row:has(:disabled) {
+    cursor: not-allowed;
 }
 
 .wa_choice_label {

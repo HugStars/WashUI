@@ -135,6 +135,7 @@ pnpm dev:docs
 | `emptyText` | 空列表文案 |
 | `placeholder` | 未选择时的占位文本 |
 | `hint` / `error` | 表单提示与错误；错误优先 |
+| `rule` | 组件级校验规则：`required`、`min`、`max`、`pattern`、`validator`、`message`、`trigger`；Input / Textarea / Select 支持 |
 | `frosted` | 白色磨砂半透明表面，与 AppPopover 的玻璃面板一致；Button、Input、Select、Chip、Card 支持 |
 
 ## 事件约定
@@ -148,6 +149,34 @@ pnpm dev:docs
 | `reject` | `{ file, reason }` | Upload 拒绝文件 |
 | `remove` | `file, index` | Upload 移除文件 |
 | `change` | `theme` | ThemeToggle 切换主题 |
+
+## 校验规则
+
+Input、Textarea、Select 支持 `rule`，不再只能用 `error` 手动传入文案。
+
+```js
+const rule = {
+    required: true,
+    min: 2,
+    max: 20,
+    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    validator: value => true, // false / 字符串 / Error 表示失败
+    message: '请输入 2-20 个字符',
+    trigger: ['blur', 'change'],
+}
+```
+
+```html
+<AppInput v-model="name" label="名称" :rule="rule" />
+<AppTextarea v-model="note" :rule="{ required: true, min: 5 }" />
+<AppSelect v-model="env" :options="options" :rule="{ required: true, message: '请选择环境' }" />
+```
+
+- `rule` 可以是对象或数组。
+- 默认触发：Input / Textarea 为 `blur`，Select 为 `change`。
+- `trigger` 支持 `blur`、`input`、`change` 或数组。
+- `error` 仍然保留，且优先于 rule 自动生成的文案，适合服务端错误。
+- 组件内部使用 `useValidation`，也可以直接导入它构建自定义表单控件。
 
 ## 目录
 
@@ -250,7 +279,7 @@ import '@wash/ui/style.css'
 | 表单 | AppInput、AppTextarea、AppSwitch、AppCheck、AppCheckGroup、AppRadio、AppRadioGroup、AppSelect、AppSelectPanel、AppChoiceList、AppCheckPanel、AppRadioPanel、AppUpload |
 | 反馈 | AppPanel、AppPopover、AppDialog、AppCheckMenu、Toast、Loading |
 | 布局 | AppShell、AppRouteBar、PageTransition、PageHeader |
-| 能力 | useTheme、useClipboard、useRequest、useChoiceGroup、useChoiceSummary |
+| 能力 | useTheme、useClipboard、useRequest、useChoiceGroup、useChoiceSummary、useValidation |
 | 基础能力 | 图标、tokens、代码高亮、主题切换 |
 
 ### 进行中

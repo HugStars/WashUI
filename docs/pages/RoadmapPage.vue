@@ -21,7 +21,7 @@
                 </div>
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">布局与能力</p>
-                    <p>AppShell、AppRouteBar、PageTransition、PageHeader、useTheme、useClipboard、useRequest、useChoiceGroup、useChoiceSummary</p>
+                    <p>AppShell、AppRouteBar、PageTransition、PageHeader、useTheme、useClipboard、useRequest、useChoiceGroup、useChoiceSummary、useValidation</p>
                 </div>
             </AppPanel>
 

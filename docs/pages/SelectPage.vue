@@ -1,6 +1,6 @@
 <template>
     <DocPage category="表单" name="AppSelect" title="下拉框"
-        description="基于 AppPopover 与 AppSelectPanel 的自定义下拉选择，不使用原生 select。支持 v-model、标签、提示、校验、分组、多选与自定义选中标记。">
+        description="基于 AppPopover 与 AppSelectPanel 的自定义下拉选择，不使用原生 select。支持 v-model、标签、提示、校验规则、分组、多选与自定义选中标记。">
         <DemoBlock title="基础" description="v-model 绑定选中值；选项较多时面板内部滚动，并自动把已选项滚动到中间。" :code="baseCode">
             <div class="doc_grid">
                 <AppSelect v-model="env" label="环境" :options="envOptions" hint="用于区分部署环境" />
@@ -23,21 +23,36 @@
             <AppSelect v-model="component" label="组件" :groups="groups" hint="按分类选择组件" />
         </DemoBlock>
 
-        <DemoBlock title="选中标记" description="默认在选中项右侧显示 ✓，check-icon 可关闭、换成自定义字符，或用图标名由内置 AppIcon 渲染。" :code="checkCode">
+        <DemoBlock title="选中标记"
+            description="默认在选中项右侧显示 ✓，check-icon 可关闭、换成自定义字符或图标名；check-position=before 可把标记放到标签前。"
+            :code="checkCode">
             <div class="doc_grid">
                 <AppSelect v-model="marked" label="默认对勾" :options="envOptions" />
                 <AppSelect v-model="plain" label="不显示对勾" :check-icon="false" :options="envOptions" />
                 <AppSelect v-model="dot" label="自定义字符" check-icon="●" :options="envOptions" />
                 <AppSelect v-model="iconChecked" label="图标名" check-icon="check" :options="envOptions" />
+                <AppSelect v-model="markedBefore" label="标记在前" check-icon="check" check-position="before"
+                    :options="envOptions" />
             </div>
         </DemoBlock>
 
-        <DemoBlock title="尺寸与状态" description="默认小尺寸，size=md 可放大；支持错误与禁用状态。" :code="stateCode">
+        <DemoBlock title="尺寸与状态" description="默认小尺寸，size=md 可放大；支持规则校验与禁用状态。"
+            :code="stateCode">
             <div class="doc_grid">
                 <AppSelect v-model="sm" label="默认尺寸" :options="envOptions" />
                 <AppSelect v-model="mdSize" label="中尺寸" size="md" :options="envOptions" />
-                <AppSelect v-model="invalid" label="校验" error="请选择一个环境" :options="envOptions" />
+                <AppSelect v-model="invalid" label="校验" :options="envOptions" :rule="envRule" />
                 <AppSelect model-value="prod" label="禁用" disabled :options="envOptions" />
+            </div>
+        </DemoBlock>
+
+        <DemoBlock title="校验规则"
+            description="rule 在 change 或 blur 时校验；多选 required 会在全部取消后提示，error 仍可手动覆盖。">
+            <div class="doc_grid">
+                <AppSelect v-model="ruleEnv" label="必选环境" placeholder="请选择" :options="envOptions"
+                    :rule="envRule" />
+                <AppSelect v-model="ruleValues" multiple label="至少选择一项" :options="notifyOptions"
+                    :rule="notifyRule" />
             </div>
         </DemoBlock>
 
@@ -64,6 +79,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { AppSelect } from '@wash/ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const env = ref('prod')
@@ -72,6 +88,10 @@ const multi = ref(['email'])
 const multiGrouped = ref(['button', 'input'])
 const frostedSingle = ref('prod')
 const frostedMultiple = ref(['dev'])
+const ruleEnv = ref('')
+const ruleValues = ref([])
+const envRule = { required: true, message: '请选择一个环境' }
+const notifyRule = { required: true, message: '请至少选择一种通知方式' }
 const sm = ref('dev')
 const mdSize = ref('dev')
 const invalid = ref('')
@@ -80,6 +100,7 @@ const marked = ref('stage')
 const plain = ref('dev')
 const dot = ref('dev')
 const iconChecked = ref('dev')
+const markedBefore = ref('dev')
 
 const envOptions = [
     { label: '开发环境', value: 'dev' },
@@ -118,10 +139,12 @@ const propsRows = [
     { name: 'label', type: 'string', default: "''", desc: '触发器标签' },
     { name: 'hint', type: 'string', default: "''", desc: '无错误时显示的提示文案' },
     { name: 'error', type: 'string', default: "''", desc: '错误文案，显示时优先于 hint' },
+    { name: 'rule', type: 'Object | Array', default: 'null', desc: '校验规则；支持 required、min、max、pattern、validator、message、trigger' },
     { name: 'placeholder', type: 'string', default: "''", desc: '未选中时的占位文本' },
     { name: 'size', type: 'md | sm', default: 'sm', desc: '默认小尺寸，md 时触发器与面板间距更宽松' },
     { name: 'multiple', type: 'boolean', default: 'false', desc: '开启多选；选项以复选框呈现，选择后不关闭面板' },
     { name: 'checkIcon', type: 'boolean | string', default: 'true', desc: '选中标记：true 显示 ✓，false 关闭，字符串自定义字符或图标名；多选时忽略' },
+    { name: 'checkPosition', type: 'before | after', default: 'after', desc: '选中标记在标签前或后；多选时忽略' },
     { name: 'iconComponent', type: 'Component', default: 'AppIcon', desc: '选项图标与 checkIcon 图标名所用的组件，默认内置 AppIcon，可覆盖' },
     { name: 'emptyText', type: 'string', default: '暂无选项', desc: '没有可选项时面板的提示文案' },
     { name: 'frosted', type: 'boolean', default: 'false', desc: '触发器使用白色磨砂半透明表面，与 AppPopover 一致' },
@@ -179,6 +202,6 @@ const emptyCode = `<AppSelect v-model="value" label="空列表" :options="[]" em
 
 const stateCode = `<AppSelect v-model="value" label="默认尺寸" :options="envOptions" />
 <AppSelect v-model="mdValue" label="中尺寸" size="md" :options="envOptions" />
-<AppSelect v-model="invalid" label="校验" error="请选择一个环境" :options="envOptions" />
+<AppSelect v-model="invalid" label="校验" :options="envOptions" :rule="{ required: true, message: '请选择一个环境' }" />
 <AppSelect model-value="prod" label="禁用" disabled :options="envOptions" />`
 </script>

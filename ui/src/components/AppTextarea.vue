@@ -5,19 +5,19 @@
         </label>
 
         <div class="wa_textarea" :class="[`wa_textarea_${size}`, {
-            on: error,
+            on: DisplayError,
             off: disabled || readonly,
             wa_frosted: frosted,
         }]">
             <textarea :id="TextareaId" ref="TextareaEl" v-bind="$attrs" class="wa_textarea_control"
                 :value="modelValue ?? ''" :rows="rows" :cols="cols" :wrap="wrap" :maxlength="maxlength"
                 :style="{ resize }" :disabled="disabled" :readonly="readonly"
-                :aria-invalid="error ? 'true' : undefined" :aria-describedby="DescribedBy"
-                :aria-label="label ? undefined : ariaLabel" @input="OnInput"></textarea>
+                :aria-invalid="DisplayError ? 'true' : undefined" :aria-describedby="DescribedBy"
+                :aria-label="label ? undefined : ariaLabel" @input="HandleInput" @blur="HandleBlur"></textarea>
         </div>
 
-        <div v-if="showCount || error || hint" class="wa_textarea_meta">
-            <p v-if="error" :id="`${TextareaId}-error`" class="wa_field_error">{{ error }}</p>
+        <div v-if="showCount || DisplayError || hint" class="wa_textarea_meta">
+            <p v-if="DisplayError" :id="`${TextareaId}-error`" class="wa_field_error">{{ DisplayError }}</p>
             <p v-else-if="hint" :id="`${TextareaId}-hint`" class="wa_field_hint">{{ hint }}</p>
             <span v-if="showCount" class="wa_textarea_count">{{ CountText }}</span>
         </div>
@@ -26,6 +26,7 @@
 
 <script setup>
 import { computed, ref, useId } from 'vue'
+import { useValidation } from '../composables/useValidation.js'
 
 defineOptions({ inheritAttrs: false })
 
@@ -81,6 +82,11 @@ const props = defineProps({
     },
     /** 白色磨砂半透明表面，与 AppPopover 面板一致 */
     frosted: Boolean,
+    /** 校验规则对象或数组；支持 required、min、max、pattern、validator、message、trigger */
+    rule: {
+        type: [Object, Array],
+        default: null,
+    },
     ariaLabel: {
         type: String,
         default: '文本域',
@@ -93,7 +99,14 @@ const emit = defineEmits(['update:modelValue'])
 
 const TextareaId = useId()
 const TextareaEl = ref(null)
-const DescribedBy = computed(() => (props.error ? `${TextareaId}-error` : props.hint ? `${TextareaId}-hint` : undefined))
+const { DisplayError, OnBlur: ValidateBlur, OnInput: ValidateInput } = useValidation(
+    props,
+    () => props.modelValue,
+    { defaultTrigger: 'blur' }
+)
+const DescribedBy = computed(() => (DisplayError.value
+    ? `${TextareaId}-error`
+    : props.hint ? `${TextareaId}-hint` : undefined))
 const Length = computed(() => String(props.modelValue ?? '').length)
 const HasMaxlength = computed(
     () => props.maxlength !== undefined && props.maxlength !== null && props.maxlength !== ''
@@ -102,8 +115,14 @@ const CountText = computed(() => HasMaxlength.value
     ? `${Length.value} / ${props.maxlength}`
     : `${Length.value}`)
 
-function OnInput(event) {
-    emit('update:modelValue', event.target.value)
+function HandleInput(event) {
+    const value = event.target.value
+    emit('update:modelValue', value)
+    ValidateInput(value)
+}
+
+function HandleBlur() {
+    ValidateBlur(props.modelValue)
 }
 </script>
 

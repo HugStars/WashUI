@@ -1,5 +1,5 @@
 <template>
-    <div class="wa_choice_row" :style="BetweenStyle">
+    <div class="wa_choice_row" :style="BetweenStyle" @click.self="Toggle">
         <label v-if="HasLabel && LabelPosition === 'before'" :id="`${CheckId}-label`" class="wa_choice_label"
             :for="CheckId">
             <slot>{{ label }}</slot>

@@ -8,10 +8,11 @@
             :padding="PopoverPadding" :disabled="disabled">
             <template #trigger="{ open, toggle }">
                 <button :id="SelectId" v-bind="$attrs" type="button" class="wa_select_trigger"
-                    :class="{ on: error, off: disabled, wa_select_sm: size === 'sm', wa_frosted: frosted }"
-                    :disabled="disabled" :aria-invalid="error ? 'true' : undefined" :aria-describedby="DescribedBy"
-                    :aria-haspopup="multiple ? 'dialog' : 'listbox'" :aria-expanded="open"
-                    @keydown.down.prevent="toggle" @keydown.up.prevent="toggle">
+                    :class="{ on: DisplayError, off: disabled, wa_select_sm: size === 'sm', wa_frosted: frosted }"
+                    :disabled="disabled" :aria-invalid="DisplayError ? 'true' : undefined"
+                    :aria-describedby="DescribedBy" :aria-haspopup="multiple ? 'dialog' : 'listbox'"
+                    :aria-expanded="open" @keydown.down.prevent="toggle" @keydown.up.prevent="toggle"
+                    @blur="HandleBlur">
                     <span class="wa_select_value"
                         :class="{ wa_select_placeholder: multiple ? !Values.length : !Selected }">{{ Shown }}</span>
                     <AppIcon class="wa_select_arrow" name="chevron" :size="15" />
@@ -23,12 +24,12 @@
                     :size="PanelSize" :disabled="disabled" :empty-text="emptyText"
                     @update:model-value="UpdateMultiple" />
                 <AppSelectPanel v-else :groups="groups" :options="options" :model-value="modelValue" :size="size"
-                    :check-icon="checkIcon" :icon-component="iconComponent" :empty-text="emptyText"
-                    @select="item => Choose(item, close)" />
+                    :check-icon="checkIcon" :check-position="checkPosition" :icon-component="iconComponent"
+                    :empty-text="emptyText" @select="item => Choose(item, close)" />
             </template>
         </AppPopover>
 
-        <p v-if="error" :id="`${SelectId}-error`" class="wa_field_error">{{ error }}</p>
+        <p v-if="DisplayError" :id="`${SelectId}-error`" class="wa_field_error">{{ DisplayError }}</p>
         <p v-else-if="hint" :id="`${SelectId}-hint`" class="wa_field_hint">{{ hint }}</p>
     </div>
 </template>
@@ -36,6 +37,7 @@
 <script setup>
 import { computed, useId } from 'vue'
 import { useChoiceSummary } from '../composables/useChoiceSummary.js'
+import { useValidation } from '../composables/useValidation.js'
 import AppCheckPanel from './AppCheckPanel.vue'
 import AppIcon from './AppIcon.vue'
 import AppPopover from './AppPopover.vue'
@@ -86,6 +88,12 @@ const props = defineProps({
         type: [Boolean, String],
         default: true,
     },
+    /** 选中标记的位置：before 在标签前，after 在标签后 */
+    checkPosition: {
+        type: String,
+        default: 'after',
+        allows: ['before', 'after'],
+    },
     /** 图标组件，默认使用内置 AppIcon，可替换为其他图标库 */
     iconComponent: {
         type: [Object, Function],
@@ -97,6 +105,11 @@ const props = defineProps({
         default: '暂无选项',
     },
     multiple: Boolean,
+    /** 校验规则对象或数组；支持 required、min、max、pattern、validator、message、trigger */
+    rule: {
+        type: [Object, Array],
+        default: null,
+    },
     /** 白色磨砂半透明表面，与 AppPopover 面板一致 */
     frosted: Boolean,
     disabled: Boolean,
@@ -108,23 +121,34 @@ const SelectId = useId()
 const PopoverPadding = computed(() => props.size === 'sm' ? 6 : 8)
 const PanelSize = computed(() => props.size === 'sm' ? 18 : 20)
 const { AllOptions, Values, Summary } = useChoiceSummary(props)
+const { DisplayError, OnBlur: ValidateBlur, OnChange: ValidateChange } = useValidation(
+    props,
+    () => props.multiple ? Values.value : props.modelValue,
+    { defaultTrigger: 'change' }
+)
 const Selected = computed(() => AllOptions.value.find(item => item.value === props.modelValue))
 const Shown = computed(() => props.multiple
     ? Summary.value
     : Selected.value?.label || props.placeholder || '请选择')
 const ariaLabel = computed(() => props.label || props.placeholder || '选择')
-const DescribedBy = computed(() => (props.error ? `${SelectId}-error` : props.hint ? `${SelectId}-hint` : undefined))
+const DescribedBy = computed(() => (DisplayError.value ? `${SelectId}-error` : props.hint ? `${SelectId}-hint` : undefined))
 
 function Choose(item, close) {
     if (item.disabled) return
     emit('update:modelValue', item.value)
     emit('change', item.value)
+    ValidateChange(item.value)
     close()
 }
 
 function UpdateMultiple(values) {
     emit('update:modelValue', values)
     emit('change', values)
+    ValidateChange(values)
+}
+
+function HandleBlur() {
+    ValidateBlur(props.multiple ? Values.value : props.modelValue)
 }
 </script>
 

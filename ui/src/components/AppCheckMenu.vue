@@ -20,8 +20,8 @@
         </AppDialog>
     </template>
 
-    <AppPopover v-else placement="bottom" :width="width" :padding="6" role="dialog" :aria-label="ariaLabel"
-        :disabled="disabled">
+    <AppPopover v-else :placement="PopoverPlacement" :width="width" :padding="6" role="dialog"
+        :aria-label="ariaLabel" :disabled="disabled">
         <template #trigger="{ open, toggle }">
             <slot name="trigger" :open="open" :toggle="toggle">
                 <AppButton class="wa_check_menu_trigger" variant="line" size="sm" :disabled="disabled"
@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useChoiceSummary } from '../composables/useChoiceSummary.js'
 import AppButton from './AppButton.vue'
 import AppCheckPanel from './AppCheckPanel.vue'
@@ -64,6 +64,12 @@ const props = defineProps({
         type: String,
         default: 'popover',
         allows: ['popover', 'dialog'],
+    },
+    /** popover 的对齐方式 */
+    align: {
+        type: String,
+        default: 'center',
+        allows: ['left', 'center', 'right'],
     },
     /** popover 模式下的面板宽度 */
     width: {
@@ -96,6 +102,9 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'change'])
 
 const DialogOpen = ref(false)
+const PopoverPlacement = computed(() => props.align === 'left'
+    ? 'bottom-left'
+    : props.align === 'right' ? 'bottom-right' : 'bottom')
 const { Values, Summary } = useChoiceSummary(props)
 
 function Update(values) {

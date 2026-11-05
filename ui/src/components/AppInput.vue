@@ -4,13 +4,14 @@
             <slot name="label">{{ label }}</slot>
         </label>
         <div class="wa_input"
-            :class="{ on: error, off: disabled, wa_input_sm: size === 'sm', wa_frosted: frosted }">
+            :class="{ on: DisplayError, off: disabled, wa_input_sm: size === 'sm', wa_frosted: frosted }">
             <span v-if="$slots.prefix" class="wa_input_affix">
                 <slot name="prefix" />
             </span>
             <input :id="InputId" ref="InputEl" v-bind="$attrs" class="wa_input_control" :type="type"
                 :value="modelValue ?? ''" :disabled="disabled" :readonly="readonly"
-                :aria-invalid="error ? 'true' : undefined" :aria-describedby="DescribedBy" @input="OnInput">
+                :aria-invalid="DisplayError ? 'true' : undefined" :aria-describedby="DescribedBy"
+                @input="HandleInput" @blur="HandleBlur">
             <Transition enter-active-class="wa_input_clear_enter_active"
                 leave-active-class="wa_input_clear_leave_active">
                 <button v-if="clearable && modelValue" type="button" class="wa_input_clear" aria-label="清空"
@@ -22,13 +23,14 @@
                 <slot name="suffix" />
             </span>
         </div>
-        <p v-if="error" :id="ErrorId" class="wa_field_error">{{ error }}</p>
+        <p v-if="DisplayError" :id="ErrorId" class="wa_field_error">{{ DisplayError }}</p>
         <p v-else-if="hint" :id="HintId" class="wa_field_hint">{{ hint }}</p>
     </div>
 </template>
 
 <script setup>
 import { computed, ref, useId } from 'vue'
+import { useValidation } from '../composables/useValidation.js'
 import AppIcon from './AppIcon.vue'
 
 defineOptions({ inheritAttrs: false })
@@ -67,6 +69,11 @@ const props = defineProps({
     clearable: Boolean,
     disabled: Boolean,
     readonly: Boolean,
+    /** 校验规则对象或数组；支持 required、min、max、pattern、validator、message、trigger */
+    rule: {
+        type: [Object, Array],
+        default: null,
+    },
     /** 白色磨砂半透明表面，与 AppPopover 面板一致 */
     frosted: Boolean,
 })
@@ -77,15 +84,27 @@ const InputId = useId()
 const HintId = `${InputId}-hint`
 const ErrorId = `${InputId}-error`
 const InputEl = ref(null)
-const DescribedBy = computed(() => (props.error ? ErrorId : props.hint ? HintId : undefined))
+const { DisplayError, OnBlur: ValidateBlur, OnInput: ValidateInput } = useValidation(
+    props,
+    () => props.modelValue,
+    { defaultTrigger: 'blur' }
+)
+const DescribedBy = computed(() => (DisplayError.value ? ErrorId : props.hint ? HintId : undefined))
 
-function OnInput(event) {
-    emit('update:modelValue', event.target.value)
+function HandleInput(event) {
+    const value = event.target.value
+    emit('update:modelValue', value)
+    ValidateInput(value)
+}
+
+function HandleBlur() {
+    ValidateBlur(props.modelValue)
 }
 
 function Clear() {
     emit('update:modelValue', '')
     emit('clear')
+    ValidateInput('')
     InputEl.value?.focus()
 }
 </script>

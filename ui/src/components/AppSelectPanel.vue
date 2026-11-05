@@ -7,12 +7,15 @@
                 :disabled="item.disabled" @click="emit('select', item)">
                 <component v-if="item.icon && iconComponent" :is="iconComponent" :name="item.icon" :size="17"
                     class="wa_select_option_icon" aria-hidden="true" />
-                <span>{{ item.label }}</span>
+                <span class="wa_select_label"
+                    :class="{ wa_select_label_before: checkPosition === 'before' }">{{ item.label }}</span>
                 <template v-if="item.value === modelValue">
-                    <span v-if="checkRender?.mode === 'text'" class="wa_select_check" aria-hidden="true">
+                    <span v-if="checkRender?.mode === 'text'" class="wa_select_check"
+                        :class="{ wa_select_check_before: checkPosition === 'before' }" aria-hidden="true">
                         {{ checkRender.value }}</span>
                     <component v-else-if="checkRender?.mode === 'icon'" :is="iconComponent" :name="checkRender.name"
-                        class="wa_select_check" aria-hidden="true" />
+                        class="wa_select_check" :class="{ wa_select_check_before: checkPosition === 'before' }"
+                        aria-hidden="true" />
                 </template>
             </button>
         </div>
@@ -22,12 +25,15 @@
             :disabled="item.disabled" @click="emit('select', item)">
             <component v-if="item.icon && iconComponent" :is="iconComponent" :name="item.icon" :size="17"
                 class="wa_select_option_icon" aria-hidden="true" />
-            <span>{{ item.label }}</span>
+            <span class="wa_select_label"
+                :class="{ wa_select_label_before: checkPosition === 'before' }">{{ item.label }}</span>
             <template v-if="item.value === modelValue">
-                <span v-if="checkRender?.mode === 'text'" class="wa_select_check" aria-hidden="true">
+                <span v-if="checkRender?.mode === 'text'" class="wa_select_check"
+                    :class="{ wa_select_check_before: checkPosition === 'before' }" aria-hidden="true">
                     {{ checkRender.value }}</span>
                 <component v-else-if="checkRender?.mode === 'icon'" :is="iconComponent" :name="checkRender.name"
-                    class="wa_select_check" aria-hidden="true" />
+                    class="wa_select_check" :class="{ wa_select_check_before: checkPosition === 'before' }"
+                    aria-hidden="true" />
             </template>
         </button>
 
@@ -66,6 +72,12 @@ const props = defineProps({
     checkIcon: {
         type: [Boolean, String],
         default: true,
+    },
+    /** 选中标记的位置：before 在标签前，after 在标签后 */
+    checkPosition: {
+        type: String,
+        default: 'after',
+        allows: ['before', 'after'],
     },
     /**
      * 图标组件，用于渲染「图标名称」。
@@ -261,8 +273,19 @@ const checkRender = computed(() => {
 }
 
 .wa_select_option_icon {
+    order: 0;
     flex: none;
     color: var(--wa_color_text_subtle);
+}
+
+.wa_select_label {
+    flex: 1;
+    min-width: 0;
+    order: 1;
+}
+
+.wa_select_label_before {
+    order: 2;
 }
 
 .wa_select_option.on .wa_select_option_icon {
@@ -282,7 +305,7 @@ const checkRender = computed(() => {
 }
 
 .wa_select_check {
-    margin-left: auto;
+    order: 2;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -292,6 +315,10 @@ const checkRender = computed(() => {
     font-size: 12px;
     line-height: 1;
     animation: wa_select_check_in .18s var(--wa_ease_spring) both;
+}
+
+.wa_select_check_before {
+    order: 1;
 }
 
 @keyframes wa_select_check_in {

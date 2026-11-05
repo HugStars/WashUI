@@ -43,7 +43,9 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="选中标记" description="checkIcon 控制选中项右侧标记：默认 ✓、false 关闭、短字符按文本显示、长名称按图标名渲染。" :code="checkCode">
+        <DemoBlock title="选中标记"
+            description="checkIcon 控制选中项标记：默认 ✓、false 关闭、短字符按文本显示、长名称按图标名渲染；checkPosition 控制标记在标签前或后。"
+            :code="checkCode">
             <div class="doc_grid">
                 <div>
                     <p class="doc_panel_caption">默认 ✓</p>
@@ -64,6 +66,11 @@
                     <p class="doc_panel_caption">图标名</p>
                     <AppSelectPanel :options="basicOptions" :model-value="markIcon" check-icon="check"
                         @select="item => markIcon = item.value" />
+                </div>
+                <div>
+                    <p class="doc_panel_caption">标记在前</p>
+                    <AppSelectPanel :options="basicOptions" :model-value="markBefore" check-icon="check"
+                        check-position="before" @select="item => markBefore = item.value" />
                 </div>
             </div>
         </DemoBlock>
@@ -98,6 +105,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { AppSelectPanel } from '@wash/ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const singleValue = ref('dev')
@@ -109,6 +117,7 @@ const markDefault = ref('dev')
 const markNone = ref('dev')
 const markDot = ref('dev')
 const markIcon = ref('dev')
+const markBefore = ref('dev')
 const defaultPanel = ref('dev')
 const mdPanel = ref('dev')
 
@@ -150,6 +159,7 @@ const propsRows = [
     { name: 'emptyText', type: 'string', default: '暂无选项', desc: '空状态文案' },
     { name: 'size', type: 'md | sm', default: 'sm', desc: '默认小尺寸，md 时选项间距、内边距与滚动条更宽松' },
     { name: 'checkIcon', type: 'boolean | string', default: 'true', desc: '选中标记：true 显示 ✓，false 关闭，字符串按字符或图标名渲染' },
+    { name: 'checkPosition', type: 'before | after', default: 'after', desc: '选中标记在标签前或后' },
     { name: 'iconComponent', type: 'Component', default: 'AppIcon', desc: '选项图标与 checkIcon 图标名所用的组件，默认内置 AppIcon，可覆盖' },
 ]
 

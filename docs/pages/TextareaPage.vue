@@ -1,6 +1,6 @@
 <template>
     <DocPage category="表单" name="AppTextarea" title="文本域"
-        description="多行文本输入，属性与样式和 AppInput 对齐，支持 rows、cols、resize、字数统计、尺寸、校验、只读、禁用与磨砂表面。">
+        description="多行文本输入，属性与样式和 AppInput 对齐，支持 rows、cols、resize、字数统计、校验规则、尺寸、只读、禁用与磨砂表面。">
         <DemoBlock title="基础与字数统计"
             description="show-count 在底部右侧显示字数；有 maxlength 时显示当前/上限，没有时只显示当前字数。">
             <div class="doc_textarea_stack">
@@ -34,11 +34,18 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="校验、只读与禁用" description="error 显示错误边框与文案；readonly 和 disabled 都会阻止编辑。">
+        <DemoBlock title="校验、只读与禁用" description="rule 校验失败会显示错误边框与文案；readonly 和 disabled 都会阻止编辑。">
             <div class="doc_textarea_grid">
-                <AppTextarea v-model="invalid" label="校验" error="内容不能为空" :rows="2" />
+                <AppTextarea v-model="invalid" label="校验" :rule="requiredRule" :rows="2" />
                 <AppTextarea model-value="只读内容" label="只读" readonly :rows="2" />
                 <AppTextarea model-value="禁用内容" label="禁用" disabled :rows="2" />
+            </div>
+        </DemoBlock>
+
+        <DemoBlock title="校验规则" description="rule 在失焦后自动校验；show-count 同时显示字数统计。">
+            <div class="doc_textarea_grid">
+                <AppTextarea v-model="ruleText" label="反馈内容" :rows="3" :maxlength="200" show-count
+                    :rule="textRule" hint="至少输入 5 个字" />
             </div>
         </DemoBlock>
 
@@ -46,7 +53,8 @@
             <div class="doc_frosted_stage">
                 <div class="doc_textarea_grid">
                     <AppTextarea v-model="frosted" label="磨砂文本域" :rows="3" placeholder="输入内容" frosted />
-                    <AppTextarea v-model="frosted" label="磨砂 + 校验" error="示例错误" :rows="2" frosted />
+                    <AppTextarea v-model="frostedInvalid" label="磨砂 + 校验" :rule="requiredRule" :rows="2"
+                        placeholder="失焦后校验" frosted />
                 </div>
             </div>
         </DemoBlock>
@@ -82,13 +90,18 @@ const small = ref('')
 const medium = ref('')
 const invalid = ref('')
 const frosted = ref('')
+const frostedInvalid = ref('')
 const wrapped = ref('')
+const ruleText = ref('')
+const requiredRule = { required: true, message: '内容不能为空' }
+const textRule = { required: true, min: 5, message: '至少输入 5 个字' }
 
 const propsRows = [
     { name: 'modelValue', type: 'string | number', default: "''", desc: '输入值，支持 v-model' },
     { name: 'label', type: 'string', default: "''", desc: '标签文案' },
     { name: 'hint', type: 'string', default: "''", desc: '提示文案' },
     { name: 'error', type: 'string', default: "''", desc: '错误文案，优先于 hint' },
+    { name: 'rule', type: 'Object | Array', default: 'null', desc: '校验规则；支持 required、min、max、pattern、validator、message、trigger' },
     { name: 'rows', type: 'number | string', default: '3', desc: '初始行数' },
     { name: 'cols', type: 'number | string', default: 'undefined', desc: '原生 cols；实际宽度由父容器控制' },
     { name: 'wrap', type: 'soft | hard | off', default: 'soft', desc: '原生换行方式' },
