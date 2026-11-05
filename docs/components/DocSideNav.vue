@@ -28,7 +28,7 @@ const Groups = computed(() => props.section.groups.map(group => ({
 })))
 
 function Go(item) {
-    if (item?.path && item.path !== route.path) router.navigate(item.path)
+    if (item?.path && item.path !== route.path) router.navigate(item.path, { mode: 'push' })
 }
 </script>
 

@@ -85,16 +85,26 @@ export function createAppRouter(options = {}) {
 
     /**
      * 导航菜单跳转：
-     * - 未配置 home：直接 replace
-     * - home 进入非 home：push
-     * - 非 home 之间：replace
-     * - 回到 home：上一页是 home 时 back，否则 replace
+     * - mode='push'：始终写入历史栈（侧边栏、文档下拉等内容导航）
+     * - mode='replace'：始终替换当前历史
+     * - 默认 auto：未配置 home 时 replace；home → 非 home 时 push；非 home 之间 replace；回到 home 时优先 back
      */
-    function Navigate(to) {
+    function Navigate(to, options = {}) {
+        const mode = options.mode || 'auto'
         const current = router.currentRoute.value
         const target = router.resolve(to)
 
         if (target.fullPath === current.fullPath) return
+
+        if (mode === 'push') {
+            router.push(to)
+            return
+        }
+
+        if (mode === 'replace') {
+            router.replace(to)
+            return
+        }
 
         const homeRoute = ResolveHome()
 

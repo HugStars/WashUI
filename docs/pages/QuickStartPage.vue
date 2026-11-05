@@ -19,7 +19,7 @@
             <li>PageTransition 要求页面组件是单根元素；多块内容请用一个元素包住。</li>
             <li>主入口不自动加载发布后的 CSS，必须显式引入 @wash/ui/style.css。</li>
             <li>需要 tree-shaking 时使用 @wash/ui/components/* 和 @wash/ui/layout/* 子路径；createUi 会全量注册。</li>
-            <li>createAppRouter 设置 home 后，主页进入非主页使用 push，非主页之间使用 replace，回主页优先 back。</li>
+            <li>createAppRouter 设置 home 后，主页进入非主页使用 push，非主页之间使用 replace，回主页优先 back；侧边栏等内容导航可用 router.navigate(path, { mode: 'push' }) 强制写入历史栈。</li>
             <li>AppDialog 是受控组件，关闭需要绑定 v-model:open。</li>
         </ul>
 
