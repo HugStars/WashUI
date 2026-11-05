@@ -13,7 +13,7 @@
                 </div>
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">表单</p>
-                    <p>AppInput、AppSwitch、AppCheck、AppCheckGroup、AppRadio、AppRadioGroup、AppSelect、AppSelectPanel、AppChoiceList、AppCheckPanel、AppRadioPanel、AppUpload、AppEditor</p>
+                    <p>AppInput、AppTextarea、AppSwitch、AppCheck、AppCheckGroup、AppRadio、AppRadioGroup、AppSelect、AppSelectPanel、AppChoiceList、AppCheckPanel、AppRadioPanel、AppUpload</p>
                 </div>
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">反馈</p>

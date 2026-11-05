@@ -247,7 +247,7 @@ import '@wash/ui/style.css'
 | --- | --- |
 | 基础 | AppButton、AppCard、AppCode、AppChip、AppTabs、AppStat、AppNumber、AppEmpty、AppThemeToggle |
 | 加载 | AppSpinner、AppSkeleton |
-| 表单 | AppInput、AppSwitch、AppCheck、AppCheckGroup、AppRadio、AppRadioGroup、AppSelect、AppSelectPanel、AppChoiceList、AppCheckPanel、AppRadioPanel、AppUpload、AppEditor |
+| 表单 | AppInput、AppTextarea、AppSwitch、AppCheck、AppCheckGroup、AppRadio、AppRadioGroup、AppSelect、AppSelectPanel、AppChoiceList、AppCheckPanel、AppRadioPanel、AppUpload |
 | 反馈 | AppPanel、AppPopover、AppDialog、AppCheckMenu、Toast、Loading |
 | 布局 | AppShell、AppRouteBar、PageTransition、PageHeader |
 | 能力 | useTheme、useClipboard、useRequest、useChoiceGroup、useChoiceSummary |

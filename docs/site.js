@@ -49,7 +49,7 @@ export const componentGroups = [
             { name: 'select-panel', label: '下拉面板', component: 'AppSelectPanel', page: 'SelectPanelPage', path: '/components/select-panel', summary: '下拉框使用的可复用选项面板。' },
             { name: 'choice-list', label: '选择列表', component: 'AppChoiceList', page: 'ChoiceListPage', path: '/components/choice-list', summary: '复选框 / 单选框共享的列表面板核心。' },
             { name: 'upload', label: '上传', component: 'AppUpload', page: 'UploadPage', path: '/components/upload', summary: '选择、拖拽、校验与文件列表。' },
-            { name: 'editor', label: '富文本', component: 'AppEditor', page: 'EditorPage', path: '/components/editor', summary: '基于 contenteditable 的轻量编辑器。' },
+            { name: 'textarea', label: '文本域', component: 'AppTextarea', page: 'TextareaPage', path: '/components/textarea', summary: '多行输入，支持行数、列数、缩放、尺寸与磨砂。' },
         ],
     },
     {
