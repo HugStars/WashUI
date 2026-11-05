@@ -146,6 +146,9 @@ pnpm dev:docs
 | `change` | 当前模型 | 与 `update:modelValue` 同步，便于业务监听 |
 | `update:open` / `open` / `close` | `boolean` / 无 | Popover、Dialog |
 | `select` | `item` | SelectPanel 选中项 |
+| `update:selectedKeys` | 当前选择键 | 表格行选择 |
+| `update:sort` / `sort-change` | `{ key, order }` / `{ key, order, column }` | 表格排序 |
+| `page-size-change` | `{ pageSize, page }` | 分页每页条数变化 |
 | `reject` | `{ file, reason }` | Upload 拒绝文件 |
 | `remove` | `file, index` | Upload 移除文件 |
 | `change` | `theme` | ThemeToggle 切换主题 |
@@ -191,7 +194,9 @@ WashUI/
 │  │  │  ├─ AppRadioGroup.vue   单选框分组 / 排版
 │  │  │  ├─ AppChoiceList.vue   选择列表共享核心
 │  │  │  ├─ AppCheckPanel.vue   多选面板薄封装
-│  │  │  └─ AppRadioPanel.vue   单选面板薄封装
+│  │  │  ├─ AppRadioPanel.vue   单选面板薄封装
+│  │  │  ├─ AppTable.vue        数据表格
+│  │  │  └─ AppPagination.vue   分页
 │  │  ├─ layout/                AppShell、PageHeader、PageBar、AppRouteBar、PageTransition
 │  │  ├─ composables/           useClipboard、useRequest、useChoiceGroup、useChoiceSummary
 │  │  ├─ core/                  图标、主题、Toast、Loading、路由状态、插件
@@ -274,10 +279,11 @@ import '@wash/ui/style.css'
 
 | 分类 | 组件 |
 | --- | --- |
-| 基础 | AppButton（按钮）、AppCard（卡片）、AppCode（代码）、AppChip（标记）、AppTabs（标签页）、AppStat（统计）、AppNumber（数字跳动）、AppEmpty（空状态）、AppThemeToggle（主题切换） |
+| 基础 | AppButton（按钮）、AppCard（卡片）、AppCode（代码）、AppChip（标记）、AppTag（标签）、AppTabs（标签页）、AppStat（统计）、AppNumber（数字跳动）、AppEmpty（空状态）、AppThemeToggle（主题切换） |
 | 加载 | AppSpinner（加载圈）、AppSkeleton（骨架屏） |
+| 数据 | AppTable（表格）、AppPagination（分页） |
 | 表单 | AppInput（输入框）、AppTextarea（文本域）、AppSwitch（开关）、AppCheck（复选框）、AppCheckGroup（复选框组）、AppRadio（单选框）、AppRadioGroup（单选框组）、AppSelect（下拉框）、AppSelectPanel（下拉面板）、AppChoiceList（选择列表）、AppCheckPanel（多选面板）、AppRadioPanel（单选面板）、AppUpload（上传） |
-| 反馈 | AppPanel（展示框）、AppPopover（弹出框）、AppDialog（弹框）、AppCheckMenu（多选菜单）、Toast（轻提示）、Loading（加载） |
+| 反馈 | AppPanel（展示框）、AppPopover（弹出框）、AppDialog（弹框）、AppTooltip（文字提示）、AppCheckMenu（多选菜单）、Toast（轻提示）、Loading（加载） |
 | 布局 | AppShell（壳层）、AppRouteBar（路由进度条）、PageTransition（页面过渡）、PageHeader（页面标题）、PageBar（页面操作栏） |
 | 能力 | useTheme（主题）、useClipboard（剪贴板）、useRequest（请求）、useChoiceGroup（选择组状态）、useChoiceSummary（选择摘要）、useValidation（校验规则） |
 | 基础能力 | 图标、tokens、代码高亮、主题切换 |
@@ -293,8 +299,8 @@ import '@wash/ui/style.css'
 | 分类 | 计划 |
 | --- | --- |
 | 表单 | AppForm / AppFormItem（表单 / 表单项）、异步与跨字段校验、Slider（滑块）、Rate（评分）、ColorPicker（颜色选择）、DatePicker（日期选择）、TimePicker（时间选择）、Cascader（级联选择）、Transfer（穿梭框） |
-| 数据展示 | AppTable（表格）、AppTree（树）、AppTreeSelect（树选择）、AppVirtualList（虚拟列表）、AppVirtualTable（虚拟表格） |
-| 反馈与导航 | AppDrawer（抽屉）、AppNotification（通知）、AppTour（漫游引导）、AppTooltip（文字提示）、AppMenu（菜单）、AppDropdown（下拉菜单）、Command（命令面板） |
+| 数据展示 | AppTree（树）、AppTreeSelect（树选择）、AppVirtualList（虚拟列表）、AppVirtualTable（虚拟表格） |
+| 反馈与导航 | AppDrawer（抽屉）、AppNotification（通知）、AppTour（漫游引导）、AppMenu（菜单）、AppDropdown（下拉菜单）、Command（命令面板） |
 | 工程与质量 | 单元测试、视觉回归、SSR / Nuxt 适配、i18n、完整无障碍审计、发布流水线 |
 
 完整路线图见文档站 **指南 → 路线图**。
@@ -313,12 +319,13 @@ import '@wash/ui/style.css'
 - [x] 新增 `PageBar` 响应式页面操作栏与 `bleed` 铺满
 - [x] Input / Textarea / Select 支持 `rule` 校验
 - [x] 文档校验示例统一改为 `rule`
+- [x] 新增 `AppTable`、`AppPagination` 与对应文档页
 - [ ] 补齐 ChoiceList 更多自定义触发器示例
 - [ ] 为 PageBar 补充更多插槽内容示例与移动端回归
 - [ ] 为表单 `rule` 增加异步校验与跨字段校验
 - [ ] 为 Radio / RadioGroup 增加浏览器回归用例
 - [ ] 形成正式的版本迁移指南
-- [ ] 按路线图实现 Form、Table、Tree 等计划组件
+- [ ] 按路线图实现 Form、Tree 等计划组件
 
 ## 构建与发布
 

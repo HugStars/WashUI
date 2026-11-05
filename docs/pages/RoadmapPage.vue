@@ -5,7 +5,7 @@
             <AppPanel title="已完成" tone="success">
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">基础</p>
-                    <p>AppButton（按钮）、AppCard（卡片）、AppCode（代码）、AppChip（标记）、AppTabs（标签页）、AppStat（统计）、AppNumber（数字跳动）、AppEmpty（空状态）、AppThemeToggle（主题切换）</p>
+                    <p>AppButton（按钮）、AppCard（卡片）、AppCode（代码）、AppChip（标记）、AppTag（标签）、AppTabs（标签页）、AppStat（统计）、AppNumber（数字跳动）、AppEmpty（空状态）、AppThemeToggle（主题切换）</p>
                 </div>
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">加载</p>
@@ -17,7 +17,11 @@
                 </div>
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">反馈</p>
-                    <p>AppPanel（展示框）、AppPopover（弹出框）、AppDialog（弹框）、AppCheckMenu（多选菜单）、Toast（轻提示）、Loading（加载）</p>
+                    <p>AppPanel（展示框）、AppPopover（弹出框）、AppDialog（弹框）、AppTooltip（文字提示）、AppCheckMenu（多选菜单）、Toast（轻提示）、Loading（加载）</p>
+                </div>
+                <div class="doc_roadmap_group">
+                    <p class="doc_roadmap_label">数据</p>
+                    <p>AppTable（表格）、AppPagination（分页）</p>
                 </div>
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">布局与能力</p>
@@ -44,11 +48,11 @@
                 </div>
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">数据展示</p>
-                    <p>AppTable（表格）、AppTree（树）、AppTreeSelect（树选择）、AppVirtualList（虚拟列表）、AppVirtualTable（虚拟表格）</p>
+                    <p>AppTree（树）、AppTreeSelect（树选择）、AppVirtualList（虚拟列表）、AppVirtualTable（虚拟表格）、表格筛选 / 展开行 / 多级表头 / 列宽拖拽</p>
                 </div>
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">反馈与导航</p>
-                    <p>AppDrawer（抽屉）、AppNotification（通知）、AppTour（漫游引导）、AppTooltip（文字提示）、AppMenu（菜单）、AppDropdown（下拉菜单）、Command（命令面板）</p>
+                    <p>AppDrawer（抽屉）、AppNotification（通知）、AppTour（漫游引导）、AppMenu（菜单）、AppDropdown（下拉菜单）、Command（命令面板）</p>
                 </div>
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">工程与质量</p>
