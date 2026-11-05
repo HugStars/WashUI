@@ -110,7 +110,7 @@ PageHeader 必须放在 AppShell 内，并且放在 RouterView 与 PageTransitio
 | `AppSpinner` | `size` | 无 | 无 |
 | `AppSkeleton` | `width`、`height`、`radius` | 无 | 无 |
 | `AppInput` | `modelValue`、`label`、`hint`、`error`、`type`、`size`、`clearable`、`frosted`、`disabled`、`readonly` | `update:modelValue`、`clear` | `label`、`prefix`、`suffix` |
-| `AppTextarea` | `modelValue`、`label`、`hint`、`error`、`rows`、`cols`、`wrap`、`maxlength`、`resize`、`size`、`frosted`、`disabled`、`readonly` | `update:modelValue` | `label` |
+| `AppTextarea` | `modelValue`、`label`、`hint`、`error`、`rows`、`cols`、`wrap`、`maxlength`、`showCount`、`resize`、`size`、`frosted`、`disabled`、`readonly` | `update:modelValue` | `label` |
 | `AppSelect` | `modelValue`、`options`、`groups`、`label`、`hint`、`error`、`placeholder`、`size`、`frosted`、`disabled` | `update:modelValue`、`change` | `label` |
 | `AppSelectPanel` | `modelValue`、`options`、`groups`、`emptyText` | `select` | 无 |
 | `AppUpload` | `modelValue`、`label`、`hint`、`error`、`accept`、`multiple`、`maxSize`、`maxCount`、`disabled` | `update:modelValue`、`change`、`reject`、`remove` | 无 |

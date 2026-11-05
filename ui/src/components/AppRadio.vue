@@ -5,7 +5,7 @@
             <slot>{{ label }}</slot>
         </label>
 
-        <button :id="RadioId" type="button" class="wa_radio" :class="{ on: Checked }" role="radio"
+        <button :id="RadioId" type="button" class="wa_radio" :class="{ on: Checked, closing: Closing }" role="radio"
             :style="SizeStyle" :aria-checked="Checked"
             :aria-labelledby="HasLabel ? `${RadioId}-label` : undefined"
             :aria-label="HasLabel ? undefined : AccessibleLabel" :disabled="Disabled" @click="Select">
@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import { computed, useId, useSlots } from 'vue'
+import { computed, onUnmounted, ref, useId, useSlots, watch } from 'vue'
 import { useChoiceItemState } from '../composables/useChoiceGroup.js'
 
 const props = defineProps({
@@ -65,6 +65,29 @@ const SizeStyle = computed(() => ({
     '--wa_radio_size': typeof Size.value === 'number' ? `${Size.value}px` : Size.value,
 }))
 
+// 取消选中时让外圈短暂保持选中，等圆点缩小后再释放，取消过程更明显
+const ReducedMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false
+const Closing = ref(false)
+let CloseTimer = 0
+
+watch(Checked, (checked, wasChecked) => {
+    clearTimeout(CloseTimer)
+
+    if (checked || !wasChecked || ReducedMotion) {
+        Closing.value = false
+        return
+    }
+
+    Closing.value = true
+    CloseTimer = setTimeout(() => {
+        Closing.value = false
+    }, 280)
+})
+
+onUnmounted(() => clearTimeout(CloseTimer))
+
 function Select() {
     if (Disabled.value) return
 
@@ -98,8 +121,8 @@ function Select() {
     background: var(--wa_color_field);
     cursor: pointer;
     transition:
-        background var(--wa_duration_fast) var(--wa_ease_out),
-        box-shadow var(--wa_duration_fast) var(--wa_ease_out),
+        background var(--wa_duration_base) var(--wa_ease_out),
+        box-shadow var(--wa_duration_base) var(--wa_ease_out),
         transform var(--wa_duration_fast) var(--wa_ease_out);
 }
 
@@ -109,6 +132,11 @@ function Select() {
 }
 
 .wa_radio.on {
+    box-shadow: inset 0 0 0 var(--wa_radio_border) var(--wa_color_text);
+}
+
+/* 取消选中：外圈保持选中，圆点缩小后再释放 */
+.wa_radio.closing {
     box-shadow: inset 0 0 0 var(--wa_radio_border) var(--wa_color_text);
 }
 
@@ -138,8 +166,8 @@ function Select() {
     opacity: 0;
     transform: scale(.2);
     transition:
-        opacity var(--wa_duration_base) var(--wa_ease_out),
-        transform .26s var(--wa_ease_in);
+        opacity .26s var(--wa_ease_out),
+        transform .3s var(--wa_ease_in_out);
 }
 
 .wa_radio.on .wa_radio_dot {

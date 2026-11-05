@@ -1,10 +1,12 @@
 <template>
     <DocPage category="表单" name="AppTextarea" title="文本域"
-        description="多行文本输入，属性与样式和 AppInput 对齐，支持 rows、cols、resize、尺寸、校验、只读、禁用与磨砂表面。">
-        <DemoBlock title="基础" description="v-model 绑定字符串，hint 显示在下方，error 会替换 hint。">
+        description="多行文本输入，属性与样式和 AppInput 对齐，支持 rows、cols、resize、字数统计、尺寸、校验、只读、禁用与磨砂表面。">
+        <DemoBlock title="基础与字数统计"
+            description="show-count 在底部右侧显示字数；有 maxlength 时显示当前/上限，没有时只显示当前字数。">
             <div class="doc_textarea_stack">
-                <AppTextarea v-model="basic" label="备注" placeholder="输入备注内容..." hint="最多 200 字" :maxlength="200" />
-                <p class="wa_hint">当前长度：{{ basic.length }} / 200</p>
+                <AppTextarea v-model="basic" label="备注" placeholder="输入备注内容..." hint="最多 200 字" :maxlength="200"
+                    show-count />
+                <AppTextarea v-model="countOnly" label="只显示字数" placeholder="没有 maxlength 时只显示当前字数" show-count />
             </div>
         </DemoBlock>
 
@@ -16,12 +18,12 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="缩放" description="resize 支持 none、both、horizontal、vertical，默认 vertical。">
+        <DemoBlock title="缩放" description="resize 支持 none、both、horizontal、vertical，默认 none。">
             <div class="doc_textarea_grid">
-                <AppTextarea v-model="resizeNone" label="none" resize="none" :rows="3" />
+                <AppTextarea v-model="resizeNone" label="none（默认）" resize="none" :rows="3" />
                 <AppTextarea v-model="resizeBoth" label="both" resize="both" :rows="3" />
                 <AppTextarea v-model="resizeHorizontal" label="horizontal" resize="horizontal" :rows="3" />
-                <AppTextarea v-model="resizeVertical" label="vertical（默认）" resize="vertical" :rows="3" />
+                <AppTextarea v-model="resizeVertical" label="vertical" resize="vertical" :rows="3" />
             </div>
         </DemoBlock>
 
@@ -68,6 +70,7 @@ import { AppTextarea } from '@wash/ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const basic = ref('')
+const countOnly = ref('')
 const short = ref('')
 const tall = ref('')
 const columns = ref('')
@@ -90,7 +93,8 @@ const propsRows = [
     { name: 'cols', type: 'number | string', default: 'undefined', desc: '原生 cols；实际宽度由父容器控制' },
     { name: 'wrap', type: 'soft | hard | off', default: 'soft', desc: '原生换行方式' },
     { name: 'maxlength', type: 'number | string', default: 'undefined', desc: '原生最大长度' },
-    { name: 'resize', type: 'none | both | horizontal | vertical', default: 'vertical', desc: '拖动缩放方向' },
+    { name: 'showCount', type: 'boolean', default: 'false', desc: '在底部右侧显示字数统计' },
+    { name: 'resize', type: 'none | both | horizontal | vertical', default: 'none', desc: '拖动缩放方向' },
     { name: 'size', type: 'sm | md', default: 'sm', desc: '默认 sm，md 使用更大字号与内边距' },
     { name: 'frosted', type: 'boolean', default: 'false', desc: '白色磨砂半透明表面，与 AppPopover 一致' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用' },

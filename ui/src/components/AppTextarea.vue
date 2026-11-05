@@ -16,8 +16,11 @@
                 :aria-label="label ? undefined : ariaLabel" @input="OnInput"></textarea>
         </div>
 
-        <p v-if="error" :id="`${TextareaId}-error`" class="wa_field_error">{{ error }}</p>
-        <p v-else-if="hint" :id="`${TextareaId}-hint`" class="wa_field_hint">{{ hint }}</p>
+        <div v-if="showCount || error || hint" class="wa_textarea_meta">
+            <p v-if="error" :id="`${TextareaId}-error`" class="wa_field_error">{{ error }}</p>
+            <p v-else-if="hint" :id="`${TextareaId}-hint`" class="wa_field_hint">{{ hint }}</p>
+            <span v-if="showCount" class="wa_textarea_count">{{ CountText }}</span>
+        </div>
     </div>
 </template>
 
@@ -66,9 +69,11 @@ const props = defineProps({
     /** 拖动缩放方向 */
     resize: {
         type: String,
-        default: 'vertical',
+        default: 'none',
         allows: ['none', 'both', 'horizontal', 'vertical'],
     },
+    /** 在底部右侧显示字数统计 */
+    showCount: Boolean,
     size: {
         type: String,
         default: 'sm',
@@ -89,6 +94,13 @@ const emit = defineEmits(['update:modelValue'])
 const TextareaId = useId()
 const TextareaEl = ref(null)
 const DescribedBy = computed(() => (props.error ? `${TextareaId}-error` : props.hint ? `${TextareaId}-hint` : undefined))
+const Length = computed(() => String(props.modelValue ?? '').length)
+const HasMaxlength = computed(
+    () => props.maxlength !== undefined && props.maxlength !== null && props.maxlength !== ''
+)
+const CountText = computed(() => HasMaxlength.value
+    ? `${Length.value} / ${props.maxlength}`
+    : `${Length.value}`)
 
 function OnInput(event) {
     emit('update:modelValue', event.target.value)
@@ -139,6 +151,29 @@ function OnInput(event) {
 
 .wa_textarea_md {
     padding: 10px var(--wa_space_3);
+}
+
+.wa_textarea_meta {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+}
+
+.wa_textarea_meta>.wa_field_hint,
+.wa_textarea_meta>.wa_field_error {
+    flex: 1;
+    min-width: 0;
+}
+
+.wa_textarea_count {
+    flex: none;
+    margin-left: auto;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--wa_color_text_faint);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
 }
 
 .wa_textarea_control {
