@@ -1,5 +1,7 @@
 export { default as AppButton } from './AppButton.vue'
 export { default as AppCard } from './AppCard.vue'
+export { default as AppCheck } from './AppCheck.vue'
+export { default as AppCheckItem } from './AppCheckItem.vue'
 export { default as AppCode } from './AppCode.vue'
 export { default as AppChip } from './AppChip.vue'
 export { default as AppDialog } from './AppDialog.vue'

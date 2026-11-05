@@ -41,6 +41,7 @@ export const componentGroups = [
         items: [
             { name: 'input', label: '输入框', component: 'AppInput', page: 'InputPage', path: '/components/input', summary: '带标签、提示与校验的输入框。' },
             { name: 'switch', label: '开关', component: 'AppSwitch', page: 'SwitchPage', path: '/components/switch', summary: '二选一状态切换，支持标签对齐、尺寸与禁用。' },
+            { name: 'check', label: '复选框组', component: 'AppCheck', page: 'CheckPage', path: '/components/check', summary: '复选项横向/纵向排列，支持标签前后位置与纵向对齐。' },
             { name: 'select', label: '下拉框', component: 'AppSelect', page: 'SelectPage', path: '/components/select', summary: '带标签、分组与校验的下拉选择。' },
             { name: 'select-panel', label: '下拉面板', component: 'AppSelectPanel', page: 'SelectPanelPage', path: '/components/select-panel', summary: '下拉框使用的可复用选项面板。' },
             { name: 'upload', label: '上传', component: 'AppUpload', page: 'UploadPage', path: '/components/upload', summary: '选择、拖拽、校验与文件列表。' },
