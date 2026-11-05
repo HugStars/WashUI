@@ -1,12 +1,11 @@
 <template>
     <DocPage category="布局" name="PageBar" title="页面操作栏"
         description="页面级操作栏。桌面端留在页面中书写的位置，移动端自动投递到 AppShell 顶部标题栏下方，并与标题栏共用磨砂背景。">
-        <PageBar class="doc_page_bar">
-            <AppTabs v-model="tab" transparent :items="tabs" />
+        <PageBar class="doc_page_bar" bleed>
+            <AppTabs v-model="tab" transparent :items="tabs" overflow="more" :max="3"  />
         </PageBar>
 
-        <DemoBlock title="标签联动" description="PageBar 只负责位置与响应式投递，内容由页面通过默认插槽决定；这里放入透明背景的 AppTabs。"
-            :code="baseCode">
+        <DemoBlock title="标签联动" description="PageBar 只负责位置与响应式投递，内容由页面通过默认插槽决定；这里放入透明背景的 AppTabs。" :code="baseCode">
             <p class="wa_hint">当前标签：{{ current?.label }}</p>
             <p class="doc_text">{{ current?.text }}</p>
         </DemoBlock>
@@ -17,11 +16,14 @@
             <li>必须放在 AppShell 内，移动端才能找到顶部标题栏的投递目标。</li>
             <li>桌面端原地渲染，移动端（≤860px）Teleport 到标题栏下方，页面不会留下空占位。</li>
             <li>标题栏本身已有 backdrop-filter，PageBar 不再添加背景或模糊，避免两层玻璃。</li>
+            <li><code>bleed</code> 会抵消标题栏左右内边距，并把同样的内边距写入 <code>--wa_page_bar_inset</code>；AppTabs 已内置适配，其他组件也可以读取这个变量。
+            </li>
             <li>跨断点切换时插槽内容会重新挂载，选中值等状态请放在页面中。</li>
             <li>一个页面只放一个 PageBar；需要按钮、筛选器时同样放进默认插槽。</li>
         </ul>
 
         <template #api>
+            <ApiTable :rows="propsRows" />
             <ApiTable title="插槽" kind="slots" :rows="slotRows" />
         </template>
     </DocPage>
@@ -41,17 +43,21 @@ const tabs = [
 const tab = ref('overview')
 const current = computed(() => tabs.find(item => item.name === tab.value))
 
-const baseCode = `<PageBar>
+const baseCode = `<PageBar bleed>
     <AppTabs v-model="tab" transparent :items="tabs" />
 </PageBar>`
 
 const usageCode = `<DocPage title="页面标题">
-    <PageBar>
+    <PageBar bleed>
         <AppTabs v-model="tab" transparent :items="tabs" />
     </PageBar>
 
     <!-- 页面内容 -->
 </DocPage>`
+
+const propsRows = [
+    { name: 'bleed', type: 'boolean', default: 'false', desc: '移动端投递到标题栏时抵消 header 左右内边距，让内容横向铺满' },
+]
 
 const slotRows = [
     { name: 'default', type: '—', desc: '操作栏内容，例如透明 AppTabs、按钮组或筛选器' },
