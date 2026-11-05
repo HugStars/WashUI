@@ -23,15 +23,16 @@
                 <span>{{ item.label }}</span>
             </button>
 
-            <AppPopover v-if="HiddenItems.length" v-model:open="MoreOpen" placement="bottom" :width="180" :padding="6"
-                role="listbox" aria-label="更多标签">
+            <!-- 与 AppShell 的更多菜单保持 12px 间距，bottom 方位需要 +4 -->
+            <AppPopover v-if="HiddenItems.length" v-model:open="MoreOpen" placement="bottom" :width="180" :offset="4"
+                :padding="6" role="listbox" aria-label="更多标签">
                 <template #trigger="{ open }">
                     <button :ref="el => SetTabEl(MORE_KEY, el)" :id="`${uid}-more`" type="button"
                         class="wa_tabs_tab wa_tabs_more"
                         :class="{ on: MoreActive, open, pressed: PressedKey === MORE_KEY }" role="tab"
                         :aria-selected="MoreActive" :aria-controls="HasPanel ? PanelId : undefined"
                         :aria-haspopup="'listbox'" :aria-expanded="open" :tabindex="MoreActive ? 0 : -1">
-                        <AppIcon name="more" :size="IconSize" />
+                        <AppIcon name="more" :size="18" />
                         <span>更多</span>
                     </button>
                 </template>
@@ -434,6 +435,18 @@ watch(
         color var(--wa_duration_fast) var(--wa_ease_out),
         background var(--wa_duration_fast) var(--wa_ease_out),
         transform var(--wa_duration_base) var(--wa_ease_spring);
+}
+
+/* 图标不参与压缩；“更多”固定 18×18，与 AppShell 导航一致 */
+.wa_tabs_tab>svg,
+.wa_tabs_tab>.wa_icon_raw {
+    flex: none;
+}
+
+.wa_tabs_more>svg,
+.wa_tabs_more>.wa_icon_raw {
+    width: 18px;
+    height: 18px;
 }
 
 .wa_tabs_md .wa_tabs_tab {
