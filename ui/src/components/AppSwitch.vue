@@ -93,10 +93,12 @@ function Toggle() {
 
 .wa_switch {
     --wa_switch_width: 44px;
-    --wa_switch_height: 25px;
-    --wa_switch_pad: 3px;
-    --wa_switch_thumb: 19px;
-    --wa_switch_travel: 19px;
+    --wa_switch_height: 28px;
+    --wa_switch_pad: 4px;
+    --wa_switch_thumb: 20px;
+    --wa_switch_travel: 16px;
+    --wa_switch_thumb_off: .667;
+    --wa_switch_thumb_pressed: 1.167;
 
     position: relative;
     display: inline-flex;
@@ -106,16 +108,20 @@ function Toggle() {
     padding: 0;
     border: 0;
     border-radius: var(--wa_radius_pill);
-    background: var(--wa_color_field);
+    background: var(--wa_color_active);
+    box-shadow: inset 0 0 0 2px var(--wa_color_text_subtle);
     cursor: pointer;
-    transition: background var(--wa_duration_fast) ease;
+    transition:
+        background-color 67ms linear,
+        box-shadow 67ms linear;
 }
 
 .wa_switch_row.wa_switch_md .wa_switch {
     --wa_switch_width: 52px;
-    --wa_switch_height: 30px;
+    --wa_switch_height: 32px;
+    --wa_switch_pad: 4px;
     --wa_switch_thumb: 24px;
-    --wa_switch_travel: 22px;
+    --wa_switch_travel: 20px;
 }
 
 .wa_switch_thumb {
@@ -125,23 +131,50 @@ function Toggle() {
     width: var(--wa_switch_thumb);
     height: var(--wa_switch_thumb);
     border-radius: 50%;
-    background: var(--wa_color_text_faint);
+    background: var(--wa_color_text_subtle);
     box-shadow: 0 1px 3px #00000026;
-    transition: transform var(--wa_duration_fast) var(--wa_ease_out), background var(--wa_duration_fast);
+    translate: 0 0;
+    scale: var(--wa_switch_thumb_off);
+    transition:
+        translate 300ms cubic-bezier(.175, .885, .32, 1.275),
+        scale 250ms cubic-bezier(.2, 0, 0, 1),
+        background-color 67ms linear,
+        box-shadow 67ms linear;
 }
 
 .wa_switch.on {
     background: var(--wa_color_text);
+    box-shadow: inset 0 0 0 2px transparent;
 }
 
 .wa_switch.on .wa_switch_thumb {
     background: var(--wa_color_on_text);
-    transform: translateX(var(--wa_switch_travel));
+    box-shadow: 0 1px 3px #00000033;
+    translate: var(--wa_switch_travel) 0;
+    scale: 1;
+}
+
+.wa_switch:active:not(:disabled) .wa_switch_thumb {
+    scale: var(--wa_switch_thumb_pressed);
+    transition-duration: 100ms;
+    transition-timing-function: linear;
+}
+
+.wa_switch.on:active:not(:disabled) .wa_switch_thumb {
+    translate: var(--wa_switch_travel) 0;
+    scale: var(--wa_switch_thumb_pressed);
 }
 
 .wa_switch:focus-visible {
     outline: 2px solid var(--wa_color_accent);
     outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_switch,
+    .wa_switch_thumb {
+        transition: none;
+    }
 }
 
 .wa_switch:disabled {
