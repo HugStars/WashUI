@@ -25,16 +25,9 @@ export const componentGroups = [
             { name: 'chip', label: '标记', component: 'AppChip', page: 'ChipPage', path: '/components/chip', summary: '轻量筛选与状态标记。' },
             { name: 'tabs', label: '标签页', component: 'AppTabs', page: 'TabsPage', path: '/components/tabs', summary: '参考导航实现的滑动标签切换，支持面板与两种外观。' },
             { name: 'stat', label: '统计', component: 'AppStat', page: 'StatPage', path: '/components/stat', summary: '紧凑的指标展示。' },
-            { name: 'number', label: '数字跳动', en: 'Number', component: 'AppNumber', page: 'NumberPage', path: '/components/number', summary: '数字变化时的平滑跳动。' },
+            { name: 'number', label: '数字跳动', component: 'AppNumber', page: 'NumberPage', path: '/components/number', summary: '数字变化时的平滑跳动。' },
             { name: 'empty', label: '空状态', component: 'AppEmpty', page: 'EmptyPage', path: '/components/empty', summary: '无数据时的占位与操作。' },
             { name: 'theme-toggle', label: '主题切换', component: 'AppThemeToggle', page: 'ThemeTogglePage', path: '/components/theme-toggle', summary: '亮暗主题切换，内置太阳与月亮图标。' },
-        ],
-    },
-    {
-        title: '加载',
-        items: [
-            { name: 'spinner', label: '加载圈', component: 'AppSpinner', page: 'SpinnerPage', path: '/components/spinner', summary: '行内加载指示。' },
-            { name: 'skeleton', label: '骨架屏', component: 'AppSkeleton', page: 'SkeletonPage', path: '/components/skeleton', summary: '内容占位与渐进加载。' },
         ],
     },
     {
@@ -58,6 +51,13 @@ export const componentGroups = [
             { name: 'panel', label: '展示框', component: 'AppPanel', page: 'PanelPage', path: '/components/panel', summary: '带色调的状态与信息展示。' },
             { name: 'popover', label: '弹出框', component: 'AppPopover', page: 'PopoverPage', path: '/components/popover', summary: '点击触发、浮层展示内容。' },
             { name: 'dialog', label: '弹框', component: 'AppDialog', page: 'DialogPage', path: '/components/dialog', summary: '受控弹框，含焦点陷阱与移动端手势。' },
+        ],
+    },
+    {
+        title: '加载',
+        items: [
+            { name: 'spinner', label: '加载圈', component: 'AppSpinner', page: 'SpinnerPage', path: '/components/spinner', summary: '行内加载指示。' },
+            { name: 'skeleton', label: '骨架屏', component: 'AppSkeleton', page: 'SkeletonPage', path: '/components/skeleton', summary: '内容占位与渐进加载。' },
         ],
     },
 ]
