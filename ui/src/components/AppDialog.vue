@@ -1,6 +1,6 @@
 <template>
     <Teleport to="body">
-        <Transition appear :duration="{ enter: 320, leave: 240 }"
+        <Transition appear :duration="{ enter: 380, leave: 240 }"
             enter-active-class="wa_dialog_enter_active" leave-active-class="wa_dialog_leave_active"
             enter-from-class="wa_dialog_enter_from" leave-to-class="wa_dialog_leave_to" @after-leave="OnAfterLeave">
             <div v-if="Visible" class="wa_dialog_mask" :class="{ wa_dialog_frosted: frosted }"
@@ -584,6 +584,8 @@ onUnmounted(() => {
 
 .wa_dialog_enter_active .wa_dialog {
     /* 不要给带 backdrop-filter 的面板做 opacity 过渡，Chromium 会丢掉模糊 */
+    /* 内容 scaleY 入场会撑出 20% 高度，先裁掉滚动溢出，避免动画期间闪出滚动条 */
+    overflow: hidden;
     transition: transform .32s var(--wa_ease_spring);
 }
 
@@ -680,6 +682,16 @@ onUnmounted(() => {
 
     .wa_dialog_enter_active .wa_dialog {
         animation: wa_dialog_sheet_in .3s cubic-bezier(.22, 1, .36, 1) both;
+    }
+
+    /*
+     * 面板整体从视口外上滑时，内容也同时在收拢，等内容露出来动画已经结束。
+     * 延后 0.16s，让面板接近落位后再播放内容收拢，总时长 0.34s，
+     * 仍在入场过渡的 380ms 内。
+     */
+    .wa_dialog_enter_active .wa_dialog_content {
+        animation-delay: .16s;
+        animation-duration: .18s;
     }
 
     .wa_dialog_leave_active .wa_dialog {
