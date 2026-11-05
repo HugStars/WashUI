@@ -4,14 +4,14 @@
             <slot name="label">{{ label }}</slot>
         </label>
 
-        <div class="wa_textarea" :class="[`wa_textarea_${size}`, {
+        <div class="wa_textarea" :style="{ resize }" :class="[`wa_textarea_${size}`, {
             on: DisplayError,
             off: disabled || readonly,
             wa_frosted: frosted,
         }]">
             <textarea :id="TextareaId" ref="TextareaEl" v-bind="$attrs" class="wa_textarea_control"
                 :value="modelValue ?? ''" :rows="rows" :cols="cols" :wrap="wrap" :maxlength="maxlength"
-                :style="{ resize }" :disabled="disabled" :readonly="readonly"
+                :disabled="disabled" :readonly="readonly"
                 :aria-invalid="DisplayError ? 'true' : undefined" :aria-describedby="DescribedBy"
                 :aria-label="label ? undefined : ariaLabel" @input="HandleInput" @blur="HandleBlur"></textarea>
         </div>
@@ -133,6 +133,7 @@ function HandleBlur() {
     width: 100%;
     min-width: 0;
     padding: 8px var(--wa_space_3);
+    overflow: hidden;
     border: 1px solid var(--wa_color_line);
     border-radius: var(--wa_radius_control);
     background: var(--wa_color_field);
@@ -198,8 +199,8 @@ function HandleBlur() {
 .wa_textarea_control {
     flex: 1;
     min-width: 0;
-    width: 100%;
     min-height: 0;
+    width: 100%;
     padding: 0;
     border: 0;
     border-radius: 0;
@@ -210,6 +211,7 @@ function HandleBlur() {
     font: inherit;
     font-size: 13px;
     line-height: 1.6;
+    resize: none;
 }
 
 .wa_textarea_md .wa_textarea_control {

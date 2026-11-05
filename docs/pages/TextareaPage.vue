@@ -18,7 +18,7 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="缩放" description="resize 支持 none、both、horizontal、vertical，默认 none。">
+        <DemoBlock title="缩放" description="resize 支持 none、both、horizontal、vertical，默认 none；缩放作用于整个文本域外壳，边框与背景会一起变化。">
             <div class="doc_textarea_grid">
                 <AppTextarea v-model="resizeNone" label="none（默认）" resize="none" :rows="3" />
                 <AppTextarea v-model="resizeBoth" label="both" resize="both" :rows="3" />
