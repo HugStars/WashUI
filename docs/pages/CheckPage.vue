@@ -8,7 +8,7 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="尺寸" description="size 接受数字（px）或 CSS 长度，默认 20px。">
+        <DemoBlock title="尺寸" description="size 接受数字（px）或 CSS 长度，默认 20px；边框、勾线粗细、圆角与整体尺寸等比例缩放。">
             <div class="doc_check_groups">
                 <p class="wa_hint">18px</p>
                 <AppCheck v-model="smallSize" :options="compactOptions" :size="18" />
@@ -91,7 +91,7 @@ const propsRows = [
     { name: 'direction', type: 'horizontal | vertical', default: 'horizontal', desc: '复选项横向或纵向排列' },
     { name: 'labelPosition', type: 'before | after', default: 'after', desc: '每个标签在复选框前或后' },
     { name: 'align', type: 'left | right | between | space-between', default: 'left', desc: '纵向排列时整组靠左/靠右，或让标签与复选框两端对齐' },
-    { name: 'size', type: 'number | string', default: '20', desc: '复选框尺寸，数字按 px 处理' },
+    { name: 'size', type: 'number | string', default: '20', desc: '复选框尺寸，数字按 px 处理；边框与勾线粗细按比例缩放' },
     { name: 'ariaLabel', type: 'string', default: '复选框组', desc: '组的无障碍名称' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用整组' },
 ]

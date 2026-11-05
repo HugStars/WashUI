@@ -5,14 +5,14 @@
             <slot>{{ label }}</slot>
         </label>
 
-        <button :id="CheckId" type="button" class="wa_check" :class="{ on: modelValue || Closing, closing: Closing }"
-            role="checkbox" :style="SizeStyle" :aria-checked="modelValue"
+        <button :id="CheckId" type="button" class="wa_check"
+            :class="{ on: modelValue || Closing, closing: Closing, drawing: Drawing }" role="checkbox"
+            :style="SizeStyle" :aria-checked="modelValue"
             :aria-labelledby="HasLabel ? `${CheckId}-label` : undefined"
             :aria-label="HasLabel ? undefined : AccessibleLabel" :disabled="disabled" @click="Toggle">
             <span class="wa_check_mark" aria-hidden="true">
-                <AppIcon name="check" size="calc(var(--wa_check_size) * .7)" stroke-width="3.4"
-                    class="wa_check_icon" />
-                <span class="wa_check_cross"></span>
+                <span class="wa_check_line wa_check_line_a"></span>
+                <span class="wa_check_line wa_check_line_b"></span>
             </span>
         </button>
 
@@ -25,7 +25,6 @@
 
 <script setup>
 import { computed, onUnmounted, ref, useId, useSlots, watch } from 'vue'
-import AppIcon from './AppIcon.vue'
 
 const props = defineProps({
     modelValue: Boolean,
@@ -66,17 +65,36 @@ const SizeStyle = computed(() => ({
     '--wa_check_size': typeof props.size === 'number' ? `${props.size}px` : props.size,
 }))
 
-// 取消选中时先让 ✓ 变成 ×，再把整个标记缩到 0；动画结束后才移除选中底色
+// 取消选中：✓ 变形为 × 后缩放消失；选中：两段线按顺序画出
 const ReducedMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
     ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
     : false
 const Closing = ref(false)
+const Drawing = ref(false)
 let CloseTimer = 0
+let DrawTimer = 0
 
 watch(() => props.modelValue, (checked, wasChecked) => {
     clearTimeout(CloseTimer)
+    clearTimeout(DrawTimer)
 
-    if (checked || !wasChecked || ReducedMotion) {
+    if (checked) {
+        // 从取消动画中途恢复时直接反向过渡，不重新播放“手写”
+        const interrupted = Closing.value
+        Closing.value = false
+        Drawing.value = !interrupted && wasChecked === false && !ReducedMotion
+
+        if (Drawing.value) {
+            DrawTimer = setTimeout(() => {
+                Drawing.value = false
+            }, 320)
+        }
+        return
+    }
+
+    Drawing.value = false
+
+    if (!wasChecked || ReducedMotion) {
         Closing.value = false
         return
     }
@@ -84,10 +102,13 @@ watch(() => props.modelValue, (checked, wasChecked) => {
     Closing.value = true
     CloseTimer = setTimeout(() => {
         Closing.value = false
-    }, 260)
+    }, 340)
 })
 
-onUnmounted(() => clearTimeout(CloseTimer))
+onUnmounted(() => {
+    clearTimeout(CloseTimer)
+    clearTimeout(DrawTimer)
+})
 
 function Toggle() {
     if (props.disabled) return
@@ -121,7 +142,8 @@ function Toggle() {
 }
 
 .wa_check {
-    --wa_check_border: 2px;
+    --wa_check_border: calc(var(--wa_check_size, 20px) * .1);
+    --wa_check_r: calc(var(--wa_check_size, 20px) * .05);
 
     position: relative;
     display: grid;
@@ -205,106 +227,136 @@ function Toggle() {
 .wa_check_mark {
     position: relative;
     z-index: 1;
-    display: grid;
-    place-items: center;
+    display: block;
     width: calc(var(--wa_check_size, 20px) * .7);
     height: calc(var(--wa_check_size, 20px) * .7);
-    pointer-events: none;
-}
-
-.wa_check_icon {
-    grid-area: 1 / 1;
     opacity: 0;
     transform: scale(.9);
+    pointer-events: none;
     transition:
-        opacity .12s var(--wa_ease_out) .16s,
-        transform var(--wa_duration_base) var(--wa_ease_spring);
+        opacity .12s var(--wa_ease_out),
+        transform .14s var(--wa_ease_out);
 }
 
-.wa_check_icon polyline {
-    stroke-dasharray: 24;
-    stroke-dashoffset: 24;
-    transition: stroke-dashoffset .24s var(--wa_ease_out);
-}
-
-.wa_check_cross {
+.wa_check_line {
     position: absolute;
-    inset: 0;
-    opacity: 0;
-}
-
-.wa_check_cross::before,
-.wa_check_cross::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    margin-top: -1px;
+    height: calc(var(--wa_check_r) * 2);
     border-radius: 999px;
     background: currentColor;
+    opacity: 0;
+    transform-origin: 0 50%;
 }
 
-.wa_check_cross::before {
+/* 勾的两段：左下短横 + 右上长横 */
+.wa_check_line_a {
+    left: 16.6667%;
+    top: calc(50% - var(--wa_check_r));
+    width: 0;
     transform: rotate(45deg);
 }
 
-.wa_check_cross::after {
+.wa_check_line_b {
+    left: calc(37.5% - var(--wa_check_r) * .7071);
+    top: calc(70.8333% - var(--wa_check_r) * .2929);
+    width: 0;
     transform: rotate(-45deg);
 }
 
-.wa_check.on .wa_check_icon {
+.wa_check.on .wa_check_line {
+    opacity: 1;
+}
+
+.wa_check.on .wa_check_mark {
     opacity: 1;
     transform: scale(1);
     transition:
         opacity .12s var(--wa_ease_out),
-        transform var(--wa_duration_base) var(--wa_ease_spring);
+        transform .18s var(--wa_ease_spring);
 }
 
-.wa_check.on .wa_check_icon polyline {
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset .28s cubic-bezier(.22, 1, .36, 1);
+.wa_check.on .wa_check_line_a {
+    width: calc(29.4629% + var(--wa_check_r));
+    transition:
+        left .14s var(--wa_ease_out),
+        top .14s var(--wa_ease_out),
+        width .14s var(--wa_ease_out),
+        opacity .04s var(--wa_ease_out);
 }
 
-/* 取消选中：✓ 立即换成 ×，随后整个标记直接缩到 0 */
-.wa_check.closing .wa_check_icon {
+.wa_check.on .wa_check_line_b {
+    width: calc(64.8179% + var(--wa_check_r));
+    transition:
+        left .14s var(--wa_ease_out),
+        top .14s var(--wa_ease_out),
+        width .14s var(--wa_ease_out),
+        opacity .04s var(--wa_ease_out);
+}
+
+/* 从空白状态选中时才播放“短横 → 长横”的手写顺序 */
+.wa_check.on.drawing .wa_check_line_a {
+    transition:
+        width .12s var(--wa_ease_out),
+        opacity .04s var(--wa_ease_out);
+}
+
+.wa_check.on.drawing .wa_check_line_b {
+    transition:
+        width .2s var(--wa_ease_out) .1s,
+        opacity .04s var(--wa_ease_out) .08s;
+}
+
+/* 取消选中：两段线分别延展/移动到 × 的位置，再整体缩放渐隐 */
+.wa_check.closing .wa_check_line {
+    transition:
+        left .14s var(--wa_ease_out),
+        top .14s var(--wa_ease_out),
+        width .14s var(--wa_ease_out);
+}
+
+.wa_check.closing .wa_check_line_a {
+    left: 20.8333%;
+    top: calc(20.8333% - var(--wa_check_r));
+    width: 82.4958%;
+}
+
+.wa_check.closing .wa_check_line_b {
+    left: 20.8333%;
+    top: calc(79.1667% - var(--wa_check_r));
+    width: 82.4958%;
+}
+
+/* 缩放阶段同步让选中底色退场，避免标记消失后再闪一下 */
+.wa_check.on.closing,
+.wa_check.on.closing:hover:not(:disabled) {
+    background: var(--wa_color_field);
+    box-shadow: inset 0 0 0 var(--wa_check_border) var(--wa_color_line_strong);
+    transition:
+        background .16s var(--wa_ease_out) .14s,
+        box-shadow .16s var(--wa_ease_out) .14s;
+}
+
+.wa_check.on.closing::before {
     opacity: 0;
-    transition: none;
-}
-
-.wa_check.closing .wa_check_icon polyline {
-    stroke-dashoffset: 24;
-    transition: none;
-}
-
-.wa_check.closing .wa_check_cross {
-    opacity: 1;
+    transform: scale(.35);
+    transition:
+        opacity .14s var(--wa_ease_out) .14s,
+        transform .16s var(--wa_ease_out) .14s;
 }
 
 .wa_check.closing .wa_check_mark {
-    animation: wa_check_collapse .16s var(--wa_ease_out) .06s forwards;
-}
-
-@keyframes wa_check_collapse {
-    to {
-        opacity: 0;
-        transform: scale(0);
-    }
+    opacity: 0;
+    transform: scale(0);
+    transition:
+        opacity .16s var(--wa_ease_out) .14s,
+        transform .16s var(--wa_ease_out) .14s;
 }
 
 @media (prefers-reduced-motion: reduce) {
     .wa_check,
-    .wa_check_icon,
-    .wa_check_icon polyline,
-    .wa_check_cross,
-    .wa_check_cross::before,
-    .wa_check_cross::after {
+    .wa_check_mark,
+    .wa_check.on .wa_check_line,
+    .wa_check.closing .wa_check_line {
         transition: none;
-    }
-
-    .wa_check.closing .wa_check_mark {
-        animation: none;
     }
 
     .wa_check:active:not(:disabled) {

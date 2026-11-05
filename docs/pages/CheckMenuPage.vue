@@ -81,7 +81,7 @@ const propsRows = [
     { name: 'groups', type: 'Array<{ label, options }>', default: '[]', desc: '分组选项，组内 options 结构同上' },
     { name: 'mode', type: 'popover | dialog', default: 'popover', desc: '浮层菜单或弹框选择' },
     { name: 'width', type: 'number | string', default: '240', desc: 'popover 模式下的面板宽度' },
-    { name: 'size', type: 'number | string', default: '18', desc: '复选框尺寸，数字按 px 处理' },
+    { name: 'size', type: 'number | string', default: '18', desc: '复选框尺寸，数字按 px 处理；边框与勾线粗细按比例缩放' },
     { name: 'title', type: 'string', default: '选择', desc: 'dialog 模式下的弹框标题' },
     { name: 'placeholder', type: 'string', default: '请选择', desc: '未选择时触发器显示的文案' },
     { name: 'emptyText', type: 'string', default: '暂无选项', desc: '没有可选项时的提示文案' },
