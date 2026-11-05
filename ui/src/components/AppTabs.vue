@@ -456,6 +456,10 @@ watch(
     padding: 0 18px;
 }
 
+.wa_tabs_fill {
+    width: 100%;
+}
+
 .wa_tabs_fill .wa_tabs_tab {
     flex: 1 1 0;
     min-width: 0;
