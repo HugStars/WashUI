@@ -47,8 +47,8 @@ const Classes = computed(() => {
     align-items: center;
     justify-content: center;
     gap: 6px;
-    min-height: var(--wa_control_height);
-    padding: 6px 22px;
+    min-height: var(--wa_btn_height, var(--wa_control_height));
+    padding: var(--wa_btn_padding, 6px 22px);
     border: 0;
     border-radius: var(--wa_radius_pill);
     font: inherit;
@@ -126,16 +126,16 @@ const Classes = computed(() => {
 }
 
 .wa_btn_sm {
-    min-height: var(--wa_control_height_sm);
-    padding: 4px 16px;
-    font-size: 13px;
+    min-height: var(--wa_btn_height, var(--wa_control_height_sm));
+    padding: var(--wa_btn_padding, 4px 16px);
+    font-size: var(--wa_btn_font, 13px);
 }
 
 .wa_btn_icon {
     position: relative;
     flex: none;
-    width: 40px;
-    height: 40px;
+    width: var(--wa_btn_icon_size, 40px);
+    height: var(--wa_btn_icon_size, 40px);
     padding: 0;
 }
 
@@ -150,8 +150,8 @@ const Classes = computed(() => {
 }
 
 .wa_btn_icon.wa_btn_sm {
-    width: 32px;
-    height: 32px;
+    width: var(--wa_btn_icon_size, 32px);
+    height: var(--wa_btn_icon_size, 32px);
 }
 
 .wa_btn .wa_spinner {

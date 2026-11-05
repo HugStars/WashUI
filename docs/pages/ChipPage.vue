@@ -10,9 +10,10 @@
             <p class="wa_hint doc_gap">当前筛选：{{ filter }}</p>
         </DemoBlock>
 
-        <DemoBlock title="文本与插槽" description="text 适合纯文本，默认插槽可以放图标或组合内容。">
+        <DemoBlock title="文本与插槽" description="text 适合纯文本，默认插槽可以放图标或组合内容；size=sm 用于表格等紧凑场景。">
             <div class="doc_row">
                 <AppChip text="纯文本" />
+                <AppChip text="紧凑标记" size="sm" />
                 <AppChip active>
                     <AppIcon name="refresh" :size="14" />
                     <span>可刷新</span>
@@ -54,6 +55,7 @@ const propsRows = [
     { name: 'active', type: 'boolean', default: 'false', desc: '选中状态' },
     { name: 'text', type: 'string', default: "''", desc: '文本内容；默认插槽优先' },
     { name: 'frosted', type: 'boolean', default: 'false', desc: '白色磨砂半透明表面，与 AppPopover 一致' },
+    { name: 'size', type: 'sm | md', default: 'md', desc: '标记尺寸；sm 为 26px 高' },
 ]
 
 const eventRows = [

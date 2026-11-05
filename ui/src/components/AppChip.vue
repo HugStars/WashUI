@@ -1,5 +1,6 @@
 <template>
-    <button type="button" class="wa_chip" :class="{ on: active, wa_frosted: frosted }">
+    <button type="button" class="wa_chip"
+        :class="{ on: active, wa_frosted: frosted, wa_chip_sm: size === 'sm' }">
         <slot>{{ text }}</slot>
     </button>
 </template>
@@ -13,6 +14,11 @@ defineProps({
     },
     /** 白色磨砂半透明表面，与 AppPopover 面板一致 */
     frosted: Boolean,
+    size: {
+        type: String,
+        default: 'md',
+        allows: ['sm', 'md'],
+    },
 })
 </script>
 
@@ -27,11 +33,11 @@ defineProps({
     align-items: center;
     justify-content: center;
     gap: 6px;
-    height: 34px;
-    padding: 0 18px;
+    height: var(--wa_chip_height, 34px);
+    padding: var(--wa_chip_padding, 0 18px);
     border: 1px solid var(--wa_color_border);
     border-radius: var(--wa_radius_pill);
-    font-size: 13px;
+    font-size: var(--wa_chip_font, 13px);
     color: var(--wa_color_text_muted);
     background: var(--wa_color_surface);
     cursor: pointer;
@@ -68,6 +74,16 @@ defineProps({
 
 .wa_chip.on:active {
     transform: scale(.94);
+}
+
+.wa_chip_sm {
+    --wa_chip_height: 26px;
+    --wa_chip_padding: 0 10px;
+    --wa_chip_font: 12px;
+
+    height: var(--wa_chip_height);
+    padding: var(--wa_chip_padding);
+    font-size: var(--wa_chip_font);
 }
 
 @media (prefers-reduced-motion: reduce) {
