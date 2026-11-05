@@ -274,28 +274,27 @@ import '@wash/ui/style.css'
 
 | 分类 | 组件 |
 | --- | --- |
-| 基础 | AppButton、AppCard、AppCode、AppChip、AppTabs、AppStat、AppNumber、AppEmpty、AppThemeToggle |
-| 加载 | AppSpinner、AppSkeleton |
-| 表单 | AppInput、AppTextarea、AppSwitch、AppCheck、AppCheckGroup、AppRadio、AppRadioGroup、AppSelect、AppSelectPanel、AppChoiceList、AppCheckPanel、AppRadioPanel、AppUpload |
-| 反馈 | AppPanel、AppPopover、AppDialog、AppCheckMenu、Toast、Loading |
-| 布局 | AppShell、AppRouteBar、PageTransition、PageHeader、PageBar |
-| 能力 | useTheme、useClipboard、useRequest、useChoiceGroup、useChoiceSummary、useValidation |
+| 基础 | AppButton（按钮）、AppCard（卡片）、AppCode（代码）、AppChip（标记）、AppTabs（标签页）、AppStat（统计）、AppNumber（数字跳动）、AppEmpty（空状态）、AppThemeToggle（主题切换） |
+| 加载 | AppSpinner（加载圈）、AppSkeleton（骨架屏） |
+| 表单 | AppInput（输入框）、AppTextarea（文本域）、AppSwitch（开关）、AppCheck（复选框）、AppCheckGroup（复选框组）、AppRadio（单选框）、AppRadioGroup（单选框组）、AppSelect（下拉框）、AppSelectPanel（下拉面板）、AppChoiceList（选择列表）、AppCheckPanel（多选面板）、AppRadioPanel（单选面板）、AppUpload（上传） |
+| 反馈 | AppPanel（展示框）、AppPopover（弹出框）、AppDialog（弹框）、AppCheckMenu（多选菜单）、Toast（轻提示）、Loading（加载） |
+| 布局 | AppShell（壳层）、AppRouteBar（路由进度条）、PageTransition（页面过渡）、PageHeader（页面标题）、PageBar（页面操作栏） |
+| 能力 | useTheme（主题）、useClipboard（剪贴板）、useRequest（请求）、useChoiceGroup（选择组状态）、useChoiceSummary（选择摘要）、useValidation（校验规则） |
 | 基础能力 | 图标、tokens、代码高亮、主题切换 |
 
 ### 进行中
 
-- README 与设计规范重构
-- 选择类组件 API 收敛与文档迁移
-- Check / Radio / ChoiceList 文档与示例补齐
+- 文档站移动端标题栏、侧边栏与内容间距持续校准
 - 动效中断、反向过渡、reduced-motion 持续校准
+- 表单校验的异步规则与跨字段能力设计
 
 ### 计划中
 
 | 分类 | 计划 |
 | --- | --- |
-| 表单 | AppForm / AppFormItem、Slider、Rate、ColorPicker、DatePicker、TimePicker、Cascader、Transfer |
-| 数据展示 | AppTable、AppTree、AppTreeSelect、AppVirtualList、AppVirtualTable |
-| 反馈与导航 | AppDrawer、AppNotification、AppTour、AppTooltip、AppMenu、AppDropdown、Command |
+| 表单 | AppForm / AppFormItem（表单 / 表单项）、异步与跨字段校验、Slider（滑块）、Rate（评分）、ColorPicker（颜色选择）、DatePicker（日期选择）、TimePicker（时间选择）、Cascader（级联选择）、Transfer（穿梭框） |
+| 数据展示 | AppTable（表格）、AppTree（树）、AppTreeSelect（树选择）、AppVirtualList（虚拟列表）、AppVirtualTable（虚拟表格） |
+| 反馈与导航 | AppDrawer（抽屉）、AppNotification（通知）、AppTour（漫游引导）、AppTooltip（文字提示）、AppMenu（菜单）、AppDropdown（下拉菜单）、Command（命令面板） |
 | 工程与质量 | 单元测试、视觉回归、SSR / Nuxt 适配、i18n、完整无障碍审计、发布流水线 |
 
 完整路线图见文档站 **指南 → 路线图**。
@@ -310,8 +309,13 @@ import '@wash/ui/style.css'
 - [x] 统一组件按压、悬停、reduced-motion 规范
 - [x] 重写 README 设计、动效、命名、事件、Props 规范
 - [x] 新增 Roadmap、Radio、ChoiceList 文档页
-- [ ] 迁移旧 `AppCheck` 分组 API 的存量示例
+- [x] 迁移旧 `AppCheck` 分组 API 的存量示例
+- [x] 新增 `PageBar` 响应式页面操作栏与 `bleed` 铺满
+- [x] Input / Textarea / Select 支持 `rule` 校验
+- [x] 文档校验示例统一改为 `rule`
 - [ ] 补齐 ChoiceList 更多自定义触发器示例
+- [ ] 为 PageBar 补充更多插槽内容示例与移动端回归
+- [ ] 为表单 `rule` 增加异步校验与跨字段校验
 - [ ] 为 Radio / RadioGroup 增加浏览器回归用例
 - [ ] 形成正式的版本迁移指南
 - [ ] 按路线图实现 Form、Table、Tree 等计划组件
