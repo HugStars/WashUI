@@ -16,6 +16,7 @@
                     <AppCheck v-model="allChecked" label="全选" :indeterminate="mixed" @change="ToggleAll" />
                     <AppButton size="sm" variant="line" @click="SetMixed">设为半选</AppButton>
                     <AppButton size="sm" variant="line" @click="SetAll">设为全选</AppButton>
+                    <AppButton size="sm" variant="line" @click="SetNone">设为未选</AppButton>
                 </div>
                 <p class="wa_hint">allChecked：{{ allChecked }} · indeterminate：{{ mixed }}</p>
             </div>
@@ -134,6 +135,11 @@ function SetMixed() {
 
 function SetAll() {
     allChecked.value = true
+    mixed.value = false
+}
+
+function SetNone() {
+    allChecked.value = false
     mixed.value = false
 }
 

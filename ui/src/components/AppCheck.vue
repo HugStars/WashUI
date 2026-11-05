@@ -13,7 +13,6 @@
             <span class="wa_check_mark" aria-hidden="true">
                 <span class="wa_check_line wa_check_line_a"></span>
                 <span class="wa_check_line wa_check_line_b"></span>
-                <span class="wa_check_dash"></span>
             </span>
         </button>
 
@@ -79,30 +78,13 @@ const ReducedMotion = typeof window !== 'undefined' && typeof window.matchMedia 
     : false
 const Closing = ref(false)
 const Drawing = ref(false)
+const PrevChecked = ref(Checked.value)
+const PrevMixed = ref(Indeterminate.value)
 let CloseTimer = 0
 let DrawTimer = 0
 
-watch(Checked, (checked, wasChecked) => {
-    clearTimeout(CloseTimer)
-    clearTimeout(DrawTimer)
-
-    if (checked) {
-        // 从取消动画中途恢复时直接反向过渡，不重新播放“手写”
-        const interrupted = Closing.value
-        Closing.value = false
-        Drawing.value = !interrupted && wasChecked === false && !ReducedMotion
-
-        if (Drawing.value) {
-            DrawTimer = setTimeout(() => {
-                Drawing.value = false
-            }, 320)
-        }
-        return
-    }
-
-    Drawing.value = false
-
-    if (!wasChecked || ReducedMotion) {
+function StartClosing() {
+    if (ReducedMotion) {
         Closing.value = false
         return
     }
@@ -111,14 +93,62 @@ watch(Checked, (checked, wasChecked) => {
     CloseTimer = setTimeout(() => {
         Closing.value = false
     }, 340)
-})
+}
 
-watch(() => props.indeterminate, mixed => {
-    if (!mixed) return
+function StartDrawing() {
+    Drawing.value = true
+    DrawTimer = setTimeout(() => {
+        Drawing.value = false
+    }, 320)
+}
+
+watch([Checked, Indeterminate], ([checked, mixed]) => {
+    const wasChecked = PrevChecked.value
+    const wasMixed = PrevMixed.value
+    PrevChecked.value = checked
+    PrevMixed.value = mixed
+
     clearTimeout(CloseTimer)
     clearTimeout(DrawTimer)
-    Closing.value = false
-    Drawing.value = false
+
+    // 选中：半选 -> 勾选时直接从短横拆分旋转，不播放手写
+    if (checked && !wasChecked) {
+        Closing.value = false
+        if (!wasMixed && !mixed && !ReducedMotion) StartDrawing()
+        else Drawing.value = false
+        return
+    }
+
+    // 取消勾选，或勾选 -> 半选
+    if (!checked && wasChecked) {
+        Drawing.value = false
+        if (mixed) {
+            Closing.value = false
+            return
+        }
+        StartClosing()
+        return
+    }
+
+    // 半选 <-> 未选
+    if (!checked && !wasChecked) {
+        if (wasMixed && !mixed) {
+            Drawing.value = false
+            StartClosing()
+            return
+        }
+        if (!wasMixed && mixed) {
+            Closing.value = false
+            Drawing.value = false
+        }
+        return
+    }
+
+    // 勾选状态不变，只在半选和勾选之间切换时反向过渡
+    if (mixed !== wasMixed) {
+        Closing.value = false
+        Drawing.value = false
+    }
 })
 
 onUnmounted(() => {
@@ -256,22 +286,7 @@ function Toggle() {
     transform: rotate(-45deg);
 }
 
-/* 半选横杠 */
-.wa_check_dash {
-    position: absolute;
-    top: 50%;
-    left: 22%;
-    right: 22%;
-    height: calc(var(--wa_check_r) * 2);
-    margin-top: calc(var(--wa_check_r) * -1);
-    border-radius: 999px;
-    background: currentColor;
-    opacity: 0;
-    transform: scaleX(.4);
-    transition:
-        opacity .12s var(--wa_ease_out),
-        transform .2s var(--wa_ease_spring);
-}
+/* 半选状态由两条线重叠成一根短横 */
 
 .wa_check.on .wa_check_line {
     opacity: 1;
@@ -291,7 +306,8 @@ function Toggle() {
         left .14s var(--wa_ease_out),
         top .14s var(--wa_ease_out),
         width .14s var(--wa_ease_out),
-        opacity .04s var(--wa_ease_out);
+        opacity .12s var(--wa_ease_out),
+        transform .16s var(--wa_ease_out);
 }
 
 .wa_check.on .wa_check_line_b {
@@ -300,20 +316,23 @@ function Toggle() {
         left .14s var(--wa_ease_out),
         top .14s var(--wa_ease_out),
         width .14s var(--wa_ease_out),
-        opacity .04s var(--wa_ease_out);
+        opacity .12s var(--wa_ease_out),
+        transform .16s var(--wa_ease_out);
 }
 
 /* 从空白状态选中时才播放“短横 → 长横”的手写顺序 */
 .wa_check.on.drawing .wa_check_line_a {
     transition:
         width .12s var(--wa_ease_out),
-        opacity .04s var(--wa_ease_out);
+        opacity .12s var(--wa_ease_out),
+        transform .16s var(--wa_ease_out);
 }
 
 .wa_check.on.drawing .wa_check_line_b {
     transition:
         width .2s var(--wa_ease_out) .1s,
-        opacity .04s var(--wa_ease_out) .08s;
+        opacity .12s var(--wa_ease_out) .06s,
+        transform .16s var(--wa_ease_out);
 }
 
 /* 取消选中：两段线分别延展/移动到 × 的位置，再整体缩放渐隐 */
@@ -321,7 +340,8 @@ function Toggle() {
     transition:
         left .14s var(--wa_ease_out),
         top .14s var(--wa_ease_out),
-        width .14s var(--wa_ease_out);
+        width .14s var(--wa_ease_out),
+        transform .14s var(--wa_ease_out);
 }
 
 .wa_check.closing .wa_check_line_a {
@@ -336,14 +356,14 @@ function Toggle() {
     width: 82.4958%;
 }
 
-/* 半选状态只显示横杠，隐藏勾线 */
-.wa_check.mixed .wa_check_line {
-    opacity: 0;
-}
-
-.wa_check.mixed .wa_check_dash {
+/* 半选状态：两条线重叠成一根短横；选中/取消时再拆分旋转 */
+.wa_check.mixed .wa_check_line_a,
+.wa_check.mixed .wa_check_line_b {
+    left: 22%;
+    top: calc(50% - var(--wa_check_r));
+    width: 56%;
+    transform: rotate(0deg);
     opacity: 1;
-    transform: scaleX(1);
 }
 
 /* 缩放阶段同步让选中底色退场，避免标记消失后再闪一下 */
@@ -376,8 +396,7 @@ function Toggle() {
     .wa_check,
     .wa_check_mark,
     .wa_check.on .wa_check_line,
-    .wa_check.closing .wa_check_line,
-    .wa_check_dash {
+    .wa_check.closing .wa_check_line {
         transition: none;
     }
 

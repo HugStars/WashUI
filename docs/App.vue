@@ -78,8 +78,9 @@ function go(item) {
 }
 
 .doc_frosted_stage {
-    padding: 18px;
-    border-radius: var(--wa_radius_card);
+    margin: calc(var(--doc_demo_padding, 20px) * -1);
+    padding: var(--doc_demo_padding, 20px);
+    border-radius: 0;
     background:
         radial-gradient(circle at 18% 20%, #7c3aed66, transparent 42%),
         radial-gradient(circle at 82% 28%, #06b6d466, transparent 42%),

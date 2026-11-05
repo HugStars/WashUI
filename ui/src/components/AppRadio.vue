@@ -138,13 +138,16 @@ function Select() {
     opacity: 0;
     transform: scale(.2);
     transition:
-        opacity .12s var(--wa_ease_out),
-        transform .2s var(--wa_ease_spring);
+        opacity var(--wa_duration_base) var(--wa_ease_out),
+        transform .26s var(--wa_ease_in);
 }
 
 .wa_radio.on .wa_radio_dot {
     opacity: 1;
     transform: scale(1);
+    transition:
+        opacity var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
 @media (prefers-reduced-motion: reduce) {

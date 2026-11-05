@@ -127,7 +127,9 @@ function OpenPlayground() {
 }
 
 .doc_demo_view {
-    padding: 20px;
+    --doc_demo_padding: 20px;
+
+    padding: var(--doc_demo_padding);
 }
 
 .doc_demo_code {
@@ -204,7 +206,7 @@ function OpenPlayground() {
 @media (max-width: 860px) {
 
     .doc_demo_view {
-        padding: 16px;
+        --doc_demo_padding: 16px;
     }
 }
 </style>
