@@ -24,7 +24,7 @@
 
             <button type="button" class="wa_pagination_btn wa_pagination_arrow" :disabled="AtEnd" aria-label="下一页"
                 @click="Go(CurrentPage + 1)">
-                <AppIcon name="chevron-right" :size="IconSize" />
+                <AppIcon name="chevron" :size="IconSize" />
             </button>
         </div>
 
