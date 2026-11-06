@@ -21,6 +21,11 @@
 
         <p class="doc_text doc_gap">createUi 会全局注册全部组件、初始化主题，并应用 tokens。主题默认读取 wa_theme，没有保存值时跟随系统。</p>
 
+        <h2 class="doc_h2">接入图标库</h2>
+        <p class="doc_text">内置图标是一套基础集。需要其他图标库时，可以用 configureIcons 注册任意 IconNode 数组：</p>
+        <AppCode lang="js" :code="iconCode" />
+        <p class="doc_note doc_gap">名称沿用你注册时使用的键。传 null 可以移除图标，传新数组可以覆盖同名图标。</p>
+
         <h2 class="doc_h2">按需引入</h2>
         <p class="doc_text">组件与布局都有独立子路径入口，适合需要 tree-shaking 的项目；样式统一引入一次 style.css。</p>
         <AppCode lang="js" :code="onDemandCode" />
@@ -57,6 +62,16 @@ import AppShell from '@wash/ui/layout/AppShell'
 const app = createApp(App)
 app.component('AppButton', AppButton)
 app.component('AppShell', AppShell)`
+
+const iconCode = `import { configureIcons } from '@wash/ui'
+
+// 任意 IconNode 数组都可以注册
+configureIcons({
+    badge: [
+        ['circle', { cx: 12, cy: 12, r: 9 }],
+        ['path', { d: 'm8 12 3 3 5-6' }],
+    ],
+})`
 
 const initCode = `import { createApp } from 'vue'
 import '@wash/ui/style.css'

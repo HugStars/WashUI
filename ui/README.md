@@ -105,7 +105,7 @@ PageHeader 必须放在 AppShell 内，并且放在 RouterView 与 PageTransitio
 | `AppChip` | `active`、`text` | 原生 `click` | 默认 |
 | `AppStat` | `label`、`value` | 无 | 默认、`label` |
 | `AppEmpty` | `text` | 无 | 默认、`action` |
-| `AppIcon` | `name`、`size`、`strokeWidth` | 无 | 无 |
+| `AppIcon` | `name`、`icon`、`size`、`strokeWidth`、`morph`、`spring`、`reducedMotion` | 无 | 无 |
 | `AppThemeToggle` | `size` | `change` | 无 |
 | `AppSpinner` | `size` | 无 | 无 |
 | `AppSkeleton` | `width`、`height`、`radius` | 无 | 无 |
@@ -157,6 +157,20 @@ import { AppButton, AppShell } from '@wash/ui'
 `AppDialog` 是受控组件，必须使用 `v-model:open`。
 
 ## 图标
+
+`AppIcon` 使用 [Morphicons](https://www.morphicons.com)（MIT）做图标形变：`name` 或 `icon` 变化时，会自动从旧图标过渡到新图标。
+
+```vue
+<AppIcon :name="open ? 'close' : 'menu'" />
+<AppIcon name="home" :size="20" :stroke-width="1.8" />
+<AppIcon name="static-icon" :morph="false" />
+```
+
+- `morph`：是否启用形变，默认 `true`
+- `spring`：`snappy`、`smooth`、`bouncy` 或 `{ stiffness, damping }`
+- `reducedMotion`：`never`、`user`（默认，跟随系统）、`always`
+- `icon`：直接传 IconNode 数组或 24 grid 的 `d` 字符串，优先级高于 `name`
+- 原始 `<svg>` 字符串按原样渲染，不参与形变；需要形变时请提供数组或 `d` 字符串
 
 全局新增或覆盖图标：
 

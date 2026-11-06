@@ -111,6 +111,7 @@ function go(item) {
 }
 .doc_gap {
     margin-top: 14px;
+    margin-bottom: 14px;
 }
 .doc_text {
     max-width: 760px;

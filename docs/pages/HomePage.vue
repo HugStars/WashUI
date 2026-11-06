@@ -52,7 +52,7 @@ const features = [
     { title: '组件', text: '按钮、卡片、表单与反馈组件。', path: '/components' },
     { title: '布局', text: '壳层、页面标题、进度条与路由过渡。', path: '/layout' },
     { title: '能力', text: '全局服务、组合式函数、工具函数与设计变量。', path: '/abilities' },
-    { title: '图标', text: '内置图标与全局图标配置。', path: '/icons' },
+    { title: '图标', text: '内置图标、全局配置与 Morphicons 形变过渡。', path: '/icons' },
 ]
 
 </script>
