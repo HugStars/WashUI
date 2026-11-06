@@ -1,14 +1,16 @@
 <template>
-    <div class="wa_tabs" :class="[
+    <div ref="RootEl" class="wa_tabs" :class="[
         `wa_tabs_${variant}`,
         {
             wa_tabs_md: size === 'md',
             wa_tabs_transparent: transparent,
             wa_tabs_fill: ShouldFill,
+            wa_tabs_pulling: ScrollDragging,
         },
-    ]">
-        <div ref="ListEl" class="wa_tabs_list" :class="{ ready: SliderReady }" role="tablist" :aria-label="ariaLabel"
-            @keydown="OnKeydown" @pointerdown="OnPressStart">
+    ]" :style="RootStyle">
+        <div ref="ListEl" class="wa_tabs_list" :class="{ ready: SliderReady, wa_tabs_scrollable: Scrollable }" role="tablist" :aria-label="ariaLabel"
+            @keydown="OnKeydown" @pointerdown="OnListPointerDown" @pointermove="OnListPointerMove"
+            @pointerup="OnListPointerUp" @pointercancel="OnListPointerUp" @click.capture="OnListClickCapture">
             <span class="wa_tabs_slider" :class="{ ready: SliderReady }" :style="SliderStyle" aria-hidden="true">
                 <span class="wa_tabs_slider_inner" :class="{ bounce: SliderBounce, press: SliderPress }"
                     @animationend="OnSliderAnimationEnd"></span>
@@ -43,6 +45,14 @@
             </AppPopover>
         </div>
 
+        <div v-if="Badges.length" class="wa_tabs_badges">
+            <AppBadge v-for="entry in Badges" :key="entry.key" class="wa_tabs_badge"
+                :style="BadgeStyle(entry.key)" :value="entry.badge.text" :dot="entry.badge.dot"
+                :tone="entry.badge.tone" :max="entry.badge.max ?? 99" :draggable="entry.badge.draggable"
+                :aria-label="entry.badge.ariaLabel || BadgeLabel(entry)" :tabindex="-1" @click="OnBadgeClick(entry)"
+                @clear="OnBadgeClear(entry)" />
+        </div>
+
         <div v-if="HasPanel" :id="PanelId" class="wa_tabs_panel" role="tabpanel"
             :aria-labelledby="PanelLabelledBy" tabindex="0">
             <slot :active="modelValue" :item="ActiveItem" />
@@ -52,6 +62,7 @@
 
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, useId, useSlots, watch } from 'vue'
+import AppBadge from './AppBadge.vue'
 import AppIcon from './AppIcon.vue'
 import AppPopover from './AppPopover.vue'
 import AppSelectPanel from './AppSelectPanel.vue'
@@ -100,7 +111,7 @@ const props = defineProps({
     },
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits(['update:modelValue', 'change', 'badge-clear'])
 
 const slots = useSlots()
 const uid = useId()
@@ -111,6 +122,7 @@ const ActiveIndex = computed(() => props.items.findIndex(item => item.name === p
 const ActiveItem = computed(() => props.items[ActiveIndex.value] || null)
 const IconSize = computed(() => props.size === 'md' ? 17 : 16)
 const ShouldFill = computed(() => props.fill || props.overflow === 'more')
+const Scrollable = computed(() => props.overflow === 'scroll' && !props.fill)
 const TabId = index => `${uid}-tab-${index}`
 
 const Limit = computed(() => Math.max(2, props.max))
@@ -125,14 +137,19 @@ const PanelLabelledBy = computed(() => {
     if (MoreActive.value) return `${uid}-more`
     return ActiveIndex.value >= 0 ? TabId(ActiveIndex.value) : undefined
 })
-const MoreOptions = computed(() => HiddenItems.value.map(item => ({
-    label: item.label,
-    value: item.name,
-    icon: item.icon,
-    disabled: item.disabled,
-})))
+const MoreOptions = computed(() => HiddenItems.value.map(item => {
+    const badge = NormalizeBadge(item.badge)
+    return {
+        label: item.label,
+        value: item.name,
+        icon: item.icon,
+        disabled: item.disabled,
+        badge: badge ? { ...badge, max: badge.max ?? 99 } : null,
+    }
+}))
 
 const ListEl = ref(null)
+const RootEl = ref(null)
 const TabEls = new Map()
 const SliderStyle = ref({})
 const SliderReady = ref(false)
@@ -140,14 +157,179 @@ const SliderBounce = ref(false)
 const SliderPress = ref(false)
 const PressedKey = ref(null)
 const MoreOpen = ref(false)
+const BadgePosition = ref({})
+const Pull = ref(0)
+const ScrollDragging = ref(false)
+
+const RootStyle = computed(() => ({
+    '--wa_tabs_pull': `${Pull.value}px`,
+}))
 
 let PressTimer = null
 let BounceFrame = 0
+let ScrollFrame = 0
 let ResizeObserverInstance = null
+let ScrollPointerId = null
+let ScrollStartX = 0
+let ScrollStartY = 0
+let ScrollStartLeft = 0
+let ScrollActive = false
+let SuppressTabClick = false
 
 function SetTabEl(name, el) {
     if (el) TabEls.set(name, el)
     else TabEls.delete(name)
+}
+
+function NormalizeBadge(badge) {
+    if (badge === null || badge === undefined || badge === false || badge === '') return null
+
+    if (badge === true) {
+        return { text: '', dot: true, tone: 'danger', draggable: false, max: undefined, ariaLabel: '' }
+    }
+
+    if (typeof badge === 'number' || typeof badge === 'string') {
+        return { text: badge, dot: false, tone: 'danger', draggable: false, max: undefined, ariaLabel: '' }
+    }
+
+    if (typeof badge !== 'object') return null
+
+    const text = badge.text ?? badge.value ?? ''
+    return {
+        text,
+        dot: !!badge.dot && text === '',
+        tone: badge.tone || 'danger',
+        draggable: !!badge.draggable,
+        max: badge.max,
+        ariaLabel: badge.ariaLabel,
+    }
+}
+
+function AggregateBadge(items) {
+    let total = 0
+    let hasNumber = false
+    let dot = false
+    let tone = ''
+    let draggable = false
+
+    for (const item of items) {
+        const badge = NormalizeBadge(item.badge)
+        if (!badge) continue
+
+        if (badge.dot) {
+            dot = true
+        } else {
+            const number = Number(badge.text)
+            if (Number.isFinite(number)) {
+                total += number
+                hasNumber = true
+            } else {
+                dot = true
+            }
+        }
+
+        tone ||= badge.tone
+        draggable ||= badge.draggable
+    }
+
+    if (!hasNumber && !dot) return null
+    return {
+        text: hasNumber ? total : '',
+        dot: !hasNumber,
+        tone: tone || 'danger',
+        draggable,
+    }
+}
+
+const Badges = computed(() => {
+    const result = []
+
+    for (const item of VisibleItems.value) {
+        const badge = NormalizeBadge(item.badge)
+        if (badge) result.push({ key: item.name, item, index: props.items.indexOf(item), badge })
+    }
+
+    const hiddenBadge = AggregateBadge(HiddenItems.value)
+    if (hiddenBadge) result.push({ key: MORE_KEY, item: null, index: -1, badge: hiddenBadge })
+
+    return result
+})
+
+function BadgeLabel(entry) {
+    if (entry.key === MORE_KEY) {
+        return entry.badge.dot ? '更多标签，有未读' : `更多标签，${entry.badge.text} 条未读`
+    }
+    return ''
+}
+
+function BadgeStyle(key) {
+    const position = BadgePosition.value[key]
+    if (!position) return { visibility: 'hidden' }
+    return {
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+    }
+}
+
+function UpdateBadges() {
+    const root = RootEl.value
+    const list = ListEl.value
+
+    if (!root || !list || !Badges.value.length) {
+        BadgePosition.value = {}
+        return
+    }
+
+    // offset 不受按压缩放和过渡中的 transform 影响，避免切换时角标抖动
+    const baseX = list.offsetLeft - list.scrollLeft
+    const baseY = list.offsetTop
+    const next = {}
+
+    for (const entry of Badges.value) {
+        const el = TabEls.get(entry.key)
+        if (!el || !el.offsetWidth) continue
+
+        next[entry.key] = {
+            x: baseX + el.offsetLeft + el.offsetWidth - 4,
+            y: baseY + el.offsetTop + 3,
+        }
+    }
+
+    BadgePosition.value = next
+}
+
+function OnBadgeClick(entry) {
+    if (entry.key === MORE_KEY) {
+        MoreOpen.value = true
+        return
+    }
+
+    const item = props.items.find(item => item.name === entry.key)
+    if (!item) return
+
+    Choose(item, props.items.indexOf(item))
+}
+
+function OnBadgeClear(entry) {
+    emit('badge-clear', {
+        name: entry.key === MORE_KEY ? '' : entry.key,
+        item: entry.item,
+        index: entry.index,
+        more: entry.key === MORE_KEY,
+    })
+}
+
+function Refresh() {
+    UpdateSlider()
+    UpdateBadges()
+}
+
+function OnListScroll() {
+    if (ScrollFrame) return
+    ScrollFrame = requestAnimationFrame(() => {
+        ScrollFrame = 0
+        UpdateBadges()
+    })
 }
 
 function UpdateSlider() {
@@ -245,6 +427,97 @@ function ClearPress() {
     PressedKey.value = null
 }
 
+function OnListPointerDown(event) {
+    OnPressStart(event)
+
+    if (!Scrollable.value) return
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+
+    const list = ListEl.value
+    if (!list) return
+
+    ScrollPointerId = event.pointerId
+    ScrollStartX = event.clientX
+    ScrollStartY = event.clientY
+    ScrollStartLeft = list.scrollLeft
+    ScrollActive = false
+}
+
+function OnListPointerMove(event) {
+    if (ScrollPointerId === null || event.pointerId !== ScrollPointerId) return
+
+    const list = ListEl.value
+    if (!list) return
+
+    const dx = event.clientX - ScrollStartX
+    const dy = event.clientY - ScrollStartY
+
+    if (!ScrollActive) {
+        // 横移明显大于纵向时才接管，避免抢走页面纵向滚动
+        if (Math.abs(dx) < 6 || Math.abs(dx) <= Math.abs(dy)) return
+
+        ScrollActive = true
+        ScrollDragging.value = true
+        ClearPress()
+
+        try {
+            list.setPointerCapture(event.pointerId)
+        } catch {
+            // 合成事件或指针已经失效时忽略
+        }
+
+        event.preventDefault()
+    }
+
+    const max = Math.max(0, list.scrollWidth - list.clientWidth)
+    const next = ScrollStartLeft - dx
+
+    if (next < 0) {
+        list.scrollLeft = 0
+        Pull.value = Math.min(72, -next * 0.45)
+    } else if (next > max) {
+        list.scrollLeft = max
+        Pull.value = -Math.min(72, (next - max) * 0.45)
+    } else {
+        list.scrollLeft = next
+        Pull.value = 0
+    }
+}
+
+function OnListPointerUp(event) {
+    if (ScrollPointerId === null || event.pointerId !== ScrollPointerId) return
+
+    const list = ListEl.value
+    if (list) {
+        try {
+            list.releasePointerCapture(event.pointerId)
+        } catch {
+            // 指针已经释放时忽略
+        }
+    }
+
+    ScrollPointerId = null
+    ScrollStartLeft = 0
+
+    if (!ScrollActive) return
+
+    ScrollActive = false
+    ScrollDragging.value = false
+    Pull.value = 0
+
+    SuppressTabClick = true
+    setTimeout(() => {
+        SuppressTabClick = false
+    }, 0)
+}
+
+function OnListClickCapture(event) {
+    if (!SuppressTabClick) return
+    event.preventDefault()
+    event.stopPropagation()
+    SuppressTabClick = false
+}
+
 function OnPressStart(event) {
     if (event.pointerType === 'mouse' && event.button !== 0) return
 
@@ -268,17 +541,19 @@ function OnPressStart(event) {
 
 onMounted(() => {
     nextTick(() => {
-        UpdateSlider()
+        Refresh()
         ScrollActiveIntoView()
     })
 
     window.addEventListener('pointerup', ClearPress)
     window.addEventListener('pointercancel', ClearPress)
-    window.addEventListener('resize', UpdateSlider)
-    document.fonts?.ready?.then(UpdateSlider)
+    window.addEventListener('resize', Refresh)
+    document.fonts?.ready?.then(Refresh)
+
+    ListEl.value?.addEventListener('scroll', OnListScroll, { passive: true })
 
     if (typeof ResizeObserver !== 'undefined' && ListEl.value) {
-        ResizeObserverInstance = new ResizeObserver(UpdateSlider)
+        ResizeObserverInstance = new ResizeObserver(Refresh)
         ResizeObserverInstance.observe(ListEl.value)
     }
 })
@@ -286,10 +561,12 @@ onMounted(() => {
 onUnmounted(() => {
     window.removeEventListener('pointerup', ClearPress)
     window.removeEventListener('pointercancel', ClearPress)
-    window.removeEventListener('resize', UpdateSlider)
+    window.removeEventListener('resize', Refresh)
+    ListEl.value?.removeEventListener('scroll', OnListScroll)
     ResizeObserverInstance?.disconnect()
     ResizeObserverInstance = null
     cancelAnimationFrame(BounceFrame)
+    cancelAnimationFrame(ScrollFrame)
     clearTimeout(PressTimer)
 })
 
@@ -297,14 +574,14 @@ watch(ListEl, (el, old) => {
     if (old) ResizeObserverInstance?.unobserve(old)
     if (el) {
         ResizeObserverInstance?.observe(el)
-        nextTick(UpdateSlider)
+        nextTick(Refresh)
     }
 })
 
 watch(() => props.modelValue, () => {
     MoreOpen.value = false
     nextTick(() => {
-        UpdateSlider()
+        Refresh()
         PlayBounce()
         ScrollActiveIntoView()
     })
@@ -312,7 +589,7 @@ watch(() => props.modelValue, () => {
 
 watch(
     [() => props.items, () => props.size, () => props.variant, () => props.fill, () => props.overflow, () => props.max],
-    () => nextTick(UpdateSlider),
+    () => nextTick(Refresh),
     { deep: true },
 )
 </script>
@@ -322,6 +599,7 @@ watch(
     --wa_tabs_height: 34px;
     --wa_tabs_font: 13px;
 
+    position: relative;
     display: grid;
     gap: 12px;
     min-width: 0;
@@ -348,6 +626,12 @@ watch(
     backdrop-filter: blur(var(--wa_blur));
     box-shadow: var(--wa_shadow_nav);
     scrollbar-width: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.wa_tabs_scrollable {
+    touch-action: pan-y;
 }
 
 .wa_tabs_list::-webkit-scrollbar {
@@ -386,11 +670,13 @@ watch(
     border-radius: var(--wa_radius_pill);
     opacity: 0;
     pointer-events: none;
+    translate: var(--wa_tabs_pull, 0px) 0;
     transition:
         left var(--wa_duration_slow) var(--wa_ease_spring),
         top var(--wa_duration_slow) var(--wa_ease_spring),
         width var(--wa_duration_slow) var(--wa_ease_spring),
         height var(--wa_duration_slow) var(--wa_ease_spring),
+        translate var(--wa_duration_base) var(--wa_ease_spring),
         opacity var(--wa_duration_fast) linear;
 }
 
@@ -434,9 +720,11 @@ watch(
     white-space: nowrap;
     cursor: pointer;
     transform-origin: center;
+    translate: var(--wa_tabs_pull, 0px) 0;
     transition:
         color var(--wa_duration_fast) var(--wa_ease_out),
         background var(--wa_duration_fast) var(--wa_ease_out),
+        translate var(--wa_duration_base) var(--wa_ease_spring),
         transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
@@ -506,10 +794,34 @@ watch(
     outline-offset: 2px;
 }
 
+.wa_tabs_badges {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    translate: var(--wa_tabs_pull, 0px) 0;
+    transition: translate var(--wa_duration_base) var(--wa_ease_spring);
+}
+
+.wa_tabs_badge {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+}
+
+.wa_tabs_pulling .wa_tabs_list {
+    cursor: grabbing;
+}
+
+.wa_tabs_pulling .wa_tabs_tab,
+.wa_tabs_pulling .wa_tabs_slider,
+.wa_tabs_pulling .wa_tabs_badges {
+    transition: none;
+}
+
 .wa_tabs_panel {
     min-width: 0;
 }
-
 .wa_tabs_panel:focus-visible {
     outline: 2px solid var(--wa_color_accent);
     outline-offset: 4px;
@@ -544,7 +856,8 @@ watch(
     }
 
     .wa_tabs_slider_inner,
-    .wa_tabs_tab {
+    .wa_tabs_tab,
+    .wa_tabs_badges {
         transition: none;
     }
 

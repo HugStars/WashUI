@@ -87,6 +87,7 @@ pnpm dev:docs
 - 连续动画使用 keyframe：Spinner、Skeleton、RouteBar。
 - 一次性装饰动画使用 keyframe：Toast、Dialog 内容、移动端 sheet。
 - 状态动画必须支持中断：不要用 `forwards` 一次性动画驱动会反复切换的状态。
+- 拖拽类连续交互使用 rAF 弹簧，松手时携带释放速度；粘性连接每帧按两个圆的几何关系计算路径，超过阈值立即断开。
 - 不要在 `backdrop-filter` 元素本身或它的祖先/子元素上同时做 opacity 入场；Chromium 会丢掉模糊。
 - 浮层、弹框、Toast 的进入退出需要同时覆盖 `prefers-reduced-motion`。
 
@@ -148,6 +149,7 @@ pnpm dev:docs
 | `select` | `item` | SelectPanel 选中项 |
 | `update:selectedKeys` | 当前选择键 | 表格行选择 |
 | `update:sort` / `sort-change` | `{ key, order }` / `{ key, order, column }` | 表格排序 |
+| `badge-clear` | `{ name, item, index, more }` | 标签页角标被拖拽或按键清除 |
 | `page-size-change` | `{ pageSize, page }` | 分页每页条数变化 |
 | `reject` | `{ file, reason }` | Upload 拒绝文件 |
 | `remove` | `file, index` | Upload 移除文件 |
@@ -279,7 +281,7 @@ import '@wash/ui/style.css'
 
 | 分类 | 组件 |
 | --- | --- |
-| 基础 | AppButton（按钮）、AppCard（卡片）、AppCode（代码）、AppChip（标记）、AppTag（标签）、AppTabs（标签页）、AppStat（统计）、AppNumber（数字跳动）、AppEmpty（空状态）、AppThemeToggle（主题切换） |
+| 基础 | AppButton（按钮）、AppCard（卡片）、AppCode（代码）、AppChip（标记）、AppTag（标签）、AppBadge（消息角标）、AppTabs（标签页）、AppStat（统计）、AppNumber（数字跳动）、AppEmpty（空状态）、AppThemeToggle（主题切换） |
 | 加载 | AppSpinner（加载圈）、AppSkeleton（骨架屏） |
 | 数据 | AppTable（表格）、AppPagination（分页） |
 | 表单 | AppInput（输入框）、AppTextarea（文本域）、AppSwitch（开关）、AppCheck（复选框）、AppCheckGroup（复选框组）、AppRadio（单选框）、AppRadioGroup（单选框组）、AppSelect（下拉框）、AppSelectPanel（下拉面板）、AppChoiceList（选择列表）、AppCheckPanel（多选面板）、AppRadioPanel（单选面板）、AppUpload（上传） |

@@ -1,3 +1,4 @@
+export { createGooeyPath } from './gooey.js'
 export {
     formatBytes,
     formatSpeed,

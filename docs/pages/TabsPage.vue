@@ -1,6 +1,6 @@
 <template>
     <DocPage category="导航" name="AppTabs" title="标签页"
-        description="参考 AppShell 导航实现的标签切换组件，选中背景会滑动并带弹性反馈。支持两种外观、透明背景、尺寸与可选面板；fill 或 overflow=more 时标签等宽铺满。">
+        description="参考 AppShell 导航实现的标签切换组件，选中背景会滑动并带弹性反馈。支持两种外观、透明背景、尺寸与可选面板；fill 或 overflow=more 时标签等宽铺满，overflow=scroll 时标签栏滚到两端后还能拉出一段并回弹。">
         <DemoBlock title="基础" description="v-model 绑定选中项的 name；写入默认插槽时渲染面板，插槽可拿到当前项。">
             <AppTabs v-model="tab" :items="tabs">
                 <template #default="{ active, item }">
@@ -44,6 +44,11 @@
             </div>
         </DemoBlock>
 
+        <DemoBlock title="消息角标"
+            description="items[].badge 支持数字、true（圆点）或对象；对象加 draggable 后可以拖拽断开清除，并通过 badge-clear 交给业务处理。">
+            <AppTabs v-model="badgeTab" :items="badgeTabs" @badge-clear="ClearTabBadge" />
+        </DemoBlock>
+
         <template #api>
             <ApiTable :rows="propsRows" />
             <ApiTable title="事件" kind="events" :rows="eventRows" />
@@ -65,6 +70,7 @@ const mdTab = ref('home')
 const fillTab = ref('overview')
 const scrollTab = ref('overview')
 const moreTab = ref('settings')
+const badgeTab = ref('all')
 
 const tabs = [
     { name: 'overview', label: '概览' },
@@ -91,9 +97,21 @@ const manyTabs = [
     { name: 'about', label: '关于' },
 ]
 
+const badgeTabs = ref([
+    { name: 'all', label: '全部', badge: 12 },
+    { name: 'reply', label: '回复', badge: { text: 3, draggable: true } },
+    { name: 'mention', label: '提到我', badge: { dot: true, tone: 'accent', draggable: true } },
+    { name: 'system', label: '系统', badge: { text: 1, tone: 'neutral' } },
+])
+
+function ClearTabBadge({ name }) {
+    const item = badgeTabs.value.find(item => item.name === name)
+    if (item) item.badge = null
+}
+
 const propsRows = [
     { name: 'modelValue', type: 'string | number | symbol', default: "''", desc: '当前选中项的 name' },
-    { name: 'items', type: 'Array<{ name, label, icon?, disabled? }>', default: '[]', desc: '标签项' },
+    { name: 'items', type: 'Array<{ name, label, icon?, disabled?, badge? }>', default: '[]', desc: '标签项；badge 支持数字、true 或 { text, dot, tone, draggable, max }' },
     { name: 'variant', type: 'nav | plain', default: 'nav', desc: 'nav 带外框，plain 无边框、无外框、无阴影' },
     { name: 'transparent', type: 'boolean', default: 'false', desc: '去掉磨砂、背景、边框和阴影' },
     { name: 'size', type: 'sm | md', default: 'sm', desc: '标签尺寸' },
@@ -106,6 +124,7 @@ const propsRows = [
 const eventRows = [
     { name: 'update:modelValue', type: 'string | number | symbol', desc: '选中项变化' },
     { name: 'change', type: 'item, index', desc: '选中项变化，返回标签项和索引' },
+    { name: 'badge-clear', type: '{ name, item, index, more }', desc: '角标被拖拽或按键清除，由业务更新 items' },
 ]
 
 const slotRows = [

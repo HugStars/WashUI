@@ -154,7 +154,7 @@ function pick(item, close) {
 
 const propsRows = [
     { name: 'modelValue', type: 'string | number | symbol', default: "''", desc: '选中值' },
-    { name: 'options', type: 'Array<{ label, value, disabled, icon }>', default: '[]', desc: '普通选项，icon 配合 iconComponent 使用' },
+    { name: 'options', type: 'Array<{ label, value, disabled, icon, badge }>', default: '[]', desc: '普通选项，icon 配合 iconComponent 使用；badge 支持 { text, dot, tone, max }' },
     { name: 'groups', type: 'Array<{ label, options }>', default: '[]', desc: '分组选项，组内 options 结构同上' },
     { name: 'emptyText', type: 'string', default: '暂无选项', desc: '空状态文案' },
     { name: 'size', type: 'md | sm', default: 'sm', desc: '默认小尺寸，md 时选项间距、内边距与滚动条更宽松' },

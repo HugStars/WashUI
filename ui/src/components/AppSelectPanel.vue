@@ -9,6 +9,9 @@
                     class="wa_select_option_icon" aria-hidden="true" />
                 <span class="wa_select_label"
                     :class="{ wa_select_label_before: checkPosition === 'before' }">{{ item.label }}</span>
+                <AppBadge v-if="item.badge" readonly class="wa_select_badge" :value="item.badge.text"
+                    :dot="item.badge.dot" :tone="item.badge.tone || 'danger'" :max="item.badge.max ?? 99"
+                    aria-hidden="true" />
                 <template v-if="item.value === modelValue">
                     <span v-if="checkRender?.mode === 'text'" class="wa_select_check"
                         :class="{ wa_select_check_before: checkPosition === 'before' }" aria-hidden="true">
@@ -27,6 +30,9 @@
                 class="wa_select_option_icon" aria-hidden="true" />
             <span class="wa_select_label"
                 :class="{ wa_select_label_before: checkPosition === 'before' }">{{ item.label }}</span>
+            <AppBadge v-if="item.badge" readonly class="wa_select_badge" :value="item.badge.text"
+                :dot="item.badge.dot" :tone="item.badge.tone || 'danger'" :max="item.badge.max ?? 99"
+                aria-hidden="true" />
             <template v-if="item.value === modelValue">
                 <span v-if="checkRender?.mode === 'text'" class="wa_select_check"
                     :class="{ wa_select_check_before: checkPosition === 'before' }" aria-hidden="true">
@@ -43,6 +49,7 @@
 
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import AppBadge from './AppBadge.vue'
 import AppIcon from './AppIcon.vue'
 
 const props = defineProps({
@@ -302,6 +309,16 @@ const checkRender = computed(() => {
 .wa_select_option:disabled {
     opacity: .45;
     cursor: not-allowed;
+}
+
+.wa_select_badge {
+    order: 2;
+    flex: none;
+}
+
+.wa_select_option.on .wa_select_badge.wa_badge_neutral {
+    --wa_badge_bg: var(--wa_color_on_text);
+    --wa_badge_color: var(--wa_color_text);
 }
 
 .wa_select_check {
