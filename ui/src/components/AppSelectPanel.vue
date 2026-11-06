@@ -195,12 +195,12 @@ const checkRender = computed(() => {
     max-height: min(320px, calc(100vh - 120px));
     overflow-y: auto;
     overscroll-behavior: contain;
-    scrollbar-width: none;
+    scrollbar-width: thin;
 }
 
-/* 只有出现滚动条时才留出与外侧等宽的内边距，让滚动条在右侧留白中居中 */
+/* 出现滚动条时预留稳定槽位，避免内容宽度来回跳 */
 .wa_select_panel.has_scrollbar {
-    padding-right: var(--wa_popover_padding);
+    scrollbar-gutter: stable;
 }
 
 .wa_select_panel.wa_select_sm {
@@ -359,6 +359,7 @@ const checkRender = computed(() => {
 
     .wa_select_panel.has_scrollbar {
         padding-right: 0;
+        scrollbar-gutter: auto;
     }
 }
 
