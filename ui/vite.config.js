@@ -34,7 +34,7 @@ export default defineConfig({
             cssFileName: 'style',
         },
         rollupOptions: {
-            external: ['vue', 'vue-router'],
+            external: ['vue', 'vue-router', /^morphicons(\/.*)?$/],
         },
         sourcemap: true,
     },

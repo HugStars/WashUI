@@ -56,6 +56,7 @@
         "node": ">=20.19"
     },
     "dependencies": {
-        "@speed-highlight/core": "^2.1.0"
+        "@speed-highlight/core": "^2.1.0",
+        "morphicons": "^2.0.2"
     }
 }
