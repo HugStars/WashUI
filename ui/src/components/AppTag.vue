@@ -1,6 +1,6 @@
 <template>
     <span class="wa_tag" :class="Classes">
-        <slot>{{ text }}</slot>
+        <span class="wa_tag_text"><slot>{{ text }}</slot></span>
     </span>
 </template>
 
@@ -30,6 +30,8 @@ const props = defineProps({
     },
     /** 白色磨砂半透明表面，与 AppPopover 面板一致 */
     frosted: Boolean,
+    /** 胶囊圆角，适合做状态角标 */
+    pill: Boolean,
     /** 挂载时从左向右展开 */
     expand: {
         type: Boolean,
@@ -43,6 +45,7 @@ const Classes = computed(() => [
         wa_tag_md: props.size === 'md',
         wa_tag_sans: !props.mono,
         wa_tag_frosted: props.frosted,
+        wa_tag_pill: props.pill,
         wa_tag_expand: props.expand,
     },
 ])
@@ -57,7 +60,8 @@ const Classes = computed(() => [
     align-items: center;
     gap: 4px;
     max-width: 100%;
-    padding: 2px 6px;
+    height: 22px;
+    padding: 0 6px;
     border: 1px solid transparent;
     border-radius: 5px;
     color: var(--wa_tag_color);
@@ -65,7 +69,7 @@ const Classes = computed(() => [
     font-family: var(--wa_font_mono);
     font-size: 12px;
     font-weight: 400;
-    line-height: 1.4;
+    line-height: 1;
     vertical-align: middle;
     white-space: nowrap;
     overflow: hidden;
@@ -77,9 +81,39 @@ const Classes = computed(() => [
     flex: none;
 }
 
+.wa_tag_text {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 支持 text-box 的浏览器按字体内容区裁剪；CJK 字形在内容区里偏上，补一点下移 */
+@supports (text-box-trim: trim-both) {
+    .wa_tag_text {
+        text-box-trim: trim-both;
+        text-box-edge: auto;
+        translate: 0 .06em;
+    }
+}
+
+/* 旧内核没有 text-box，中文行盒通常偏上，做一点近似补偿 */
+@supports not (text-box-trim: trim-both) {
+    .wa_tag_text {
+        padding-top: .08em;
+    }
+}
+
 .wa_tag_md {
-    padding: 4px 8px;
+    height: 27px;
+    padding: 0 8px;
     font-size: 13px;
+}
+
+.wa_tag_pill {
+    border-radius: var(--wa_radius_pill);
 }
 
 .wa_tag_sans {

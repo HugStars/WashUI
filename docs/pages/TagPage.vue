@@ -29,6 +29,17 @@
             </div>
         </DemoBlock>
 
+        <DemoBlock title="胶囊角标" description="pill 使用胶囊圆角，适合状态角标，或与消息角标、圆形头像并排。">
+            <div class="doc_row">
+                <AppTag text="进行中" tone="success" pill />
+                <AppTag text="待审核" tone="warning" pill />
+                <AppTag text="已失败" tone="danger" pill />
+                <AppTag text="Beta" pill />
+                <AppTag text="12" tone="danger" pill />
+                <AppTag text="md 胶囊" size="md" pill />
+            </div>
+        </DemoBlock>
+
         <DemoBlock title="磨砂" description="frosted 使用与 AppPopover 一致的玻璃表面，适合叠在内容或渐变背景上。">
             <div class="doc_tag_frosted_stage">
                 <div class="doc_row">
@@ -67,6 +78,7 @@ const propsRows = [
     { name: 'size', type: 'sm | md', default: 'sm', desc: '字号与上下内边距' },
     { name: 'mono', type: 'boolean', default: 'true', desc: '使用等宽字体；false 时使用界面字体' },
     { name: 'frosted', type: 'boolean', default: 'false', desc: '白色磨砂半透明表面' },
+    { name: 'pill', type: 'boolean', default: 'false', desc: '胶囊圆角，适合状态角标' },
     { name: 'expand', type: 'boolean', default: 'true', desc: '挂载时从左向右展开；设为 false 关闭' },
 ]
 
