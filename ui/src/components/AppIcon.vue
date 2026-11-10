@@ -1,7 +1,14 @@
 <script>
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { svgToIcon } from 'morphicons/adapters'
 import { createMorph } from 'morphicons/dom'
-import { getIcon } from '../core/icons.js'
+import { getIcon, getIconDefaults } from '../core/icons.js'
+
+const SPRING_PRESETS = {
+    smooth: { stiffness: 170, damping: 26 },
+    snappy: { stiffness: 420, damping: 30 },
+    bouncy: { stiffness: 300, damping: 14 },
+}
 
 function toSize(value) {
     return typeof value === 'number' ? `${value}px` : value
@@ -9,6 +16,19 @@ function toSize(value) {
 
 function toStrokeWidth(value) {
     return Number.parseFloat(value) || 1.8
+}
+
+// 速度按时间缩放：刚度乘 speed²、阻尼乘 speed，保持原弹簧手感
+function toSpring(spring, speed) {
+    if (speed === 1 || spring === undefined || spring === null) return spring
+
+    const base = typeof spring === 'string' ? SPRING_PRESETS[spring] : spring
+    if (!base || !Number.isFinite(base.stiffness) || !Number.isFinite(base.damping)) return spring
+
+    return {
+        stiffness: base.stiffness * speed * speed,
+        damping: base.damping * speed,
+    }
 }
 
 function renderRaw(source, size, className, style, rest) {
@@ -21,16 +41,23 @@ function renderRaw(source, size, className, style, rest) {
     })
 }
 
-function toIconData(icon) {
-    if (Array.isArray(icon)) return icon.length ? icon : null
+function normalizeIconData(data) {
+    if (Array.isArray(data)) return data.length ? data : null
+    if (typeof data === 'string' && data.trim()) return [['path', { d: data }]]
+    return null
+}
 
-    // 裸 d 字符串
-    if (typeof icon === 'string' && icon.trim() && !icon.trim().startsWith('<')) {
-        return [['path', { d: icon }]]
+function toIconData(icon) {
+    // 原始 SVG 先转成 24 网格，转换失败时保留原样渲染
+    if (typeof icon === 'string' && icon.trim().startsWith('<')) {
+        try {
+            return normalizeIconData(svgToIcon(icon))
+        } catch {
+            return null
+        }
     }
 
-    // 原始 SVG 字符串继续走 innerHTML，不参与形变
-    return null
+    return normalizeIconData(icon)
 }
 
 export default defineComponent({
@@ -52,7 +79,7 @@ export default defineComponent({
         },
         strokeWidth: {
             type: [Number, String],
-            default: 1.8,
+            default: undefined,
         },
         /** 是否启用图标形变过渡 */
         morph: {
@@ -62,22 +89,38 @@ export default defineComponent({
         /** snappy / smooth / bouncy 或 { stiffness, damping } */
         spring: {
             type: [String, Object],
-            default: () => ({ stiffness: 520, damping: 34 }),
+            default: undefined,
+        },
+        /** 播放速度倍率，按弹簧时间缩放换算 */
+        speed: {
+            type: Number,
+            default: undefined,
         },
         /** never / user / always */
         reducedMotion: {
             type: String,
-            default: 'user',
+            default: undefined,
         },
     },
     setup(props, { attrs }) {
+        const Defaults = getIconDefaults()
         const PathEl = ref(null)
         const Source = computed(() => props.icon ?? getIcon(props.name))
         const IconData = computed(() => toIconData(Source.value))
         const CanMorph = computed(() => Boolean(props.morph && IconData.value))
         const IsRaw = computed(
-            () => typeof Source.value === 'string' && Source.value.trim().startsWith('<')
+            () => typeof Source.value === 'string'
+                && Source.value.trim().startsWith('<')
+                && !IconData.value
         )
+
+        const StrokeWidth = computed(() => props.strokeWidth ?? Defaults.strokeWidth ?? 1.8)
+        const ReducedMotion = computed(() => props.reducedMotion ?? Defaults.reducedMotion ?? 'user')
+        const Speed = computed(() => {
+            const value = Number(props.speed ?? Defaults.speed ?? 1)
+            return Number.isFinite(value) && value > 0 ? value : 1
+        })
+        const EffectiveSpring = computed(() => toSpring(props.spring ?? Defaults.spring, Speed.value))
 
         let morph = null
         let MorphEl = null
@@ -88,8 +131,8 @@ export default defineComponent({
 
             MorphEl = PathEl.value
             morph = createMorph(MorphEl, icon, {
-                reducedMotion: props.reducedMotion,
-                strokeWidth: toStrokeWidth(props.strokeWidth),
+                reducedMotion: ReducedMotion.value,
+                strokeWidth: toStrokeWidth(StrokeWidth.value),
             })
         }
 
@@ -107,7 +150,7 @@ export default defineComponent({
                 MorphEl = null
             }
 
-            if (morph) morph.morphTo(icon, props.spring)
+            if (morph) morph.morphTo(icon, EffectiveSpring.value)
             else EnsureMorph(icon)
         })
 
@@ -120,11 +163,11 @@ export default defineComponent({
             if (CanMorph.value) EnsureMorph(IconData.value)
         })
 
-        watch(() => props.strokeWidth, (value) => {
+        watch(StrokeWidth, (value) => {
             if (morph) morph.strokeWidth = toStrokeWidth(value)
         })
 
-        watch(() => props.reducedMotion, (value) => {
+        watch(ReducedMotion, (value) => {
             if (morph) morph.reducedMotion = value
         })
 
@@ -147,7 +190,7 @@ export default defineComponent({
                 height: size,
                 fill: 'none',
                 stroke: 'currentColor',
-                'stroke-width': props.strokeWidth,
+                'stroke-width': StrokeWidth.value,
                 'stroke-linecap': 'round',
                 'stroke-linejoin': 'round',
                 'aria-hidden': 'true',

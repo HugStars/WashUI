@@ -32,6 +32,8 @@ import '@wash/ui/tokens.css'
 
 两者不要同时引入。
 
+包内附带 `types/` 声明，组件子路径和主入口都能直接获得 Props 提示。
+
 ## 初始化
 
 ```js
@@ -168,9 +170,28 @@ import { AppButton, AppShell } from '@wash/ui'
 
 - `morph`：是否启用形变，默认 `true`
 - `spring`：`snappy`、`smooth`、`bouncy` 或 `{ stiffness, damping }`
+- `speed`：播放速度倍率，默认 `1`，按弹簧时间缩放换算
+- `strokeWidth`：描边宽度，默认 `1.8`
 - `reducedMotion`：`never`、`user`（默认，跟随系统）、`always`
 - `icon`：直接传 IconNode 数组或 24 grid 的 `d` 字符串，优先级高于 `name`
-- 原始 `<svg>` 字符串按原样渲染，不参与形变；需要形变时请提供数组或 `d` 字符串
+- 原始 `<svg>` 字符串会先通过 `svgToIcon` 转成 24 网格并参与形变；无法解析时回退为原样渲染
+
+全局配置形变默认值：
+
+```js
+app.use(createUi({
+    iconDefaults: {
+        spring: 'snappy',
+        speed: 1,
+        strokeWidth: 1.8,
+        reducedMotion: 'user',
+    },
+}))
+```
+
+- 组件上的 props 优先于 `iconDefaults`
+- 运行时可用 `configureIconDefaults()` 修改
+- `getIconDefaults()` 返回当前默认值
 
 全局新增或覆盖图标：
 
@@ -187,7 +208,7 @@ app.use(createUi({
 ```
 
 - 数组形式沿用 `strokeWidth`、`currentColor` 等规则
-- 字符串 SVG 原样渲染，不应用 `strokeWidth`，尺寸仍由 `size` 控制
+- 字符串 SVG 会自动转换并参与形变；转换失败时原样渲染，尺寸仍由 `size` 控制
 - 运行时使用 `configureIcons()`；传 `null` 可移除图标
 - `iconNames()` 返回当前图标名列表
 - `iconGroups` 提供内置图标的分类信息，可用于文档或图标选择器
