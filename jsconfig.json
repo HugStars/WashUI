@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@ui/*": ["ui/*"],
+            "@docs/*": ["docs/*"],
+            "@/*": ["ui/src/*"]
+        }
+    },
+    "include": ["ui/src/**/*", "docs/**/*", "tests/**/*"],
+    "exclude": ["node_modules", "dist", "ui/types"]
+}

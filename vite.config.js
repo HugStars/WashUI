@@ -40,6 +40,9 @@ export default defineConfig({
     },
     resolve: {
         alias: [
+            { find: /^@ui\//, replacement: `${resolvePath('./ui')}/` },
+            { find: /^@docs\//, replacement: `${resolvePath('./docs')}/` },
+            { find: /^@\//, replacement: `${resolvePath('./ui/src')}/` },
             { find: /^@wash\/ui\/style\.css$/, replacement: resolvePath('./ui/src/styles/index.css') },
             { find: /^@wash\/ui\/tokens\.css$/, replacement: resolvePath('./ui/tokens.css') },
             { find: /^@wash\/ui\/tokens\.js$/, replacement: resolvePath('./ui/tokens.js') },
