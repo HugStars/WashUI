@@ -189,13 +189,13 @@ function Select() {
     display: inline-flex;
     width: 100%;
     height: auto;
-    min-height: 28px;
-    padding: 6px 10px;
-    border-radius: var(--wa_radius_pill);
+    min-height: var(--wa_segmented_height, 36px);
+    padding: var(--wa_segmented_pad_y, 8px) var(--wa_segmented_pad_x, 16px);
+    border-radius: var(--wa_segmented_radius, var(--wa_radius_pill));
     box-shadow: none;
     color: var(--wa_color_text_subtle);
     background: transparent;
-    font-size: 12px;
+    font-size: var(--wa_segmented_font, 13px);
     line-height: 1.4;
 }
 
@@ -208,10 +208,8 @@ function Select() {
 .wa_radio.wa_radio_segmented.on,
 .wa_radio.wa_radio_segmented.on:hover:not(:disabled) {
     color: var(--wa_color_text);
-    background: var(--wa_color_dialog);
-    box-shadow:
-        0 1px 2px #0000001a,
-        inset 0 0 0 1px var(--wa_color_line);
+    background: transparent;
+    box-shadow: none;
 }
 
 .wa_radio.wa_radio_segmented:active:not(:disabled) {

@@ -67,25 +67,46 @@
 
 /* 分段单选：AppRadioGroup variant="segmented" */
 .wa_choice_group_segmented {
+    --wa_segmented_pad: 3px;
+    --wa_segmented_gap: 2px;
+    --wa_segmented_height: 36px;
+    --wa_segmented_pad_y: 8px;
+    --wa_segmented_pad_x: 16px;
+    --wa_segmented_font: 13px;
+    --wa_segmented_radius: var(--wa_radius_pill);
+
+    position: relative;
     display: flex;
     flex-wrap: nowrap;
     align-items: stretch;
-    gap: 2px;
+    gap: var(--wa_segmented_gap);
     width: fit-content;
     max-width: 100%;
-    padding: 3px;
-    border-radius: var(--wa_radius_pill);
+    padding: var(--wa_segmented_pad);
+    border-radius: var(--wa_segmented_radius);
     background: var(--wa_color_field);
+}
+
+.wa_choice_group_segmented_sm {
+    --wa_segmented_height: 30px;
+    --wa_segmented_pad_y: 6px;
+    --wa_segmented_pad_x: 12px;
+    --wa_segmented_font: 12px;
+}
+
+.wa_choice_group_segmented_rect {
+    --wa_segmented_radius: var(--wa_radius_control);
 }
 
 .wa_choice_group_segmented.wa_choice_group_vertical {
     width: 100%;
     flex-direction: column;
     align-items: stretch;
-    gap: 2px;
 }
 
 .wa_choice_group_segmented .wa_choice_row {
+    position: relative;
+    z-index: 1;
     width: auto;
     flex: 1 1 0;
     justify-content: center;
@@ -96,6 +117,36 @@
 .wa_choice_group_segmented.wa_choice_group_vertical .wa_choice_row {
     width: 100%;
     flex: 0 0 auto;
+}
+
+/* 选中背景单独一层，切换时在选项之间滑动 */
+.wa_choice_group_glider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    border-radius: var(--wa_segmented_radius);
+    background: var(--wa_color_dialog);
+    box-shadow:
+        0 1px 2px #0000001a,
+        inset 0 0 0 1px var(--wa_color_line);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        transform var(--wa_duration_base) var(--wa_ease_in_out),
+        width var(--wa_duration_base) var(--wa_ease_in_out),
+        height var(--wa_duration_base) var(--wa_ease_in_out),
+        opacity var(--wa_duration_fast) var(--wa_ease_out);
+}
+
+.wa_choice_group_glider.ready {
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_choice_group_glider {
+        transition: none;
+    }
 }
 
 .wa_choice_group_vertical .wa_choice_label {

@@ -16,12 +16,15 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="分段选择" description="variant=segmented 把互斥选项渲染成等宽分段，适合 2–4 个短选项。">
+        <DemoBlock title="分段选择"
+            description="variant=segmented 把互斥选项渲染成等宽分段，适合 2–4 个短选项；size 支持 sm / md，shape=rect 切换为小圆角矩形。">
             <div class="doc_radio_stack">
-                <AppRadioGroup v-model="segmentedPeriod" :options="compactOptions" variant="segmented"
+                <AppRadioGroup v-model="segmentedPeriod" :options="compactOptions" variant="segmented" size="sm"
                     aria-label="计费周期" />
-                <AppRadioGroup v-model="segmentedPlan" :options="options" variant="segmented" aria-label="套餐" />
-                <p class="wa_hint">当前：{{ segmentedPeriod }} / {{ segmentedPlan }}</p>
+                <AppRadioGroup v-model="segmentedPlan" :options="options" variant="segmented" size="md" aria-label="套餐" />
+                <AppRadioGroup v-model="segmentedView" :options="viewOptions" variant="segmented" size="md" shape="rect"
+                    aria-label="视图" />
+                <p class="wa_hint">当前：{{ segmentedPeriod }} / {{ segmentedPlan }} / {{ segmentedView }}</p>
             </div>
         </DemoBlock>
 
@@ -130,6 +133,12 @@ const singleBefore = ref(false)
 const plan = ref('pro')
 const segmentedPeriod = ref('month')
 const segmentedPlan = ref('pro')
+const segmentedView = ref('list')
+const viewOptions = [
+    { label: '列表', value: 'list' },
+    { label: '卡片', value: 'grid' },
+    { label: '紧凑', value: 'compact' },
+]
 const horizontal = ref('basic')
 const verticalLeft = ref('basic')
 const verticalRight = ref('basic')
@@ -158,9 +167,10 @@ const groupRows = [
     { name: 'options', type: 'Array<{ label, value, disabled? }>', default: '[]', desc: '单选项数据' },
     { name: 'direction', type: 'horizontal | vertical', default: 'horizontal', desc: '单选项横向或纵向排列' },
     { name: 'variant', type: 'default | segmented', default: 'default', desc: 'segmented 渲染为等宽分段单选' },
+    { name: 'shape', type: 'pill | rect', default: 'pill', desc: 'segmented 的外形：胶囊或小圆角矩形' },
     { name: 'labelPosition', type: 'before | after', default: 'after', desc: '每个标签在单选框前或后' },
     { name: 'align', type: 'left | right | between | space-between', default: 'left', desc: '纵向排列时整组靠左/靠右，或让标签与单选框两端对齐' },
-    { name: 'size', type: 'number | string', default: '20', desc: '单选框尺寸，数字按 px 处理' },
+    { name: 'size', type: 'number | sm | md', default: '20 (md)', desc: '普通单选框按 px；segmented 使用 sm / md' },
     { name: 'ariaLabel', type: 'string', default: '单选框组', desc: '组的无障碍名称' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用整组' },
 ]
