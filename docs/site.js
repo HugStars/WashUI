@@ -28,8 +28,15 @@ export const componentGroups = [
             { name: 'tabs', label: '标签页', component: 'AppTabs', page: 'TabsPage', path: '/components/tabs', summary: '参考导航实现的滑动标签切换，支持面板与两种外观。' },
             { name: 'stat', label: '统计', component: 'AppStat', page: 'StatPage', path: '/components/stat', summary: '紧凑的指标展示。' },
             { name: 'number', label: '数字跳动', component: 'AppNumber', page: 'NumberPage', path: '/components/number', summary: '数字变化时的平滑跳动。' },
+            { name: 'stepper', label: '步进器', component: 'AppStepper', page: 'StepperPage', path: '/components/stepper', summary: '加减按钮与输入结合的精确数值步进。' },
             { name: 'empty', label: '空状态', component: 'AppEmpty', page: 'EmptyPage', path: '/components/empty', summary: '无数据时的占位与操作。' },
             { name: 'theme-toggle', label: '主题切换', component: 'AppThemeToggle', page: 'ThemeTogglePage', path: '/components/theme-toggle', summary: '亮暗主题切换，内置太阳与月亮图标。' },
+        ],
+    },
+    {
+        title: '导航',
+        items: [
+            { name: 'nav-menu', label: '导航菜单', component: 'AppNavMenu', page: 'NavMenuPage', path: '/components/nav-menu', summary: '分组导航链接，支持图标、角标、选中态与路由组件。' },
         ],
     },
     {

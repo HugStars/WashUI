@@ -1,13 +1,13 @@
 <template>
-    <AppSelectPanel v-if="props.section" class="doc_side" role="listbox" aria-label="文档导航" :groups="Groups"
-        :model-value="route.name" size="md" :check-icon="false" @select="Go" />
+    <AppNavMenu v-if="props.section" class="doc_side" :model-value="route.name" :groups="Groups"
+        :link-component="RouterLink" aria-label="文档导航" />
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { AppSelectPanel } from '@wash/ui'
-import { pageLabel, sections } from '../site.js'
+import { RouterLink, useRoute } from 'vue-router'
+import { AppNavMenu } from '@wash/ui'
+import { pageLabel } from '../site.js'
 
 const props = defineProps({
     section: {
@@ -17,19 +17,14 @@ const props = defineProps({
 })
 
 const route = useRoute()
-const router = useRouter()
 const Groups = computed(() => props.section.groups.map(group => ({
-    label: group.title || props.section.title,
-    options: group.items.map(item => ({
+    title: group.title || props.section.title,
+    items: group.items.map(item => ({
         label: pageLabel(item),
         value: item.name,
-        path: item.path,
+        href: item.path,
     })),
 })))
-
-function Go(item) {
-    if (item?.path && item.path !== route.path) router.navigate(item.path, { mode: 'push' })
-}
 </script>
 
 <style>

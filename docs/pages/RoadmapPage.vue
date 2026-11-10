@@ -5,7 +5,11 @@
             <AppPanel title="已完成" tone="success">
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">基础</p>
-                    <p>AppButton（按钮）、AppCard（卡片）、AppCode（代码）、AppChip（标记）、AppTag（标签）、AppTabs（标签页）、AppStat（统计）、AppNumber（数字跳动）、AppEmpty（空状态）、AppThemeToggle（主题切换）</p>
+                    <p>AppButton（按钮）、AppCard（卡片）、AppCode（代码）、AppChip（标记）、AppTag（标签）、AppBadge（消息角标）、AppTabs（标签页）、AppStat（统计）、AppNumber（数字跳动）、AppEmpty（空状态）、AppThemeToggle（主题切换）</p>
+                </div>
+                <div class="doc_roadmap_group">
+                    <p class="doc_roadmap_label">导航</p>
+                    <p>AppNavMenu（导航菜单）</p>
                 </div>
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">加载</p>
