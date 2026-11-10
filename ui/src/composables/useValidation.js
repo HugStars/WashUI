@@ -30,8 +30,12 @@ function CheckRule(rule, value) {
         return rule.message || `最多 ${rule.max} 个字符`
     }
 
-    if (rule.pattern instanceof RegExp && !rule.pattern.test(String(value))) {
-        return rule.message || '格式不正确'
+    if (rule.pattern instanceof RegExp) {
+        // 带 g / y 标志的正则会在多次 test 之间保留 lastIndex
+        rule.pattern.lastIndex = 0
+        const matched = rule.pattern.test(String(value))
+        rule.pattern.lastIndex = 0
+        if (!matched) return rule.message || '格式不正确'
     }
 
     if (typeof rule.validator === 'function') {
