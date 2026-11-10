@@ -52,6 +52,7 @@ export function createChoiceGroup(props, emit, multiple) {
             disabled: computed(() => props.disabled),
             size: computed(() => props.size),
             labelPosition: computed(() => props.labelPosition),
+            variant: computed(() => props.variant || 'default'),
             between: computed(() => props.direction === 'vertical' && IsBetween.value),
             toggle,
             select,
@@ -74,6 +75,7 @@ export function useChoiceItemState(props, multiple) {
 
     const Disabled = computed(() => Boolean(props.disabled || group?.disabled.value))
     const Size = computed(() => props.size ?? group?.size.value ?? 20)
+    const Variant = computed(() => group?.variant?.value || 'default')
     const LabelPosition = computed(
         () => props.labelPosition ?? group?.labelPosition.value ?? 'after'
     )
@@ -87,6 +89,7 @@ export function useChoiceItemState(props, multiple) {
         Checked,
         Disabled,
         Size,
+        Variant,
         LabelPosition,
         Between,
         BetweenStyle,

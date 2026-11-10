@@ -16,6 +16,15 @@
             </div>
         </DemoBlock>
 
+        <DemoBlock title="分段选择" description="variant=segmented 把互斥选项渲染成等宽分段，适合 2–4 个短选项。">
+            <div class="doc_radio_stack">
+                <AppRadioGroup v-model="segmentedPeriod" :options="compactOptions" variant="segmented"
+                    aria-label="计费周期" />
+                <AppRadioGroup v-model="segmentedPlan" :options="options" variant="segmented" aria-label="套餐" />
+                <p class="wa_hint">当前：{{ segmentedPeriod }} / {{ segmentedPlan }}</p>
+            </div>
+        </DemoBlock>
+
         <DemoBlock title="排列与排版"
             description="direction 控制横向/纵向；纵向时 align 控制靠左、靠右或两端对齐；label-position 控制标签位置。">
             <div class="doc_radio_stack">
@@ -119,6 +128,8 @@ const panelGroups = [
 const single = ref(true)
 const singleBefore = ref(false)
 const plan = ref('pro')
+const segmentedPeriod = ref('month')
+const segmentedPlan = ref('pro')
 const horizontal = ref('basic')
 const verticalLeft = ref('basic')
 const verticalRight = ref('basic')
@@ -146,6 +157,7 @@ const groupRows = [
     { name: 'modelValue', type: 'string | number | symbol | boolean', default: "''", desc: '选中的值，支持 v-model' },
     { name: 'options', type: 'Array<{ label, value, disabled? }>', default: '[]', desc: '单选项数据' },
     { name: 'direction', type: 'horizontal | vertical', default: 'horizontal', desc: '单选项横向或纵向排列' },
+    { name: 'variant', type: 'default | segmented', default: 'default', desc: 'segmented 渲染为等宽分段单选' },
     { name: 'labelPosition', type: 'before | after', default: 'after', desc: '每个标签在单选框前或后' },
     { name: 'align', type: 'left | right | between | space-between', default: 'left', desc: '纵向排列时整组靠左/靠右，或让标签与单选框两端对齐' },
     { name: 'size', type: 'number | string', default: '20', desc: '单选框尺寸，数字按 px 处理' },

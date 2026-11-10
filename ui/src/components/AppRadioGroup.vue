@@ -4,6 +4,7 @@
         {
             'wa_choice_group_right': direction === 'vertical' && align === 'right',
             'wa_choice_group_between': direction === 'vertical' && IsBetween,
+            'wa_choice_group_segmented': variant === 'segmented',
         },
     ]" role="radiogroup" :aria-label="ariaLabel">
         <slot />
@@ -27,23 +28,37 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    /** horizontal：单选项横向排列；vertical：单选项纵向排列 */
+    /**
+     * horizontal：单选项横向排列；vertical：单选项纵向排列
+     * @type {'horizontal' | 'vertical'}
+     */
     direction: {
         type: String,
         default: 'horizontal',
-        allows: ['horizontal', 'vertical'],
     },
-    /** before：每个标签在单选框前；after：标签在单选框后 */
+    /**
+     * default：圆形单选框；segmented：等宽分段单选
+     * @type {'default' | 'segmented'}
+     */
+    variant: {
+        type: String,
+        default: 'default',
+    },
+    /**
+     * before：每个标签在单选框前；after：标签在单选框后
+     * @type {'before' | 'after'}
+     */
     labelPosition: {
         type: String,
         default: 'after',
-        allows: ['before', 'after'],
     },
-    /** 纵向排列时整组靠左/靠右，或让标签与单选框两端对齐 */
+    /**
+     * 纵向排列时整组靠左/靠右，或让标签与单选框两端对齐
+     * @type {'left' | 'right' | 'between' | 'space-between'}
+     */
     align: {
         type: String,
         default: 'left',
-        allows: ['left', 'right', 'between', 'space-between'],
     },
     /** 单选框尺寸，数字按 px 处理 */
     size: {

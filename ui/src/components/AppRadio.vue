@@ -1,21 +1,32 @@
 <template>
-    <div class="wa_choice_row" :style="BetweenStyle" @click.self="Select">
-        <label v-if="HasLabel && LabelPosition === 'before'" :id="`${RadioId}-label`" class="wa_choice_label"
-            :for="RadioId">
-            <slot>{{ label }}</slot>
-        </label>
-
-        <button :id="RadioId" type="button" class="wa_radio" :class="{ on: Checked, closing: Closing }" role="radio"
-            :style="SizeStyle" :aria-checked="Checked"
-            :aria-labelledby="HasLabel ? `${RadioId}-label` : undefined"
+    <div class="wa_choice_row" :class="{ wa_choice_row_segmented: Segmented }" :style="BetweenStyle"
+        @click.self="Select">
+        <button v-if="Segmented" :id="RadioId" type="button" class="wa_radio wa_radio_segmented"
+            :class="{ on: Checked, closing: Closing }" role="radio" :aria-checked="Checked"
             :aria-label="HasLabel ? undefined : AccessibleLabel" :disabled="Disabled" @click="Select">
-            <span class="wa_radio_dot" aria-hidden="true"></span>
+            <span class="wa_radio_segmented_text">
+                <slot>{{ label }}</slot>
+            </span>
         </button>
 
-        <label v-if="HasLabel && LabelPosition !== 'before'" :id="`${RadioId}-label`" class="wa_choice_label"
-            :for="RadioId">
-            <slot>{{ label }}</slot>
-        </label>
+        <template v-else>
+            <label v-if="HasLabel && LabelPosition === 'before'" :id="`${RadioId}-label`" class="wa_choice_label"
+                :for="RadioId">
+                <slot>{{ label }}</slot>
+            </label>
+
+            <button :id="RadioId" type="button" class="wa_radio" :class="{ on: Checked, closing: Closing }"
+                role="radio" :style="SizeStyle" :aria-checked="Checked"
+                :aria-labelledby="HasLabel ? `${RadioId}-label` : undefined"
+                :aria-label="HasLabel ? undefined : AccessibleLabel" :disabled="Disabled" @click="Select">
+                <span class="wa_radio_dot" aria-hidden="true"></span>
+            </button>
+
+            <label v-if="HasLabel && LabelPosition !== 'before'" :id="`${RadioId}-label`" class="wa_choice_label"
+                :for="RadioId">
+                <slot>{{ label }}</slot>
+            </label>
+        </template>
     </div>
 </template>
 
@@ -34,11 +45,13 @@ const props = defineProps({
         type: String,
         default: '',
     },
-    /** before：标签在单选框前；after：标签在单选框后 */
+    /**
+     * before：标签在单选框前；after：标签在单选框后
+     * @type {'before' | 'after'}
+     */
     labelPosition: {
         type: String,
         default: null,
-        allows: ['before', 'after'],
     },
     ariaLabel: {
         type: String,
@@ -58,7 +71,8 @@ const emit = defineEmits(['update:modelValue', 'change'])
 
 const slots = useSlots()
 const RadioId = useId()
-const { group, Checked, Disabled, Size, LabelPosition, BetweenStyle } = useChoiceItemState(props, false)
+const { group, Checked, Disabled, Size, Variant, LabelPosition, BetweenStyle } = useChoiceItemState(props, false)
+const Segmented = computed(() => Variant.value === 'segmented')
 const HasLabel = computed(() => Boolean(props.label || slots.default))
 const AccessibleLabel = computed(() => props.ariaLabel || props.label || '单选框')
 const SizeStyle = computed(() => ({
@@ -168,6 +182,52 @@ function Select() {
     transition:
         opacity .26s var(--wa_ease_out),
         transform .3s var(--wa_ease_in_out);
+}
+
+/* 分段单选：由 AppRadioGroup variant="segmented" 启用 */
+.wa_radio.wa_radio_segmented {
+    display: inline-flex;
+    width: 100%;
+    height: auto;
+    min-height: 28px;
+    padding: 6px 10px;
+    border-radius: var(--wa_radius_pill);
+    box-shadow: none;
+    color: var(--wa_color_text_subtle);
+    background: transparent;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.wa_radio.wa_radio_segmented:hover:not(:disabled) {
+    color: var(--wa_color_text);
+    background: var(--wa_color_hover);
+    box-shadow: none;
+}
+
+.wa_radio.wa_radio_segmented.on,
+.wa_radio.wa_radio_segmented.on:hover:not(:disabled) {
+    color: var(--wa_color_text);
+    background: var(--wa_color_dialog);
+    box-shadow:
+        0 1px 2px #0000001a,
+        inset 0 0 0 1px var(--wa_color_line);
+}
+
+.wa_radio.wa_radio_segmented:active:not(:disabled) {
+    transform: none;
+}
+
+.wa_radio_segmented_text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .wa_radio.on .wa_radio_dot {

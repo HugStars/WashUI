@@ -65,6 +65,39 @@
     justify-content: space-between;
 }
 
+/* 分段单选：AppRadioGroup variant="segmented" */
+.wa_choice_group_segmented {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 2px;
+    width: fit-content;
+    max-width: 100%;
+    padding: 3px;
+    border-radius: var(--wa_radius_pill);
+    background: var(--wa_color_field);
+}
+
+.wa_choice_group_segmented.wa_choice_group_vertical {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+}
+
+.wa_choice_group_segmented .wa_choice_row {
+    width: auto;
+    flex: 1 1 0;
+    justify-content: center;
+    gap: 0;
+    cursor: default;
+}
+
+.wa_choice_group_segmented.wa_choice_group_vertical .wa_choice_row {
+    width: 100%;
+    flex: 0 0 auto;
+}
+
 .wa_choice_group_vertical .wa_choice_label {
     white-space: normal;
 }
@@ -90,7 +123,7 @@
 .wa_choice_list_label {
     padding: 4px 10px;
     font-size: 11px;
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
 }
 
 .wa_choice_list_item {
@@ -111,7 +144,7 @@
 .wa_choice_list_empty {
     padding: 10px;
     font-size: 12px;
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
 }
 
 @media (max-width: 860px) {
