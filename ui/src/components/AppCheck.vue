@@ -38,11 +38,13 @@ const props = defineProps({
         type: String,
         default: '',
     },
-    /** before：标签在复选框前；after：标签在复选框后 */
+    /**
+     * before：标签在复选框前；after：标签在复选框后
+     * @type {'before' | 'after'}
+     */
     labelPosition: {
         type: String,
         default: null,
-        allows: ['before', 'after'],
     },
     ariaLabel: {
         type: String,

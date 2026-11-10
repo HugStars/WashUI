@@ -42,6 +42,7 @@ const colors = [
     '--wa_color_text_subtle',
     '--wa_color_text_faint',
     '--wa_color_accent',
+    '--wa_color_on_accent',
     '--wa_color_success',
     '--wa_color_warning',
     '--wa_color_help',

@@ -140,11 +140,13 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    /** bar：移动端操作栏固定在底部；content：操作栏放进内容区随内容滚动 */
+    /**
+     * bar：移动端操作栏固定在底部；content：操作栏放进内容区随内容滚动
+     * @type {'bar' | 'content'}
+     */
     footerPlacement: {
         type: String,
         default: 'bar',
-        allows: ['bar', 'content'],
     },
     /** 开启后弹框面板使用与 AppPopover 一致的磨砂玻璃背景 */
     frosted: Boolean,

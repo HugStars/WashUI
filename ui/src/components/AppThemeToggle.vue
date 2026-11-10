@@ -11,10 +11,12 @@ import AppButton from './AppButton.vue'
 import AppIcon from './AppIcon.vue'
 
 const props = defineProps({
+    /**
+     * @type {'md' | 'sm'}
+     */
     size: {
         type: String,
         default: 'sm',
-        allows: ['md', 'sm'],
     },
 })
 

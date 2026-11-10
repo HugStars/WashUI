@@ -227,7 +227,7 @@ onUnmounted(() => {
 }
 
 .pg_textarea::placeholder {
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
 }
 
 .pg_textarea::selection {

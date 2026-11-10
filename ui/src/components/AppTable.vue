@@ -267,10 +267,12 @@ const props = defineProps({
         type: String,
         default: '暂无数据',
     },
+    /**
+     * @type {'sm' | 'md'}
+     */
     size: {
         type: String,
         default: 'sm',
-        allows: ['sm', 'md'],
     },
     stripe: Boolean,
     bordered: Boolean,
@@ -294,10 +296,12 @@ const props = defineProps({
         type: [Number, String],
         default: null,
     },
+    /**
+     * @type {'auto' | 'fixed'}
+     */
     tableLayout: {
         type: String,
         default: 'auto',
-        allows: ['auto', 'fixed'],
     },
     selectable: Boolean,
     /** v-model:selectedKeys；不传时组件内部维护 */

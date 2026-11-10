@@ -59,17 +59,21 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    /** popover：浮层菜单；dialog：弹框选择 */
+    /**
+     * popover：浮层菜单；dialog：弹框选择
+     * @type {'popover' | 'dialog'}
+     */
     mode: {
         type: String,
         default: 'popover',
-        allows: ['popover', 'dialog'],
     },
-    /** popover 的对齐方式 */
+    /**
+     * popover 的对齐方式
+     * @type {'left' | 'center' | 'right'}
+     */
     align: {
         type: String,
         default: 'center',
-        allows: ['left', 'center', 'right'],
     },
     /** popover 模式下的面板宽度 */
     width: {

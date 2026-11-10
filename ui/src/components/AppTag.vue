@@ -12,16 +12,20 @@ const props = defineProps({
         type: String,
         default: '',
     },
-    /** default | success | warning | help | danger */
+    /**
+     * default | success | warning | help | danger
+     * @type {'default' | 'success' | 'warning' | 'help' | 'danger'}
+     */
     tone: {
         type: String,
         default: 'default',
-        allows: ['default', 'success', 'warning', 'help', 'danger'],
     },
+    /**
+     * @type {'sm' | 'md'}
+     */
     size: {
         type: String,
         default: 'sm',
-        allows: ['sm', 'md'],
     },
     /** 等宽字体，默认贴近文档 API 表格里的属性 / 类型 / 默认值 */
     mono: {

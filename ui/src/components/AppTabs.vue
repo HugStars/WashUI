@@ -40,7 +40,7 @@
                 </template>
                 <template #default="{ close }">
                     <AppSelectPanel :options="MoreOptions" :model-value="modelValue" :size="size" :check-icon="false"
-                        @select="item => SelectMore(item, close)" />
+                        autofocus @select="item => SelectMore(item, close)" />
                 </template>
             </AppPopover>
         </div>
@@ -79,26 +79,32 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    /** nav：带外框与玻璃背景；plain：无边框、无外框、无阴影 */
+    /**
+     * nav：带外框与玻璃背景；plain：无边框、无外框、无阴影
+     * @type {'nav' | 'plain'}
+     */
     variant: {
         type: String,
         default: 'nav',
-        allows: ['nav', 'plain'],
     },
     /** 去掉磨砂、背景、边框和阴影 */
     transparent: Boolean,
+    /**
+     * @type {'sm' | 'md'}
+     */
     size: {
         type: String,
         default: 'sm',
-        allows: ['sm', 'md'],
     },
     /** 标签项等宽铺满 */
     fill: Boolean,
-    /** 元素过多时的处理：scroll 横向滚动；more 收进“更多”按钮 */
+    /**
+     * 元素过多时的处理：scroll 横向滚动；more 收进“更多”按钮
+     * @type {'scroll' | 'more'}
+     */
     overflow: {
         type: String,
         default: 'scroll',
-        allows: ['scroll', 'more'],
     },
     /** overflow=more 时最多显示的标签数（含“更多”） */
     max: {

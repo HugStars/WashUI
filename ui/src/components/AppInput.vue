@@ -52,19 +52,19 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    /**
+     * @type {'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url' | 'date' | 'time' | 'datetime-local' | 'month' | 'week' | 'color' | 'file' | 'range' | 'checkbox' | 'radio' | 'hidden'}
+     */
     type: {
         type: String,
         default: 'text',
-        allows: [
-            'text', 'password', 'email', 'number', 'search', 'tel', 'url',
-            'date', 'time', 'datetime-local', 'month', 'week', 'color',
-            'file', 'range', 'checkbox', 'radio', 'hidden',
-        ],
     },
+    /**
+     * @type {'md' | 'sm'}
+     */
     size: {
         type: String,
         default: 'sm',
-        allows: ['md', 'sm'],
     },
     clearable: Boolean,
     disabled: Boolean,

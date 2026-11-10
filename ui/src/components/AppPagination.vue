@@ -73,10 +73,12 @@ const props = defineProps({
         type: Number,
         default: 5,
     },
+    /**
+     * @type {'sm' | 'md'}
+     */
     size: {
         type: String,
         default: 'sm',
-        allows: ['sm', 'md'],
     },
     disabled: Boolean,
     ariaLabel: {
@@ -255,7 +257,7 @@ function ChangeSize(value) {
     justify-content: center;
     min-width: var(--wa_pagination_size);
     height: var(--wa_pagination_size);
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
     user-select: none;
 }
 

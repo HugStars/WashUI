@@ -23,16 +23,20 @@ const props = defineProps({
     },
     /** 隐藏标签文本，但保留无障碍名称 */
     hideLabel: Boolean,
-    /** inline：标签与开关紧挨；between：标签与开关分别贴左右两侧 */
+    /**
+     * inline：标签与开关紧挨；between：标签与开关分别贴左右两侧
+     * @type {'inline' | 'between'}
+     */
     align: {
         type: String,
         default: 'inline',
-        allows: ['inline', 'between'],
     },
+    /**
+     * @type {'sm' | 'md'}
+     */
     size: {
         type: String,
         default: 'sm',
-        allows: ['sm', 'md'],
     },
     disabled: Boolean,
 })

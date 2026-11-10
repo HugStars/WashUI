@@ -30,10 +30,12 @@ defineProps({
         type: String,
         default: '',
     },
+    /**
+     * @type {'default' | 'success' | 'warning' | 'help' | 'danger'}
+     */
     tone: {
         type: String,
         default: 'default',
-        allows: ['default', 'success', 'warning', 'help', 'danger'],
     },
     compact: Boolean,
 })

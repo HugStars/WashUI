@@ -4,7 +4,6 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    outline: 0;
     -webkit-tap-highlight-color: transparent;
     -ms-tap-highlight-color: transparent;
     -moz-tap-highlight-color: transparent;
@@ -42,6 +41,15 @@ button {
 
 svg {
     display: block;
+}
+
+/* 全局键盘焦点兜底；组件自己的 focus-visible 样式会按更高优先级覆盖 */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+[tabindex]:not([tabindex='-1']):focus-visible {
+    outline: 2px solid var(--wa_color_accent);
+    outline-offset: 2px;
 }
 
 ::selection {
@@ -130,7 +138,7 @@ svg {
 }
 
 :where(.wa_shell, .wa_dialog) :where(input, textarea)::placeholder {
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
 }
 
 :where(.wa_card, .wa_panel_body, .wa_dialog_body, .wa_dialog_content)> :where(p, ul, ol, blockquote, pre, table, figure) {

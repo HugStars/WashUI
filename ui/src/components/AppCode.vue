@@ -15,7 +15,7 @@
 <script setup>
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { highlightHTML } from '@speed-highlight/core'
-import { codeLanguageLabel, codeLanguageNames, normalizeCodeLang } from '../core/code_languages.js'
+import { codeLanguageLabel, normalizeCodeLang } from '../core/code_languages.js'
 import { toast } from '../core/toast.js'
 import { useClipboard } from '../composables/useClipboard.js'
 import AppIcon from './AppIcon.vue'
@@ -25,10 +25,12 @@ const props = defineProps({
         type: String,
         default: ''
     },
+    /**
+     * @type {string} 可选值见 codeLanguageNames
+     */
     lang: {
         type: String,
         default: 'plain',
-        allows: codeLanguageNames,
     },
     showLineNumbers: Boolean,
     showLang: {
@@ -143,7 +145,7 @@ watch(
     left: 14px;
     overflow: hidden;
     max-width: calc(100% - 60px);
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
     font: 600 11px/1.4 var(--wa_font_mono);
     letter-spacing: .03em;
     text-overflow: ellipsis;

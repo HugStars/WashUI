@@ -24,7 +24,7 @@ defineProps({
     justify-content: center;
     gap: 14px;
     min-height: 420px;
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
 }
 
 .wa_empty p {

@@ -27,23 +27,29 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    /** horizontal：复选项横向排列；vertical：复选项纵向排列 */
+    /**
+     * horizontal：复选项横向排列；vertical：复选项纵向排列
+     * @type {'horizontal' | 'vertical'}
+     */
     direction: {
         type: String,
         default: 'horizontal',
-        allows: ['horizontal', 'vertical'],
     },
-    /** before：每个标签在复选框前；after：标签在复选框后 */
+    /**
+     * before：每个标签在复选框前；after：标签在复选框后
+     * @type {'before' | 'after'}
+     */
     labelPosition: {
         type: String,
         default: 'after',
-        allows: ['before', 'after'],
     },
-    /** 纵向排列时整组靠左/靠右，或让标签与复选框两端对齐 */
+    /**
+     * 纵向排列时整组靠左/靠右，或让标签与复选框两端对齐
+     * @type {'left' | 'right' | 'between' | 'space-between'}
+     */
     align: {
         type: String,
         default: 'left',
-        allows: ['left', 'right', 'between', 'space-between'],
     },
     /** 复选框尺寸，数字按 px 处理 */
     size: {

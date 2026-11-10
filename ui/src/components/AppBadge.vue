@@ -31,16 +31,20 @@ const props = defineProps({
     },
     /** 只显示一个小圆点 */
     dot: Boolean,
-    /** danger | accent | neutral */
+    /**
+     * danger | accent | neutral
+     * @type {'danger' | 'accent' | 'neutral'}
+     */
     tone: {
         type: String,
         default: 'danger',
-        allows: ['danger', 'accent', 'neutral'],
     },
+    /**
+     * @type {'sm' | 'md'}
+     */
     size: {
         type: String,
         default: 'sm',
-        allows: ['sm', 'md'],
     },
     /** 数字上限，超出显示 max+ */
     max: {
@@ -427,7 +431,7 @@ onUnmounted(() => {
 
 .wa_badge_accent {
     --wa_badge_bg: var(--wa_color_accent);
-    --wa_badge_color: #ffffff;
+    --wa_badge_color: var(--wa_color_on_accent);
 }
 
 .wa_badge_neutral {

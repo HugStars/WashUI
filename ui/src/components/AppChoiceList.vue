@@ -39,10 +39,12 @@ const props = defineProps({
         type: [Number, String],
         default: 18,
     },
+    /**
+     * @type {'before' | 'after'}
+     */
     labelPosition: {
         type: String,
         default: 'after',
-        allows: ['before', 'after'],
     },
     disabled: Boolean,
     emptyText: {

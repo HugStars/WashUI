@@ -9,8 +9,8 @@
     --wa_color_dialog_line: #0000000f;
     --wa_color_text: #1a1a1a;
     --wa_color_text_muted: #00000099;
-    --wa_color_text_subtle: #00000066;
-    --wa_color_text_faint: #00000033;
+    --wa_color_text_subtle: #0000008a;
+    --wa_color_text_faint: #0000004d;
     --wa_color_on_text: #ffffff;
     --wa_color_glass: #ffffffbb;
     --wa_color_border: #ffffff;
@@ -22,6 +22,7 @@
     --wa_color_line_strong: #00000022;
     --wa_color_scroll: #00000026;
     --wa_color_accent: #05cfa4;
+    --wa_color_on_accent: #0b1f1a;
     --wa_color_success: #05cfa4;
     --wa_color_warning: #f59e0b;
     --wa_color_help: #a855f7;
@@ -82,8 +83,8 @@
     --wa_color_dialog_line: #ffffff12;
     --wa_color_text: #f2f2f2;
     --wa_color_text_muted: #ffffff99;
-    --wa_color_text_subtle: #ffffff66;
-    --wa_color_text_faint: #ffffff33;
+    --wa_color_text_subtle: #ffffff8a;
+    --wa_color_text_faint: #ffffff4d;
     --wa_color_on_text: #141414;
     --wa_color_glass: #1e1e1ebb;
     --wa_color_border: #ffffff14;
@@ -96,6 +97,7 @@
     --wa_color_scroll: #ffffff26;
     --wa_color_primary_hover: #d9d9d9;
     --wa_color_focus_ring: #ffffff26;
+    --wa_color_on_accent: #0b1f1a;
     --wa_color_nav_active: #ffffffcc;
     --wa_color_on_nav_active: #141414;
     --wa_color_danger: #ff7875;

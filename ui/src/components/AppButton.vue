@@ -10,20 +10,26 @@
 import { computed } from 'vue'
 
 const props = defineProps({
+    /**
+     * @type {'default' | 'primary' | 'line' | 'danger' | 'icon'}
+     */
     variant: {
         type: String,
         default: 'default',
-        allows: ['default', 'primary', 'line', 'danger', 'icon'],
     },
+    /**
+     * @type {'md' | 'sm'}
+     */
     size: {
         type: String,
         default: 'sm',
-        allows: ['md', 'sm'],
     },
+    /**
+     * @type {'button' | 'submit' | 'reset'}
+     */
     type: {
         type: String,
         default: 'button',
-        allows: ['button', 'submit', 'reset'],
     },
     loading: Boolean,
     /** 白色磨砂半透明表面，与 AppPopover 面板一致 */

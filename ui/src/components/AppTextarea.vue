@@ -67,18 +67,22 @@ const props = defineProps({
         type: [Number, String],
         default: undefined,
     },
-    /** 拖动缩放方向 */
+    /**
+     * 拖动缩放方向
+     * @type {'none' | 'both' | 'horizontal' | 'vertical'}
+     */
     resize: {
         type: String,
         default: 'none',
-        allows: ['none', 'both', 'horizontal', 'vertical'],
     },
     /** 在底部右侧显示字数统计 */
     showCount: Boolean,
+    /**
+     * @type {'md' | 'sm'}
+     */
     size: {
         type: String,
         default: 'sm',
-        allows: ['md', 'sm'],
     },
     /** 白色磨砂半透明表面，与 AppPopover 面板一致 */
     frosted: Boolean,
@@ -191,7 +195,7 @@ function HandleBlur() {
     margin-left: auto;
     font-size: 12px;
     line-height: 1.6;
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }

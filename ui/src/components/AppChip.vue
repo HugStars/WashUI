@@ -1,5 +1,5 @@
 <template>
-    <button type="button" class="wa_chip"
+    <button type="button" class="wa_chip" :aria-pressed="active"
         :class="{ on: active, wa_frosted: frosted, wa_chip_sm: size === 'sm' }">
         <slot>{{ text }}</slot>
     </button>
@@ -14,10 +14,12 @@ defineProps({
     },
     /** 白色磨砂半透明表面，与 AppPopover 面板一致 */
     frosted: Boolean,
+    /**
+     * @type {'sm' | 'md'}
+     */
     size: {
         type: String,
         default: 'md',
-        allows: ['sm', 'md'],
     },
 })
 </script>
