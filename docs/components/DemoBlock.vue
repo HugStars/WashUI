@@ -1,7 +1,7 @@
 <template>
     <section class="doc_demo" :class="{ 'is-expanded': expanded }">
         <header v-if="title || description" class="doc_demo_head">
-            <h3 v-if="title" class="doc_demo_title">{{ title }}</h3>
+            <h2 v-if="title" class="doc_demo_title">{{ title }}</h2>
             <p v-if="description" class="doc_demo_desc">{{ description }}</p>
         </header>
 

@@ -39,13 +39,6 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const stats = [
-    { label: '组件', value: '16' },
-    { label: '布局', value: '4' },
-    { label: '内置图标', value: '16' },
-    { label: '组合式函数', value: '3' },
-]
-
 const features = [
     { title: '安装与初始化', text: '安装依赖、引入样式、注册组件与配置主题。', path: '/guide/install' },
     { title: '主题与变量', text: '亮暗主题、CSS tokens 与加载时配置。', path: '/guide/theme' },
@@ -58,16 +51,6 @@ const features = [
 </script>
 
 <style>
-.doc_stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
-    gap: 12px;
-}
-
-.doc_stats>* {
-    min-width: 0;
-}
-
 .doc_hero {
     display: grid;
     grid-template-columns: minmax(0, 1fr);

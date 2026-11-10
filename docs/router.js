@@ -58,8 +58,5 @@ export function createDocsRouter() {
         ],
         home: 'home',
         title: to => `${to.meta?.title || '文档'} · WashUI`,
-        onNavigate(to) {
-            console.info('[wash-ui]', to.fullPath)
-        },
     })
 }

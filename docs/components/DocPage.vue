@@ -91,6 +91,11 @@ const next = computed(() => index.value >= 0 && index.value < pageNav.length - 1
     background: var(--wa_color_surface);
 }
 
+/* 顶部栏是 sticky，锚点跳转时给标题留出空间 */
+.doc_article h2 {
+    scroll-margin-top: 92px;
+}
+
 .doc_head {
     display: grid;
     gap: 10px;
@@ -158,7 +163,7 @@ const next = computed(() => index.value >= 0 && index.value < pageNav.length - 1
 
 .doc_pager_link span {
     font-size: 11px;
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
 }
 
 .doc_pager_link b {

@@ -32,7 +32,8 @@ pnpm dev:docs
 | `pnpm dev:docs:force` | 强制重建依赖预构建后启动 |
 | `pnpm build:docs` | 构建文档站到根目录 `dist` |
 | `pnpm preview:docs` | 预览文档站构建结果 |
-| `pnpm build:ui` | 构建库到 `ui/dist` |
+| `pnpm build:ui` | 构建库到 `ui/dist`，并生成 `ui/types` 声明 |
+| `pnpm test` | 运行 Vitest 单元测试 |
 | `pnpm dev` | 等同 `pnpm dev:docs` |
 | `pnpm build` | 等同 `pnpm build:docs` |
 | `pnpm preview` | 等同 `pnpm preview:docs` |
@@ -139,6 +140,20 @@ pnpm dev:docs
 | `rule` | 组件级校验规则：`required`、`min`、`max`、`pattern`、`validator`、`message`、`trigger`；Input / Textarea / Select 支持 |
 | `frosted` | 白色磨砂半透明表面，与 AppPopover 的玻璃面板一致；Button、Input、Select、Chip、Card 支持 |
 
+### 枚举 Prop 的可选值
+
+可选值统一写在 JSDoc 里，IDE 和 Volar 会直接提示：
+
+```js
+/** @type {'md' | 'sm'} 默认 sm，md 时更宽松 */
+size: {
+    type: String,
+    default: 'sm',
+},
+```
+
+项目不使用 `validator` 做运行时枚举校验：每次渲染都跑数组判断收益很低，传错值时还会刷控制台。组件内部对未知值回退到默认行为，可选值只作为开发期的文档和提示。
+
 ## 事件约定
 
 | 事件 | 载荷 | 说明 |
@@ -146,7 +161,7 @@ pnpm dev:docs
 | `update:modelValue` | 当前模型 | 所有 v-model 组件 |
 | `change` | 当前模型 | 与 `update:modelValue` 同步，便于业务监听 |
 | `update:open` / `open` / `close` | `boolean` / 无 | Popover、Dialog |
-| `select` | `item` | SelectPanel 选中项 |
+| `select` | `item` | SelectPanel 选中项 / NavMenu 点击项 |
 | `update:selectedKeys` | 当前选择键 | 表格行选择 |
 | `update:sort` / `sort-change` | `{ key, order }` / `{ key, order, column }` | 表格排序 |
 | `badge-clear` | `{ name, item, index, more }` | 标签页角标被拖拽或按键清除 |
@@ -197,6 +212,7 @@ WashUI/
 │  │  │  ├─ AppChoiceList.vue   选择列表共享核心
 │  │  │  ├─ AppCheckPanel.vue   多选面板薄封装
 │  │  │  ├─ AppRadioPanel.vue   单选面板薄封装
+│  │  │  ├─ AppNavMenu.vue      导航菜单
 │  │  │  ├─ AppTable.vue        数据表格
 │  │  │  └─ AppPagination.vue   分页
 │  │  ├─ layout/                AppShell、PageHeader、PageBar、AppRouteBar、PageTransition
@@ -275,6 +291,8 @@ import '@wash/ui/style.css'
 
 `createUi()` 会全量注册所有组件；不使用它时手动注册即可。样式统一抽取为 `dist/style.css`。
 
+组件子路径同时提供类型声明（`types/components/*.d.ts`），`@wash/ui/components/AppButton` 可以直接获得 Props 与事件提示。
+
 ## 组件状态
 
 ### 已完成
@@ -282,6 +300,7 @@ import '@wash/ui/style.css'
 | 分类 | 组件 |
 | --- | --- |
 | 基础 | AppButton（按钮）、AppCard（卡片）、AppCode（代码）、AppChip（标记）、AppTag（标签）、AppBadge（消息角标）、AppTabs（标签页）、AppStat（统计）、AppNumber（数字跳动）、AppEmpty（空状态）、AppThemeToggle（主题切换） |
+| 导航 | AppNavMenu（导航菜单） |
 | 加载 | AppSpinner（加载圈）、AppSkeleton（骨架屏） |
 | 数据 | AppTable（表格）、AppPagination（分页） |
 | 表单 | AppInput（输入框）、AppTextarea（文本域）、AppSwitch（开关）、AppCheck（复选框）、AppCheckGroup（复选框组）、AppRadio（单选框）、AppRadioGroup（单选框组）、AppSelect（下拉框）、AppSelectPanel（下拉面板）、AppChoiceList（选择列表）、AppCheckPanel（多选面板）、AppRadioPanel（单选面板）、AppUpload（上传） |
@@ -322,6 +341,13 @@ import '@wash/ui/style.css'
 - [x] Input / Textarea / Select 支持 `rule` 校验
 - [x] 文档校验示例统一改为 `rule`
 - [x] 新增 `AppTable`、`AppPagination` 与对应文档页
+- [x] 枚举 Prop 的可选值统一改为 JSDoc
+- [x] Popover 关闭时恢复焦点，Select / 更多菜单支持方向键导航
+- [x] 修复深色主题辅助文字对比度与全局键盘焦点环
+- [x] 增加 Vitest 测试与 GitHub Actions 校验
+- [x] 生成 `ui/types` 组件 Props 声明
+- [x] 文档站增加搜索（Ctrl/Cmd+K）与页内目录
+- [x] 新增 `AppNavMenu` 导航菜单，文档侧栏改用真实链接
 - [ ] 补齐 ChoiceList 更多自定义触发器示例
 - [ ] 为 PageBar 补充更多插槽内容示例与移动端回归
 - [ ] 为表单 `rule` 增加异步校验与跨字段校验
@@ -337,7 +363,9 @@ cd ui
 pnpm publish --registry=https://你的私有源地址
 ```
 
-`ui/package.json` 的 `files` 只包含 `dist`、`tokens.css`、`tokens.js` 与 `README.md`，文档不会发布。发布前需要在私有源拥有 `@wash` 作用域。
+`ui/package.json` 的 `files` 包含 `dist`、`types`、`tokens.css`、`tokens.js` 与 `README.md`，文档不会发布。发布前需要在私有源拥有 `@wash` 作用域。
+
+`pnpm build:ui` 会先用 `vue-tsc` 生成 `ui/types`，再由 `scripts/build-types.mjs` 从 `defineProps` 生成组件的 Props 声明。类型目录不提交到仓库，发布时由 `prepublishOnly` 重新生成。
 
 ## 提交约定
 

@@ -41,7 +41,7 @@
         </DemoBlock>
 
         <DemoBlock title="磨砂" description="frosted 使用与 AppPopover 一致的玻璃表面，适合叠在内容或渐变背景上。">
-            <div class="doc_tag_frosted_stage">
+            <div class="doc_frosted_stage">
                 <div class="doc_row">
                     <AppTag text="玻璃标签" frosted />
                     <AppTag text="成功" tone="success" frosted />
@@ -86,11 +86,3 @@ const slotRows = [
     { name: 'default', type: '—', desc: '标签内容，可以放图标或组合内容' },
 ]
 </script>
-
-<style>
-.doc_tag_frosted_stage {
-    padding: 28px;
-    border-radius: var(--wa_radius_control);
-    background: linear-gradient(135deg, var(--wa_color_soft), var(--wa_color_active));
-}
-</style>

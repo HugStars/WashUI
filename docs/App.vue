@@ -5,7 +5,8 @@
                 <DocNavSelect v-if="Mobile" />
             </template>
             <template #actions>
-                <span class="doc_version">v0.1.0</span>
+                <DocSearch />
+                <span class="doc_version">v{{ Version }}</span>
                 <AppThemeToggle />
             </template>
         </PageHeader>
@@ -27,8 +28,12 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { AppThemeToggle } from '@wash/ui'
+import pkg from '../package.json'
 import DocNavSelect from './components/DocNavSelect.vue'
+import DocSearch from './components/DocSearch.vue'
 import { nav } from './site.js'
+
+const Version = pkg.version
 
 const route = useRoute()
 const router = useRouter()
@@ -74,18 +79,82 @@ function go(item) {
 }
 .doc_version {
     font-size: 12px;
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
+}
+
+@media (max-width: 640px) {
+    .doc_version {
+        display: none;
+    }
+}
+
+/* 彩色光斑背景：模糊层独立于内容，避免 filter 把子元素一起糊掉 */
+.doc_aurora,
+.doc_frosted_stage {
+    --doc_aurora_opacity: .55;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+}
+
+.doc_frosted_stage {
+    --doc_aurora_opacity: .62;
+}
+
+.doc_aurora::before,
+.doc_frosted_stage::before {
+    content: '';
+    position: absolute;
+    inset: -24%;
+    z-index: -1;
+    background:
+        radial-gradient(38% 45% at 22% 28%, #007cf080, #0000 70%),
+        radial-gradient(35% 42% at 78% 24%, #00dfd866, #0000 70%),
+        radial-gradient(40% 48% at 30% 78%, #7928ca61, #0000 70%),
+        radial-gradient(36% 44% at 76% 74%, #ff008052, #0000 70%),
+        radial-gradient(30% 38% at 52% 52%, #f9cb2840, #0000 70%);
+    filter: blur(36px) saturate(.9);
+    opacity: var(--doc_aurora_opacity);
+    pointer-events: none;
+}
+
+/* 再压一层画布色，保证磨砂上的文字对比度，不让色斑抢内容 */
+.doc_aurora::after,
+.doc_frosted_stage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg,
+            color-mix(in srgb, var(--wa_color_canvas) 6%, transparent),
+            color-mix(in srgb, var(--wa_color_canvas) 28%, transparent));
+    pointer-events: none;
+}
+
+[data-theme='dark'] .doc_aurora {
+    --doc_aurora_opacity: .46;
+}
+
+[data-theme='dark'] .doc_frosted_stage {
+    --doc_aurora_opacity: .52;
+}
+
+[data-theme='dark'] .doc_aurora::before,
+[data-theme='dark'] .doc_frosted_stage::before {
+    filter: blur(40px) saturate(.9);
+}
+
+[data-theme='dark'] .doc_aurora::after,
+[data-theme='dark'] .doc_frosted_stage::after {
+    background: linear-gradient(180deg,
+            color-mix(in srgb, var(--wa_color_canvas) 12%, transparent),
+            color-mix(in srgb, var(--wa_color_canvas) 38%, transparent));
 }
 
 .doc_frosted_stage {
     margin: calc(var(--doc_demo_padding, 20px) * -1);
     padding: var(--doc_demo_padding, 20px);
     border-radius: 0;
-    background:
-        radial-gradient(circle at 18% 20%, #7c3aed66, transparent 42%),
-        radial-gradient(circle at 82% 28%, #06b6d466, transparent 42%),
-        radial-gradient(circle at 50% 88%, #f59e0b66, transparent 46%),
-        var(--wa_color_soft);
 }
 .doc_stack {
     display: grid;
