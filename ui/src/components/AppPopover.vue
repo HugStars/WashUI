@@ -22,14 +22,12 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    /**
+     * @type {'top' | 'top-left' | 'top-right' | 'bottom' | 'bottom-left' | 'bottom-right' | 'left' | 'right'}
+     */
     placement: {
         type: String,
         default: 'top',
-        allows: [
-            'top', 'top-left', 'top-right',
-            'bottom', 'bottom-left', 'bottom-right',
-            'left', 'right',
-        ],
     },
     offset: {
         type: [Number, Object],
@@ -120,6 +118,27 @@ const PaddingStyle = computed(() => {
 const PanelStyles = computed(() => [PanelStyle.value, PaddingStyle.value].filter(Boolean))
 
 let Listening = false
+let PrevActive = null
+
+function FocusableTrigger() {
+    const el = TriggerEl.value
+    if (!el) return null
+    return el.querySelector('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+        || el.firstElementChild
+}
+
+function RestoreFocus() {
+    const el = PrevActive
+    PrevActive = null
+
+    if (el instanceof HTMLElement && document.contains(el)) {
+        el.focus({ preventScroll: true })
+        return
+    }
+
+    const trigger = FocusableTrigger()
+    if (trigger instanceof HTMLElement) trigger.focus({ preventScroll: true })
+}
 
 function TriggerRect() {
     const el = TriggerEl.value
@@ -212,7 +231,8 @@ function Unlisten() {
 function OnPointerDown(event) {
     if (!props.closeOnOutside) return
     if (TriggerEl.value?.contains(event.target) || PanelEl.value?.contains(event.target)) return
-    Close()
+    // 外部点击会由浏览器把焦点交给目标元素，这里不要抢回触发器
+    Close({ restoreFocus: false })
 }
 
 function OnKeydown(event) {
@@ -221,27 +241,44 @@ function OnKeydown(event) {
     Close()
 }
 
+function AfterOpen() {
+    nextTick(() => {
+        Position()
+        Listen()
+        // 非模态 dialog 也应有初始焦点；listbox 等由具体面板自己管理
+        // 定位会先写 visibility，等本次 patch 完成后再聚焦
+        if (props.role === 'dialog') {
+            nextTick(() => PanelEl.value?.focus({ preventScroll: true }))
+        }
+    })
+}
+
 function Open() {
     if (Visible.value || props.disabled) return
     if (props.matchTrigger) {
         const rect = TriggerRect()
         if (rect) PanelStyle.value = { ...PanelStyle.value, width: `${rect.width}px` }
     }
+    if (typeof document !== 'undefined') PrevActive = document.activeElement
     Visible.value = true
     emit('update:open', true)
     emit('open')
-    nextTick(() => {
-        Position()
-        Listen()
-    })
+    AfterOpen()
 }
 
-function Close() {
+function Close(options = {}) {
     if (!Visible.value) return
+
+    const restoreFocus = options.restoreFocus !== false
+    const focusInPanel = typeof document !== 'undefined'
+        && PanelEl.value?.contains(document.activeElement)
+
     Visible.value = false
     emit('update:open', false)
     emit('close')
     Unlisten()
+
+    if (restoreFocus && focusInPanel) RestoreFocus()
 }
 
 function Toggle() {
@@ -271,10 +308,8 @@ watch(() => props.placement, () => {
 
 onMounted(() => {
     if (!Visible.value) return
-    nextTick(() => {
-        Position()
-        Listen()
-    })
+    if (typeof document !== 'undefined') PrevActive = document.activeElement
+    AfterOpen()
 })
 
 onUnmounted(Unlisten)

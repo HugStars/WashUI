@@ -1,10 +1,12 @@
 <template>
-    <div ref="PanelEl" class="wa_select_panel" :class="{ wa_select_sm: size === 'sm', has_scrollbar: HasScrollbar }">
+    <div ref="PanelEl" class="wa_select_panel" :class="{ wa_select_sm: size === 'sm', has_scrollbar: HasScrollbar }"
+        @keydown="OnKeydown">
         <div v-for="group in groups" :key="group.label" class="wa_select_group">
             <p v-if="group.label" class="wa_select_group_label">{{ group.label }}</p>
             <button v-for="item in group.options" :key="item.value" type="button" class="wa_select_option"
                 :class="{ on: item.value === modelValue }" role="option" :aria-selected="item.value === modelValue"
-                :disabled="item.disabled" @click="emit('select', item)">
+                :tabindex="item.value === modelValue && !item.disabled ? 0 : -1" :disabled="item.disabled"
+                @click="emit('select', item)">
                 <component v-if="item.icon && iconComponent" :is="iconComponent" :name="item.icon" :size="17"
                     class="wa_select_option_icon" aria-hidden="true" />
                 <span class="wa_select_label"
@@ -25,7 +27,8 @@
 
         <button v-for="item in options" :key="item.value" type="button" class="wa_select_option"
             :class="{ on: item.value === modelValue }" role="option" :aria-selected="item.value === modelValue"
-            :disabled="item.disabled" @click="emit('select', item)">
+            :tabindex="item.value === modelValue && !item.disabled ? 0 : -1" :disabled="item.disabled"
+            @click="emit('select', item)">
             <component v-if="item.icon && iconComponent" :is="iconComponent" :name="item.icon" :size="17"
                 class="wa_select_option_icon" aria-hidden="true" />
             <span class="wa_select_label"
@@ -80,11 +83,13 @@ const props = defineProps({
         type: [Boolean, String],
         default: true,
     },
-    /** 选中标记的位置：before 在标签前，after 在标签后 */
+    /**
+     * 选中标记的位置：before 在标签前，after 在标签后
+     * @type {'before' | 'after'}
+     */
     checkPosition: {
         type: String,
         default: 'after',
-        allows: ['before', 'after'],
     },
     /**
      * 图标组件，用于渲染「图标名称」。
@@ -94,12 +99,16 @@ const props = defineProps({
         type: [Object, Function],
         default: () => AppIcon,
     },
-    /** 与下拉触发器保持同一尺寸：默认 sm，md 时选项间距和内边距更宽松 */
+    /**
+     * 与下拉触发器保持同一尺寸：默认 sm，md 时选项间距和内边距更宽松
+     * @type {'md' | 'sm'}
+     */
     size: {
         type: String,
         default: 'sm',
-        allows: ['md', 'sm'],
     },
+    /** 挂载后聚焦选中项（或第一项）；下拉面板使用，常驻侧栏不要开启 */
+    autofocus: Boolean,
 })
 
 const emit = defineEmits(['select'])
@@ -107,6 +116,41 @@ const emit = defineEmits(['select'])
 const PanelEl = ref(null)
 const HasScrollbar = ref(false)
 let ScrollObserver = null
+
+function OptionEls() {
+    const el = PanelEl.value
+    if (!el) return []
+    return [...el.querySelectorAll('.wa_select_option')].filter(item => !item.disabled)
+}
+
+/** 移动 roving focus；Enter / Space 交给按钮原生 click */
+function OnKeydown(event) {
+    const keys = ['ArrowDown', 'ArrowUp', 'Home', 'End']
+    if (!keys.includes(event.key)) return
+
+    const list = OptionEls()
+    if (!list.length) return
+
+    event.preventDefault()
+    const index = list.indexOf(document.activeElement)
+    let next = index
+
+    if (event.key === 'Home') next = 0
+    else if (event.key === 'End') next = list.length - 1
+    else if (event.key === 'ArrowDown') next = index < 0 ? 0 : (index + 1) % list.length
+    else if (event.key === 'ArrowUp') next = index < 0 ? list.length - 1 : (index - 1 + list.length) % list.length
+
+    list[next].focus({ preventScroll: true })
+}
+
+function FocusSelected() {
+    const list = OptionEls()
+    if (!list.length) return
+
+    const selected = list.find(item => item.getAttribute('aria-selected') === 'true')
+    const target = selected || list[0]
+    target.focus({ preventScroll: true })
+}
 
 function UpdateScrollbar() {
     const el = PanelEl.value
@@ -136,7 +180,14 @@ function ScrollSelectedToCenter() {
 onMounted(() => {
     nextTick(() => {
         UpdateScrollbar()
-        nextTick(ScrollSelectedToCenter)
+        nextTick(() => {
+            ScrollSelectedToCenter()
+            if (!props.autofocus) return
+            // 等浮层完成定位（visibility 从 hidden 切到 visible）后再聚焦
+            nextTick(() => {
+                if (PanelEl.value) FocusSelected()
+            })
+        })
     })
 
     if (typeof ResizeObserver !== 'undefined' && PanelEl.value) {
@@ -254,7 +305,7 @@ const checkRender = computed(() => {
 .wa_select_group_label {
     padding: 0 var(--wa_select_pad_x);
     font-size: 11px;
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
 }
 
 .wa_select_option {
@@ -359,7 +410,7 @@ const checkRender = computed(() => {
 .wa_select_empty {
     padding: var(--wa_select_pad_y) var(--wa_select_pad_x);
     font-size: 12px;
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
 }
 
 /* 移动端不显示滚动条，也就不需要给滚动条预留右侧内边距 */

@@ -5,7 +5,7 @@
         </label>
 
         <AppPopover placement="bottom" match-trigger :role="multiple ? 'dialog' : 'listbox'" :aria-label="ariaLabel"
-            :padding="PopoverPadding" :disabled="disabled">
+            :padding="PopoverPadding" :disabled="disabled" @update:open="OnOpenChange">
             <template #trigger="{ open, toggle }">
                 <button :id="SelectId" v-bind="$attrs" type="button" class="wa_select_trigger"
                     :class="{ on: DisplayError, off: disabled, wa_select_sm: size === 'sm', wa_frosted: frosted }"
@@ -25,7 +25,7 @@
                     @update:model-value="UpdateMultiple" />
                 <AppSelectPanel v-else :groups="groups" :options="options" :model-value="modelValue" :size="size"
                     :check-icon="checkIcon" :check-position="checkPosition" :icon-component="iconComponent"
-                    :empty-text="emptyText" @select="item => Choose(item, close)" />
+                    :empty-text="emptyText" autofocus @select="item => Choose(item, close)" />
             </template>
         </AppPopover>
 
@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { computed, useId } from 'vue'
+import { computed, ref, useId } from 'vue'
 import { useChoiceSummary } from '../composables/useChoiceSummary.js'
 import { useValidation } from '../composables/useValidation.js'
 import AppCheckPanel from './AppCheckPanel.vue'
@@ -74,10 +74,12 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    /**
+     * @type {'md' | 'sm'}
+     */
     size: {
         type: String,
         default: 'sm',
-        allows: ['md', 'sm'],
     },
     /**
      * 选中对号的呈现方式，透传给下拉面板：
@@ -88,11 +90,13 @@ const props = defineProps({
         type: [Boolean, String],
         default: true,
     },
-    /** 选中标记的位置：before 在标签前，after 在标签后 */
+    /**
+     * 选中标记的位置：before 在标签前，after 在标签后
+     * @type {'before' | 'after'}
+     */
     checkPosition: {
         type: String,
         default: 'after',
-        allows: ['before', 'after'],
     },
     /** 图标组件，默认使用内置 AppIcon，可替换为其他图标库 */
     iconComponent: {
@@ -118,6 +122,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'change'])
 
 const SelectId = useId()
+const PopoverOpen = ref(false)
 const PopoverPadding = computed(() => props.size === 'sm' ? 6 : 8)
 const PanelSize = computed(() => props.size === 'sm' ? 18 : 20)
 const { AllOptions, Values, Summary } = useChoiceSummary(props)
@@ -147,7 +152,13 @@ function UpdateMultiple(values) {
     ValidateChange(values)
 }
 
+function OnOpenChange(open) {
+    PopoverOpen.value = open
+}
+
 function HandleBlur() {
+    // 打开面板时焦点会移入选项，此时不算真正的失焦
+    if (PopoverOpen.value) return
     ValidateBlur(props.multiple ? Values.value : props.modelValue)
 }
 </script>
@@ -218,7 +229,7 @@ function HandleBlur() {
 }
 
 .wa_select_placeholder {
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
 }
 
 .wa_select_arrow {

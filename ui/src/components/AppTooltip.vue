@@ -1,7 +1,6 @@
 <template>
-    <span ref="TriggerEl" class="wa_tooltip" :class="{ wa_tooltip_fill: fill }"
-        :aria-describedby="Visible ? TooltipId : undefined" @mouseenter="OnEnter" @mouseleave="OnLeave"
-        @focusin="OnEnter" @focusout="OnFocusOut">
+    <span ref="TriggerEl" class="wa_tooltip" :class="{ wa_tooltip_fill: fill }" @mouseenter="OnEnter"
+        @mouseleave="OnLeave" @focusin="OnFocusIn" @focusout="OnFocusOut">
         <slot />
     </span>
 
@@ -23,10 +22,12 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    /**
+     * @type {'top' | 'bottom'}
+     */
     placement: {
         type: String,
         default: 'top',
-        allows: ['top', 'bottom'],
     },
     /** 悬停多久后出现，模拟浏览器 title 的延迟 */
     delay: {
@@ -66,9 +67,37 @@ const MaxWidth = computed(() => ToSize(props.maxWidth))
 
 let ShowTimer = null
 let Listening = false
+let DescribedEl = null
+let PrevDescribed = null
 
 function ToSize(value) {
     return typeof value === 'number' ? `${value}px` : value
+}
+
+function FocusableTrigger() {
+    const el = TriggerEl.value
+    if (!el) return null
+    return el.querySelector('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])') || el
+}
+
+// aria-describedby 必须落在真正可聚焦的子元素上，外层 span 对读屏无效
+function AttachDescription(target) {
+    if (!(target instanceof HTMLElement) || DescribedEl === target) return
+
+    DetachDescription()
+    DescribedEl = target
+    PrevDescribed = target.getAttribute('aria-describedby')
+    target.setAttribute('aria-describedby', TooltipId)
+}
+
+function DetachDescription() {
+    if (!DescribedEl) return
+
+    if (PrevDescribed === null) DescribedEl.removeAttribute('aria-describedby')
+    else DescribedEl.setAttribute('aria-describedby', PrevDescribed)
+
+    DescribedEl = null
+    PrevDescribed = null
 }
 
 function ClearTimer() {
@@ -87,6 +116,12 @@ function OnEnter() {
     }, Math.max(0, Number(props.delay) || 0))
 }
 
+function OnFocusIn(event) {
+    // 焦点进入时按固定延迟显示；若提示已经打开，则把描述迁移到新的焦点元素
+    if (Visible.value) AttachDescription(event.target)
+    OnEnter()
+}
+
 function OnLeave() {
     ClearTimer()
     Close()
@@ -100,7 +135,13 @@ function OnFocusOut(event) {
 function Open() {
     if (props.disabled || !HasContent.value || Visible.value) return
 
+    const active = typeof document !== 'undefined' ? document.activeElement : null
+    const target = active instanceof HTMLElement && TriggerEl.value?.contains(active)
+        ? active
+        : FocusableTrigger()
+
     Visible.value = true
+    AttachDescription(target)
     nextTick(() => {
         Position()
         Listen()
@@ -111,6 +152,7 @@ function Close() {
     if (!Visible.value) return
 
     Visible.value = false
+    DetachDescription()
     Unlisten()
     PanelStyle.value = { ...PanelStyle.value, visibility: 'hidden' }
 }

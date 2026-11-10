@@ -34,7 +34,7 @@
                 </template>
                 <template #default="{ close }">
                     <AppSelectPanel :options="MoreOptions" :model-value="active" :check-icon="false"
-                        @select="item => SelectMore(item, close)" />
+                        autofocus @select="item => SelectMore(item, close)" />
                 </template>
             </AppPopover>
         </nav>
@@ -68,10 +68,12 @@ const props = defineProps({
         type: [String, Symbol],
         default: '',
     },
+    /**
+     * @type {'auto' | 'inline' | 'stacked' | 'icon' | 'text'}
+     */
     navLayout: {
         type: String,
         default: 'auto',
-        allows: ['auto', 'inline', 'stacked', 'icon', 'text'],
     },
     loading: {
         type: Boolean,
@@ -489,7 +491,7 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
     padding: 40px 0;
     font-size: 13px;
     text-align: center;
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
     display: flex;
     justify-content: center;
     gap: var(--doc_side_padding);
