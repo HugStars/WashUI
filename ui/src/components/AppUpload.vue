@@ -3,7 +3,7 @@
         <span v-if="label" class="wa_field_label">{{ label }}</span>
         <button type="button" class="wa_upload_zone" :class="{ on: Dragging, off: disabled }" :disabled="disabled"
             @click="Open" @dragenter.prevent="Dragging = true" @dragover.prevent="Dragging = true"
-            @dragleave.prevent="Dragging = false" @drop.prevent="OnDrop">
+            @dragleave.prevent="OnDragLeave" @drop.prevent="OnDrop">
             <AppIcon name="upload" :size="24" />
             <span class="wa_upload_title">{{ Dragging ? '松开即可添加' : '点击选择或拖拽文件到这里' }}</span>
             <span class="wa_upload_rule">{{ HintText }}</span>
@@ -95,6 +95,12 @@ function Open() {
 function OnChange(event) {
     Add(event.target.files)
     event.target.value = ''
+}
+
+// dragleave 会从子元素冒泡，只有真正离开上传区才取消高亮
+function OnDragLeave(event) {
+    if (event.currentTarget.contains(event.relatedTarget)) return
+    Dragging.value = false
 }
 
 function OnDrop(event) {
@@ -217,7 +223,7 @@ function Remove(index) {
 .wa_upload_rule {
     font-size: 12px;
     line-height: 1.5;
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
 }
 
 .wa_upload_input {
@@ -289,7 +295,7 @@ function Remove(index) {
 
 .wa_upload_size {
     flex: none;
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_subtle);
     font-variant-numeric: tabular-nums;
 }
 
