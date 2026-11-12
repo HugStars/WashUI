@@ -20,7 +20,13 @@
                 </p>
             </div>
 
-            <ul v-if="Results.length" class="doc_search_results" role="listbox" aria-label="搜索结果">
+            <!-- * 快速跳转复用下拉面板：高度和滚动交给 AppSelectPanel，选项不显示描述 -->
+            <AppSelectPanel v-if="!Query.trim()" class="doc_search_panel" :options="QuickOptions"
+                :model-value="ActivePath" :check-icon="false" size="md" role="listbox" aria-label="快速跳转"
+                @select="SelectQuick" />
+
+            <ul v-else-if="Results.length" ref="ResultsEl" class="doc_search_results" role="listbox"
+                aria-label="搜索结果">
                 <li v-for="(item, index) in Results" :key="item.path" role="presentation">
                     <button type="button" class="doc_search_item" :class="{ on: index === Active }" role="option"
                         :aria-selected="index === Active" @mouseenter="Active = index" @click="Go(item)">
@@ -41,7 +47,7 @@
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { AppDialog, AppIcon } from 'wash-ui'
+import { AppDialog, AppIcon, AppSelectPanel } from 'wash-ui'
 import { searchDocs, searchItems } from '../search.js'
 
 const router = useRouter()
@@ -50,13 +56,23 @@ const Visible = ref(false)
 const Query = ref('')
 const Active = ref(0)
 const InputEl = ref(null)
+const ResultsEl = ref(null)
 
 const IsMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform)
 const Shortcut = IsMac ? '⌘ K' : 'Ctrl K'
+const QuickItems = searchItems.slice(0, 8)
+const QuickOptions = QuickItems.map(item => {
+    const detail = item.en || item.component
+    return {
+        value: item.path,
+        label: detail ? `${item.label} · ${detail}` : item.label,
+    }
+})
 const Results = computed(() => {
     const query = Query.value.trim()
-    return query ? searchDocs(query) : searchItems.slice(0, 8)
+    return query ? searchDocs(query) : QuickItems
 })
+const ActivePath = computed(() => Results.value[Active.value]?.path || '')
 
 function FocusInput() {
     nextTick(() => nextTick(() => InputEl.value?.focus()))
@@ -75,7 +91,8 @@ function Move(delta) {
 
     Active.value = (Active.value + delta + total) % total
     nextTick(() => {
-        document.querySelector('.doc_search_item.on')?.scrollIntoView({ block: 'nearest' })
+        // note 只在搜索组件内部查询，避免全局 document.querySelector 误选其他实例
+        ResultsEl.value?.querySelector('.doc_search_item.on')?.scrollIntoView({ block: 'nearest' })
     })
 }
 
@@ -104,6 +121,10 @@ function Go(item) {
     Visible.value = false
     Query.value = ''
     if (route.path !== item.path) router.push(item.path)
+}
+
+function SelectQuick(option) {
+    Go(Results.value.find(item => item.path === option.value))
 }
 
 function OnGlobalKeydown(event) {
@@ -237,12 +258,37 @@ onUnmounted(() => {
     color: var(--wa_color_text_subtle);
 }
 
+/* * 快速跳转直接复用 AppSelectPanel，这里只覆盖计算高度，超出时由面板自身滚动 */
+.doc_search .doc_search_panel {
+    max-height: min(360px, calc(100vh - 240px));
+}
+
+/* * 快速跳转里的 on 表示键盘/鼠标高亮，不是已选值，沿用轻量 hover 样式 */
+.doc_search .doc_search_panel .wa_select_option.on,
+.doc_search .doc_search_panel .wa_select_option.on:hover {
+    color: var(--wa_color_text);
+    background: var(--wa_color_hover);
+    font-weight: 400;
+}
+
 .doc_search_results {
     display: grid;
     gap: 3px;
+    max-height: min(360px, calc(100vh - 240px));
     margin: 0;
-    padding: 0;
+    padding: 0 4px 0 0;
+    overflow-y: auto;
     list-style: none;
+    scrollbar-width: thin;
+}
+
+.doc_search_results::-webkit-scrollbar {
+    width: 6px;
+}
+
+.doc_search_results::-webkit-scrollbar-thumb {
+    border-radius: var(--wa_radius_pill);
+    background: var(--wa_color_scroll);
 }
 
 .doc_search_item {
