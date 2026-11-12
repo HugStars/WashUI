@@ -68,7 +68,7 @@
     },
     "scripts": {
         "build": "vite build && pnpm build:types",
-        "build:types": "vue-tsc -p ../tsconfig.types.json && node ../scripts/build-types.mjs",
+        "build:types": "node ../scripts/clean-types.mjs && vue-tsc -p ../tsconfig.types.json && node ../scripts/build-types.mjs",
         "prepublishOnly": "pnpm build"
     },
     "peerDependencies": {

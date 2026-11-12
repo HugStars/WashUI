@@ -1,6 +1,6 @@
 import { parse as parseSfc } from '@vue/compiler-sfc'
 import { parse as parseJs } from 'acorn'
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -188,18 +188,7 @@ function writeEntry() {
     writeFileSync(join(outRoot, 'index.d.ts'), output, 'utf8')
 }
 
-function resetGenerated(dir) {
-    if (!existsSync(dir)) return
-    for (const file of readdirSync(dir)) {
-        if (file.endsWith('.d.ts') && !file.endsWith('.vue.d.ts')) {
-            rmSync(join(dir, file))
-        }
-    }
-}
-
 mkdirSync(outRoot, { recursive: true })
-resetGenerated(join(outRoot, 'components'))
-resetGenerated(join(outRoot, 'layout'))
 writeComponents(join(srcRoot, 'components'), join(outRoot, 'components'))
 writeComponents(join(srcRoot, 'layout'), join(outRoot, 'layout'))
 writeEntry()
