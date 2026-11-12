@@ -1,50 +1,17 @@
 <template>
     <div ref="PanelEl" class="wa_select_panel" :class="{ wa_select_sm: size === 'sm', has_scrollbar: HasScrollbar }"
         @keydown="OnKeydown">
+        <!-- * 分组选项和平铺选项共用 SelectOption，避免两份按钮结构 -->
         <div v-for="group in groups" :key="group.label" class="wa_select_group">
             <p v-if="group.label" class="wa_select_group_label">{{ group.label }}</p>
-            <button v-for="item in group.options" :key="item.value" type="button" class="wa_select_option"
-                :class="{ on: item.value === modelValue }" role="option" :aria-selected="item.value === modelValue"
-                :tabindex="item.value === modelValue && !item.disabled ? 0 : -1" :disabled="item.disabled"
-                @click="emit('select', item)">
-                <component v-if="item.icon && iconComponent" :is="iconComponent" :name="item.icon" :size="17"
-                    class="wa_select_option_icon" aria-hidden="true" />
-                <span class="wa_select_label"
-                    :class="{ wa_select_label_before: checkPosition === 'before' }">{{ item.label }}</span>
-                <AppBadge v-if="item.badge" readonly class="wa_select_badge" :value="item.badge.text"
-                    :dot="item.badge.dot" :tone="item.badge.tone || 'danger'" :max="item.badge.max ?? 99"
-                    aria-hidden="true" />
-                <template v-if="item.value === modelValue">
-                    <span v-if="checkRender?.mode === 'text'" class="wa_select_check"
-                        :class="{ wa_select_check_before: checkPosition === 'before' }" aria-hidden="true">
-                        {{ checkRender.value }}</span>
-                    <component v-else-if="checkRender?.mode === 'icon'" :is="iconComponent" :name="checkRender.name"
-                        class="wa_select_check" :class="{ wa_select_check_before: checkPosition === 'before' }"
-                        aria-hidden="true" />
-                </template>
-            </button>
+            <SelectOption v-for="item in group.options" :key="item.value" :item="item"
+                :model-value="modelValue" :check-render="checkRender" :check-position="checkPosition"
+                :icon-component="iconComponent" @select="emit('select', $event)" />
         </div>
 
-        <button v-for="item in options" :key="item.value" type="button" class="wa_select_option"
-            :class="{ on: item.value === modelValue }" role="option" :aria-selected="item.value === modelValue"
-            :tabindex="item.value === modelValue && !item.disabled ? 0 : -1" :disabled="item.disabled"
-            @click="emit('select', item)">
-            <component v-if="item.icon && iconComponent" :is="iconComponent" :name="item.icon" :size="17"
-                class="wa_select_option_icon" aria-hidden="true" />
-            <span class="wa_select_label"
-                :class="{ wa_select_label_before: checkPosition === 'before' }">{{ item.label }}</span>
-            <AppBadge v-if="item.badge" readonly class="wa_select_badge" :value="item.badge.text"
-                :dot="item.badge.dot" :tone="item.badge.tone || 'danger'" :max="item.badge.max ?? 99"
-                aria-hidden="true" />
-            <template v-if="item.value === modelValue">
-                <span v-if="checkRender?.mode === 'text'" class="wa_select_check"
-                    :class="{ wa_select_check_before: checkPosition === 'before' }" aria-hidden="true">
-                    {{ checkRender.value }}</span>
-                <component v-else-if="checkRender?.mode === 'icon'" :is="iconComponent" :name="checkRender.name"
-                    class="wa_select_check" :class="{ wa_select_check_before: checkPosition === 'before' }"
-                    aria-hidden="true" />
-            </template>
-        </button>
+        <SelectOption v-for="item in options" :key="item.value" :item="item" :model-value="modelValue"
+            :check-render="checkRender" :check-position="checkPosition" :icon-component="iconComponent"
+            @select="emit('select', $event)" />
 
         <p v-if="!HasOptions" class="wa_select_empty">{{ emptyText }}</p>
     </div>
@@ -52,8 +19,8 @@
 
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import AppBadge from './AppBadge.vue'
 import AppIcon from './AppIcon.vue'
+import SelectOption from './select/SelectOption.vue'
 
 const props = defineProps({
     modelValue: {
@@ -116,6 +83,8 @@ const emit = defineEmits(['select'])
 const PanelEl = ref(null)
 const HasScrollbar = ref(false)
 let ScrollObserver = null
+let ScrollbarFrame = 0
+let FocusFrame = 0
 
 function OptionEls() {
     const el = PanelEl.value
@@ -153,9 +122,22 @@ function FocusSelected() {
 }
 
 function UpdateScrollbar() {
+    // note 直接调用时取消排队中的帧，避免同一帧重复读取 scrollHeight
+    cancelAnimationFrame(ScrollbarFrame)
+    ScrollbarFrame = 0
+
     const el = PanelEl.value
     if (!el) return
     HasScrollbar.value = el.scrollHeight > el.clientHeight + 1
+}
+
+// * resize 只用于更新滚动条状态，合并到 rAF，避免和 ResizeObserver 重复测量
+function ScheduleScrollbar() {
+    if (ScrollbarFrame) return
+    ScrollbarFrame = requestAnimationFrame(() => {
+        ScrollbarFrame = 0
+        UpdateScrollbar()
+    })
 }
 
 // 打开时把已选项滚动到可视区中间，避免长列表里选中项在视野外
@@ -183,8 +165,10 @@ onMounted(() => {
         nextTick(() => {
             ScrollSelectedToCenter()
             if (!props.autofocus) return
-            // 等浮层完成定位（visibility 从 hidden 切到 visible）后再聚焦
-            nextTick(() => {
+            // ! AppPopover 在 nextTick 里才把面板从 visibility:hidden 切到 visible；
+            // ! 这里等一帧再聚焦，否则浏览器会拒绝 focus，方向键会留在触发器上
+            FocusFrame = requestAnimationFrame(() => {
+                FocusFrame = 0
                 if (PanelEl.value) FocusSelected()
             })
         })
@@ -195,13 +179,15 @@ onMounted(() => {
         ScrollObserver.observe(PanelEl.value)
     }
 
-    window.addEventListener('resize', UpdateScrollbar)
+    window.addEventListener('resize', ScheduleScrollbar)
 })
 
 onUnmounted(() => {
     ScrollObserver?.disconnect()
     ScrollObserver = null
-    window.removeEventListener('resize', UpdateScrollbar)
+    window.removeEventListener('resize', ScheduleScrollbar)
+    cancelAnimationFrame(ScrollbarFrame)
+    cancelAnimationFrame(FocusFrame)
 })
 
 watch([() => props.options, () => props.groups, () => props.modelValue, () => props.size], () => {
@@ -221,7 +207,9 @@ const CHECK_TEXT_ICONS = new Set(['✓', '✔', '√', '☑', '●', '•', '★
 // 是否显示对号
 const showCheck = computed(() => props.checkIcon !== false && props.checkIcon != null)
 
-// 统一计算渲染方式：{ mode: 'text', value } | { mode: 'icon', name } | null
+// section 选中标记
+// * 父级算好渲染方式后传给 SelectOption，子组件只负责展示
+// - { mode: 'text', value } | { mode: 'icon', name } | null
 const checkRender = computed(() => {
     if (!showCheck.value) return null
     const v = props.checkIcon
@@ -252,8 +240,8 @@ const checkRender = computed(() => {
     min-width: 0;
     max-height: min(320px, calc(100vh - 120px));
     overflow-y: auto;
-    /* fixed 下拉浮层：滚到边界后不带动页面，否则浮层会随页面滚动重定位 */
-    overscroll-behavior: contain;
+    /* warning 不要设置 overscroll-behavior: contain：面板没有滚动条时会拦截滚轮，页面滚不动 */
+    /* note 内容滚到边界后允许继续滚动页面；AppPopover 会跟随页面滚动重新定位 */
     scrollbar-width: thin;
 }
 
@@ -329,6 +317,11 @@ const checkRender = computed(() => {
 .wa_select_option:hover {
     color: var(--wa_color_text);
     background: var(--wa_color_hover);
+}
+
+/* * 面板本身是滚动容器，外扩 outline 会被裁掉；聚焦态改为内缩 */
+.wa_select_option:focus-visible {
+    outline-offset: -2px;
 }
 
 .wa_select_option_icon {
