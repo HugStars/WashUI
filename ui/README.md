@@ -1,5 +1,9 @@
 # WashUI
 
+[![npm version](https://img.shields.io/npm/v/wash-ui)](https://www.npmjs.com/package/wash-ui)
+[![license](https://img.shields.io/npm/l/wash-ui)](./LICENSE)
+[![CI](https://github.com/HugStars/WashUI/actions/workflows/ci.yml/badge.svg)](https://github.com/HugStars/WashUI/actions/workflows/ci.yml)
+
 `wash-ui` 前端设计系统。包含设计变量、Vue 3 组件、页面布局、Toast、路由工厂、工具函数与组合式函数。
 
 - 纯 CSS 变量 + 原生 CSS，不依赖 Tailwind、UI 框架或预处理器

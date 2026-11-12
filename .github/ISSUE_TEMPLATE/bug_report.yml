@@ -1,0 +1,62 @@
+name: 🐛 Bug 反馈
+description: 组件、样式或交互表现不符合预期
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。提交前请先搜索已有 issue，并尽量提供一个最小复现。
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 实际表现是什么，期望表现是什么。
+      placeholder: 点击 AppButton 后……期望……实际……
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 按顺序写出操作步骤，附上最小代码片段。
+      placeholder: |
+        1. 使用 AppInput，传入 rule ...
+        2. 输入 ...
+        3. 看到 ...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: wash-ui 版本
+      placeholder: 0.1.0
+    validations:
+      required: true
+
+  - type: input
+    id: vue-version
+    attributes:
+      label: Vue 版本
+      placeholder: 3.5.28
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: 浏览器与系统
+      placeholder: Chrome 130 / Windows 11
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充信息
+      description: 截图、录屏、控制台报错、相关 issue 都可以放在这里。
+    validations:
+      required: false

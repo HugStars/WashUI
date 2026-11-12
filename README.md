@@ -1,5 +1,9 @@
 # WashUI
 
+[![npm version](https://img.shields.io/npm/v/wash-ui)](https://www.npmjs.com/package/wash-ui)
+[![license](https://img.shields.io/npm/l/wash-ui)](./LICENSE)
+[![CI](https://github.com/HugStars/WashUI/actions/workflows/ci.yml/badge.svg)](https://github.com/HugStars/WashUI/actions/workflows/ci.yml)
+
 WashUI 是一个 Vue 3 设计系统与文档站，仓库：<https://github.com/HugStars/WashUI>。
 
 它由两部分组成：
