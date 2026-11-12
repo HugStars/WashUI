@@ -21,11 +21,18 @@ function GetChannel() {
     return channel
 }
 
+function ClearTimers(item) {
+    if (!item) return
+    for (const timer of item.timers) clearTimeout(timer)
+    item.timers = []
+}
+
 function SendPending() {
     if (!channel || !pending) return
 
     const current = pending
     pending = null
+    ClearTimers(current)
 
     channel.postMessage({
         type: 'code',
@@ -41,43 +48,50 @@ export function OpenInPlayground(code, options = {}) {
 
     const { onSuccess, onError } = options
     const token = `${Date.now()}-${Math.random().toString(36).slice(2)}`
-    pending = { token, code, opened: false, onSuccess, onError }
+    const bus = GetChannel()
 
-    const channel = GetChannel()
-
-    if (!channel) {
+    if (!bus) {
         window.open('/playground', 'washui-playground')?.focus()
-        pending = null
         onError?.(new Error('当前浏览器不支持 BroadcastChannel'))
         return
     }
 
-    const ping = () => {
-        if (pending?.token !== token) return
-        channel.postMessage({ type: 'ping', token })
+    // 连续点击时取消上一次请求，避免旧计时器继续堆积
+    ClearTimers(pending)
+    pending = null
+
+    const timers = []
+    pending = { token, code, opened: false, onSuccess, onError, timers }
+
+    function Later(delay, action) {
+        timers.push(setTimeout(action, delay))
     }
 
-    ping()
+    function Ping() {
+        if (pending?.token !== token) return
+        bus.postMessage({ type: 'ping', token })
+    }
+
+    function Fail(message) {
+        if (pending?.token !== token) return
+
+        const current = pending
+        pending = null
+        ClearTimers(current)
+        onError?.(new Error(message))
+    }
+
+    Ping()
 
     // 先等已有实验场回应；没有回应才打开新标签
-    setTimeout(() => {
+    Later(500, () => {
         if (pending?.token !== token || pending.opened) return
 
         pending.opened = true
         window.open('/playground', 'washui-playground')?.focus()
-        ping()
-    }, 500)
+        Ping()
+    })
 
-    setTimeout(ping, 1200)
-    setTimeout(ping, 2500)
-    setTimeout(ping, 4500)
-    setTimeout(ping, 7000)
-    setTimeout(ping, 10000)
-
-    setTimeout(() => {
-        if (pending?.token !== token) return
-
-        pending = null
-        onError?.(new Error('实验场没有响应，请手动打开后再试'))
-    }, 15000)
+    for (const delay of [1200, 2500, 4500, 7000, 10000]) Later(delay, Ping)
+    Later(15000, () => Fail('实验场没有响应，请手动打开后再试'))
 }
