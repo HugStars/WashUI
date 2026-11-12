@@ -265,9 +265,13 @@ task.close()
 toast('常驻提示', { persistent: true })
 toast('三秒后关闭', { duration: 3000 })
 toast.clear()
+
+toast('距顶部 120px', { top: 120 })
+toast.configure({ top: 80 })
+toast.configure({ top: null }) // 恢复 CSS 默认
 ```
 
-Toast 使用 `textContent` 写入内容，不解析 HTML。
+Toast 使用 `textContent` 写入内容，不解析 HTML。顶部距离会自动叠加 `env(safe-area-inset-top)`；初始化时可通过 `createUi({ toast: { top: 80 } })` 设置全局默认。
 
 ## Loading
 

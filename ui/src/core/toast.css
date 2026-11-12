@@ -1,8 +1,11 @@
 
 
 .wa_toast_box {
+    /* * top 可被调用参数或全局配置覆盖，safe-area 始终叠加，避免刘海屏遮挡 */
+    --wa_toast_top: 22px;
+
     position: fixed;
-    top: 22px;
+    top: calc(var(--wa_toast_top, 22px) + env(safe-area-inset-top, 0px));
     left: 50%;
     z-index: var(--wa_z_toast);
     display: flex;
@@ -148,6 +151,7 @@
 
 @media (max-width: 860px) {
     .wa_toast_box {
-        top: 14px;
+        /* ! 这里只改基准距离，不能在媒体查询里直接写 top，否则会覆盖调用方配置；safe-area 由上面的 top 统一叠加 */
+        --wa_toast_top: 14px;
     }
 }

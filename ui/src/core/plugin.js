@@ -2,6 +2,7 @@ import * as components from '../components/index.js'
 import * as layout from '../layout/index.js'
 import { configureIconDefaults, configureIcons } from './icons.js'
 import { configureTokens, initTheme } from './theme.js'
+import { configureToast } from './toast.js'
 
 const registry = { ...components, ...layout }
 
@@ -18,6 +19,7 @@ export function createUi(options = {}) {
             })
             configureIcons(options.icons)
             configureIconDefaults(options.iconDefaults)
+            configureToast(options.toast)
         },
     }
 }

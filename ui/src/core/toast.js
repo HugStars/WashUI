@@ -6,19 +6,55 @@ const LEAVE_DELAY = 220
 const UPDATE_DELAY = 360
 const DEFAULT_DURATION = 2200
 
-let container = null
+// section 容器与全局配置
+// * 不同 top 使用不同容器，互不挤压；key 为归一化后的 top 字符串
+const containers = new Map()
 const active = new Set()
+let defaultTop = ''
 
-function host() {
+function NormalizeTop(top) {
+    if (top === null || top === undefined || top === '') return ''
+    if (typeof top === 'number') return `${top}px`
+
+    const value = String(top).trim()
+    // note 兼容调用方传 '80' 这类纯数字字符串，避免生成无效的 CSS 值
+    return /^-?\d+(\.\d+)?$/.test(value) ? `${value}px` : value
+}
+
+/**
+ * 全局配置 Toast
+ * @param {object} options 配置对象
+ * @param {number|string|null} [options.top] 距顶部距离，数字按 px；传 null 恢复 CSS 默认
+ * @returns {{ top: string }} 当前配置
+ */
+export function configureToast(options = {}) {
+    if (options && Object.prototype.hasOwnProperty.call(options, 'top')) {
+        defaultTop = NormalizeTop(options.top)
+    }
+    return { top: defaultTop }
+}
+
+function host(top) {
     if (typeof document === 'undefined') return null
-    if (container && document.contains(container)) return container
-    container = document.createElement('div')
-    container.className = CONTAINER_CLASS
-    container.setAttribute('role', 'status')
-    container.setAttribute('aria-live', 'polite')
-    container.setAttribute('aria-atomic', 'false')
-    document.body.appendChild(container)
-    return container
+
+    const key = top || ''
+    const existing = containers.get(key)
+    if (existing && document.contains(existing)) return existing
+
+    const box = document.createElement('div')
+    box.className = CONTAINER_CLASS
+    box.setAttribute('role', 'status')
+    box.setAttribute('aria-live', 'polite')
+    box.setAttribute('aria-atomic', 'false')
+    // * CSS 默认值负责响应式；指定 top 时同时写变量和内联 top，避免被移动端媒体查询覆盖
+    if (top) {
+        box.style.setProperty('--wa_toast_top', top)
+        box.style.top = `calc(${top} + env(safe-area-inset-top, 0px))`
+    }
+
+    containers.set(key, box)
+    document.body.appendChild(box)
+    return box
 }
 
 function dismiss(item) {
@@ -27,11 +63,21 @@ function dismiss(item) {
     clearTimeout(item._timer)
     active.delete(item)
     item.classList.add('wa_toast_item_leave')
-    setTimeout(() => item.remove(), LEAVE_DELAY)
+    setTimeout(() => {
+        const box = item.parentElement
+        item.remove()
+        if (!box || box.children.length) return
+
+        box.remove()
+        for (const [key, value] of containers) {
+            if (value === box) containers.delete(key)
+        }
+    }, LEAVE_DELAY)
 }
 
-function createItem(type, text) {
-    const box = host()
+function createItem(type, text, top) {
+    // * top 为调用参数，未传时回落到全局默认；两者都没有则交给 CSS 默认值
+    const box = host(NormalizeTop(top ?? defaultTop))
     if (!box) return null
 
     const item = document.createElement('div')
@@ -55,8 +101,8 @@ function schedule(item, duration) {
 }
 
 export function toast(text, options = {}) {
-    const { type = '', duration = DEFAULT_DURATION, persistent = false } = options
-    const node = createItem(type, text)
+    const { type = '', duration = DEFAULT_DURATION, persistent = false, top } = options
+    const node = createItem(type, text, top)
     if (!node) return () => { }
 
     if (!persistent && type !== 'loading') schedule(node.item, duration)
@@ -68,8 +114,8 @@ toast.warning = (text, options = {}) => toast(text, { ...options, type: 'warning
 toast.help = (text, options = {}) => toast(text, { ...options, type: 'help' })
 toast.danger = (text, options = {}) => toast(text, { ...options, type: 'danger' })
 
-toast.loading = function (text = '加载中...') {
-    const node = createItem('loading', text)
+toast.loading = function (text = '加载中...', options = {}) {
+    const node = createItem('loading', text, options.top)
     if (!node) return { update() { }, close() { } }
 
     let closed = false
@@ -113,6 +159,8 @@ toast.loading = function (text = '加载中...') {
 
     return { update, close }
 }
+
+toast.configure = configureToast
 
 toast.clear = function () {
     for (const item of [...active]) dismiss(item)
