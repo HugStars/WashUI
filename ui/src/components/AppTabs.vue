@@ -176,6 +176,7 @@ const RootStyle = computed(() => ({
 
 let BounceFrame = 0
 let ScrollFrame = 0
+let ResizeFrame = 0
 let ResizeObserverInstance = null
 let ScrollPointerId = null
 let ScrollStartX = 0
@@ -333,8 +334,20 @@ function OnBadgeClear(entry) {
 }
 
 function Refresh() {
+    // note 直接调用时取消排队中的 resize 帧，避免和 ResizeObserver 重复测量
+    cancelAnimationFrame(ResizeFrame)
+    ResizeFrame = 0
     UpdateSlider()
     UpdateBadges()
+}
+
+// * resize 合并到 rAF，避免和 ResizeObserver 在同一帧重复测量滑块与角标
+function ScheduleRefresh() {
+    if (ResizeFrame) return
+    ResizeFrame = requestAnimationFrame(() => {
+        ResizeFrame = 0
+        Refresh()
+    })
 }
 
 function OnListScroll() {
@@ -533,7 +546,7 @@ onMounted(() => {
         ScrollActiveIntoView()
     })
 
-    window.addEventListener('resize', Refresh)
+    window.addEventListener('resize', ScheduleRefresh)
     document.fonts?.ready?.then(() => {
         if (!Unmounted) Refresh()
     })
@@ -548,12 +561,13 @@ onMounted(() => {
 
 onUnmounted(() => {
     Unmounted = true
-    window.removeEventListener('resize', Refresh)
+    window.removeEventListener('resize', ScheduleRefresh)
     ListEl.value?.removeEventListener('scroll', OnListScroll)
     ResizeObserverInstance?.disconnect()
     ResizeObserverInstance = null
     cancelAnimationFrame(BounceFrame)
     cancelAnimationFrame(ScrollFrame)
+    cancelAnimationFrame(ResizeFrame)
 })
 
 watch(ListEl, (el, old) => {
@@ -600,8 +614,9 @@ watch(
     position: relative;
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 6px;
+    /* * 与 AppRadioGroup segmented 的 8px padding / 8px gap 保持一致 */
+    gap: 8px;
+    padding: 8px;
     overflow-x: auto;
     overflow-y: hidden;
     border: 1px solid var(--wa_color_border);
@@ -625,7 +640,8 @@ watch(
 }
 
 .wa_tabs_plain .wa_tabs_list {
-    gap: 4px;
+    /* * plain 无外框，padding 保持 0；选项间距与默认 nav 统一为 8px */
+    gap: 8px;
     padding: 0;
     border: 0;
     border-radius: 0;
@@ -773,11 +789,6 @@ watch(
 .wa_tabs_tab.on:active,
 .wa_tabs_tab.on.pressed {
     transform: scale(.94);
-}
-
-.wa_tabs_tab:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
 }
 
 .wa_tabs_badges {
