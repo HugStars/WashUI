@@ -243,7 +243,7 @@ onUnmounted(() => {
     border-radius: var(--wa_radius_control);
     color: var(--wa_color_text);
     background: var(--wa_color_glass);
-    background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
+    background: var(--wa_glass_gradient);
     -webkit-backdrop-filter: blur(var(--wa_blur));
     backdrop-filter: blur(var(--wa_blur));
     box-shadow: var(--wa_shadow_nav);

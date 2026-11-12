@@ -6,7 +6,7 @@
 .wa_select_trigger.wa_frosted,
 .wa_card.wa_frosted {
     background: var(--wa_color_glass);
-    background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
+    background: var(--wa_glass_gradient);
     -webkit-backdrop-filter: blur(var(--wa_blur)) saturate(1.35);
     backdrop-filter: blur(var(--wa_blur)) saturate(1.35);
 }

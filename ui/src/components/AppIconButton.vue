@@ -87,11 +87,6 @@ const Classes = computed(() => ({
     transform: scale(.94);
 }
 
-.wa_icon_btn:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
-}
-
 .wa_icon_btn:disabled {
     opacity: .4;
     cursor: not-allowed;
@@ -99,7 +94,7 @@ const Classes = computed(() => ({
 
 .wa_icon_btn_danger:hover:not(:disabled),
 .wa_icon_btn_danger:active:not(:disabled) {
-    color: #ffffff;
+    color: var(--wa_color_on_danger);
     background: var(--wa_color_danger);
 }
 

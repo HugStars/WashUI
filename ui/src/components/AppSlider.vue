@@ -471,7 +471,7 @@ function OnKeydown(event) {
     background: var(--wa_color_dialog);
     box-shadow:
         0 0 0 var(--wa_slider_ring) var(--wa_color_dialog),
-        0 1px 4px #0000001f;
+        var(--wa_shadow_thumb_soft);
     translate: -50% -50%;
     cursor: grab;
     outline: none;

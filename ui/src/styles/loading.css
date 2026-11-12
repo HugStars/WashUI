@@ -5,7 +5,7 @@
     display: grid;
     place-items: center;
     padding: 20px;
-    background: #00000059;
+    background: var(--wa_color_loading_gradient);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;

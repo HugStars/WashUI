@@ -60,8 +60,9 @@ function PickTop() {
 function ApplyOverlay(item) {
     if (!host) return
 
+    // note 用 CSS 变量而不是硬编码颜色，方便主题覆盖
     host.style.background = item.gradient
-        ? 'linear-gradient(to bottom, transparent, #00000059)'
+        ? 'linear-gradient(to bottom, transparent, var(--wa_color_loading_gradient))'
         : ''
     host.style.webkitBackdropFilter = item.blur > 0 ? `blur(${item.blur}px)` : ''
     host.style.backdropFilter = item.blur > 0 ? `blur(${item.blur}px)` : ''

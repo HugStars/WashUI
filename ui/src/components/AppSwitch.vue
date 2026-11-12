@@ -146,7 +146,7 @@ function Toggle() {
     height: var(--wa_switch_thumb);
     border-radius: 50%;
     background: var(--wa_color_text_subtle);
-    box-shadow: 0 1px 3px #00000026;
+    box-shadow: var(--wa_shadow_thumb);
     translate: 0 0;
     scale: var(--wa_switch_thumb_off);
     transition:
@@ -163,7 +163,7 @@ function Toggle() {
 
 .wa_switch.on .wa_switch_thumb {
     background: var(--wa_color_on_text);
-    box-shadow: 0 1px 3px #00000033;
+    box-shadow: var(--wa_shadow_thumb_pressed);
     translate: var(--wa_switch_travel) 0;
     scale: 1;
 }
@@ -177,11 +177,6 @@ function Toggle() {
 .wa_switch.on:active:not(:disabled) .wa_switch_thumb {
     translate: var(--wa_switch_travel) 0;
     scale: var(--wa_switch_thumb_pressed);
-}
-
-.wa_switch:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
