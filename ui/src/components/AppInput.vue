@@ -241,9 +241,4 @@ function Clear() {
     opacity: .4;
     cursor: not-allowed;
 }
-
-.wa_input_clear:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
-}
 </style>

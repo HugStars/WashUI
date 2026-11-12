@@ -163,12 +163,6 @@ function Remove(index) {
 </script>
 
 <style>
-.wa_upload_zone:focus-visible,
-.wa_upload_remove:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
-}
-
 .wa_upload_zone {
     display: flex;
     flex-direction: column;

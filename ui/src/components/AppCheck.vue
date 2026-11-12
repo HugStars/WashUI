@@ -240,11 +240,6 @@ function Toggle() {
     transform: scale(.9);
 }
 
-.wa_check:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
-}
-
 .wa_check:disabled {
     opacity: .45;
     cursor: not-allowed;

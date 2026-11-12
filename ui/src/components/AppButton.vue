@@ -98,11 +98,6 @@ const Classes = computed(() => {
     cursor: not-allowed;
 }
 
-.wa_btn:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
-}
-
 .wa_btn_primary {
     color: var(--wa_color_on_text);
     background: var(--wa_color_text);

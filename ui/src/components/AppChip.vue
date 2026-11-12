@@ -25,11 +25,6 @@ defineProps({
 </script>
 
 <style>
-.wa_chip:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
-}
-
 .wa_chip {
     display: inline-flex;
     align-items: center;

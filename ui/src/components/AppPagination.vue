@@ -228,11 +228,6 @@ function ChangeSize(value) {
     transform: scale(.94);
 }
 
-.wa_pagination_btn:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
-}
-
 .wa_pagination_btn.on,
 .wa_pagination_btn.on:hover:not(:disabled) {
     color: var(--wa_color_on_nav_active);

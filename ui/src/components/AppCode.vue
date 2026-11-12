@@ -213,11 +213,6 @@ watch(
     }
 }
 
-.wa_code_copy:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
-}
-
 @media (hover: none) {
 
     .wa_code_copy {
