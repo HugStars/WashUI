@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Check tag matches version
+        run: |
+          node -e "const v = require('./ui/package.json').version; if ('v' + v !== process.env.GITHUB_REF_NAME) { console.error('tag ' + process.env.GITHUB_REF_NAME + ' 与 ui/package.json 版本 ' + v + ' 不一致'); process.exit(1) }"
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build library
+        run: pnpm build:ui
+
+      - name: Publish
+        run: pnpm publish:ui --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
