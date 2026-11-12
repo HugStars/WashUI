@@ -111,7 +111,7 @@
                         aria-label="图标分类" />
                 </div>
                 <div class="doc_icon_search">
-                    <AppInput v-model="Search" placeholder="搜索图标" clearable />
+                    <AppInput v-model="Search" placeholder="搜索图标" aria-label="搜索图标" clearable />
                 </div>
                 <AppButton size="sm" variant="icon" :disabled="!Selected.length" aria-label="清空选择"
                     title="清空选择" @click="ClearSelected">
@@ -126,7 +126,7 @@
             <div class="doc_icon_grid">
                 <button v-for="name in PageIcons" :key="name" type="button" class="doc_icon_item"
                     :class="{ selected: isSelected(name) }" :title="name" @click="Pick(name)"
-                    @contextmenu.prevent="OpenMenu($event, name)">
+                    @keydown="OnIconKeydown($event, name)" @contextmenu.prevent="OpenMenu($event, name)">
                     <AppIcon :name="name" :size="22" :morph="false" />
                     <span class="doc_icon_name">{{ name }}</span>
                     <span v-if="isSelected(name)" class="doc_icon_pick">{{ Selected.indexOf(name) + 1 }}</span>
@@ -185,19 +185,24 @@
             <ApiTable :rows="propsRows" />
         </template>
 
-        <Teleport to="body">
-            <div v-if="MenuOpen" class="doc_icon_menu"
-                :style="{ left: `${MenuX}px`, top: `${MenuY}px` }" @contextmenu.prevent>
-                <button type="button" class="doc_icon_menu_item" @click="CopyName">复制名称</button>
-                <button type="button" class="doc_icon_menu_item" @click="CopyComponent">复制组件</button>
+        <AppPopover v-model:open="MenuOpen" placement="bottom-left" :width="160" :gap="4" :padding="4"
+            role="menu" aria-label="图标操作">
+            <template #trigger>
+                <!-- * 1px 固定锚点承接右键坐标，AppPopover 只认 trigger 的 rect -->
+                <span class="doc_icon_menu_anchor" :style="{ left: `${MenuX}px`, top: `${MenuY}px` }"
+                    aria-hidden="true"></span>
+            </template>
+            <div ref="MenuEl" class="doc_icon_menu" @keydown="OnMenuKeydown" @contextmenu.prevent>
+                <button type="button" class="doc_icon_menu_item" role="menuitem" @click="CopyName">复制名称</button>
+                <button type="button" class="doc_icon_menu_item" role="menuitem" @click="CopyComponent">复制组件</button>
             </div>
-        </Teleport>
+        </AppPopover>
     </DocPage>
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
-import { AppRadioGroup, AppStepper, iconGroups, iconNames, toast, useClipboard } from 'wash-ui'
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import { AppPopover, AppRadioGroup, AppStepper, iconGroups, iconNames, toast, useClipboard } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const icons = computed(() => iconNames())
@@ -273,6 +278,8 @@ function StopPreview() {
 function SchedulePreview() {
     StopPreview()
     if (!Auto.value || !CanMorph.value) return
+    // * 页面隐藏时暂停自动预览，恢复可见后由 OnVisibility 重新启动
+    if (typeof document !== 'undefined' && document.hidden) return
 
     PreviewTimer = setInterval(() => {
         PreviewName.value = PreviewName.value === First.value ? Second.value : First.value
@@ -317,28 +324,61 @@ const MotionMedia = typeof window !== 'undefined' && window.matchMedia
     ? window.matchMedia('(prefers-reduced-motion: reduce)')
     : null
 const ReduceMotion = ref(MotionMedia?.matches ?? false)
-let TileTimers = []
+const TILE_DELAY = 2200
+const TILE_STAGGER = 170
+let TileTimer = 0
+let TileDeadlines = []
 
 function StopTiles() {
-    TileTimers.forEach(timer => clearInterval(timer))
-    TileTimers = []
+    clearTimeout(TileTimer)
+    TileTimer = 0
+}
+
+// * 每个 tile 保持原来的独立节奏，但共用一个调度器，避免多个常驻定时器
+// ! TILE_DELAY + index * TILE_STAGGER 是原始 interval 的节奏，改动前先确认视觉节奏
+function ScheduleTiles() {
+    clearTimeout(TileTimer)
+    if (ReduceMotion.value || !Tiles.length || !TileDeadlines.length) return
+
+    const now = performance.now()
+    let next = Infinity
+
+    Tiles.forEach((tile, index) => {
+        if (now >= TileDeadlines[index]) {
+            tile.current = tile.current === tile.from ? tile.to : tile.from
+            TileDeadlines[index] = now + TILE_DELAY + index * TILE_STAGGER
+        }
+        next = Math.min(next, TileDeadlines[index])
+    })
+
+    TileTimer = setTimeout(ScheduleTiles, Math.max(80, next - performance.now()))
 }
 
 function StartTiles() {
     StopTiles()
-    if (ReduceMotion.value) return
+    if (ReduceMotion.value || document.hidden) return
 
-    Tiles.forEach((tile, index) => {
-        const timer = setInterval(() => {
-            tile.current = tile.current === tile.from ? tile.to : tile.from
-        }, 2200 + index * 170)
-        TileTimers.push(timer)
-    })
+    const now = performance.now()
+    TileDeadlines = Tiles.map((_, index) => now + TILE_DELAY + index * TILE_STAGGER)
+    ScheduleTiles()
 }
 
 function OnMotion(event) {
     ReduceMotion.value = event.matches
     StartTiles()
+}
+
+// * 页面不可见时暂停装饰动画，回到页面再恢复
+// note 自动预览和示例 tile 共用这个开关，避免后台标签页继续跑形变
+function OnVisibility() {
+    if (document.hidden) {
+        StopPreview()
+        StopTiles()
+        return
+    }
+
+    StartTiles()
+    SchedulePreview()
 }
 
 function UsePair(tile) {
@@ -432,27 +472,58 @@ const MenuOpen = ref(false)
 const MenuName = ref('')
 const MenuX = ref(0)
 const MenuY = ref(0)
+const MenuEl = ref(null)
 
-function OpenMenu(event, name) {
+// section 右键菜单定位
+// * 锚点先落到右键位置，等 DOM 更新后再打开，AppPopover 才能读到正确坐标
+// ! 不能设置坐标后立刻 open，否则 AppPopover 会按旧锚点定位
+async function OpenMenu(event, name) {
+    const trigger = event.currentTarget instanceof HTMLElement ? event.currentTarget : null
     MenuName.value = name
-    MenuX.value = Math.min(event.clientX, window.innerWidth - 180)
-    MenuY.value = Math.min(event.clientY, window.innerHeight - 110)
+
+    if (event.clientX || event.clientY) {
+        MenuX.value = Math.min(event.clientX, window.innerWidth - 180)
+        MenuY.value = Math.min(event.clientY, window.innerHeight - 110)
+    } else if (trigger) {
+        const rect = trigger.getBoundingClientRect()
+        MenuX.value = Math.min(rect.left, window.innerWidth - 180)
+        MenuY.value = rect.bottom + 4
+    }
+
+    await nextTick()
+    trigger?.focus({ preventScroll: true })
     MenuOpen.value = true
+
+    // ! 两次 nextTick：第一次等面板渲染，第二次等 AppPopover 完成定位；提前聚焦会让方向键失效
+    await nextTick()
+    await nextTick()
+    MenuEl.value?.querySelector('button')?.focus({ preventScroll: true })
 }
 
-function CloseMenu() {
-    MenuOpen.value = false
+// * Shift+F10 / 菜单键与右键使用同一份菜单和定位逻辑
+// ! 不能只做右键入口，否则键盘用户无法打开图标操作菜单
+function OnIconKeydown(event, name) {
+    if (event.key !== 'ContextMenu' && !(event.shiftKey && event.key === 'F10')) return
+    event.preventDefault()
+    OpenMenu(event, name)
 }
 
-function OnOutside(event) {
-    if (!MenuOpen.value) return
-    if (event.target instanceof Element && event.target.closest('.doc_icon_menu')) return
-    CloseMenu()
+function OnMenuKeydown(event) {
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+
+    const items = [...(MenuEl.value?.querySelectorAll('button') || [])]
+    if (!items.length) return
+
+    event.preventDefault()
+    const index = items.indexOf(document.activeElement)
+    const step = event.key === 'ArrowDown' ? 1 : -1
+    const next = index < 0 ? 0 : (index + step + items.length) % items.length
+    items[next].focus()
 }
 
 async function CopyName() {
     const name = MenuName.value
-    CloseMenu()
+    MenuOpen.value = false
     const ok = await copy(name)
     if (!ok) toast.danger('复制失败')
     else toast.success(`已复制 ${name}`)
@@ -460,20 +531,20 @@ async function CopyName() {
 
 async function CopyComponent() {
     const text = `<AppIcon name="${MenuName.value}" />`
-    CloseMenu()
+    MenuOpen.value = false
     const ok = await copy(text)
     if (!ok) toast.danger('复制失败')
     else toast.success(`已复制 ${text}`)
 }
 
 onMounted(() => {
-    document.addEventListener('pointerdown', OnOutside, true)
+    document.addEventListener('visibilitychange', OnVisibility)
     MotionMedia?.addEventListener('change', OnMotion)
     StartTiles()
 })
 
 onUnmounted(() => {
-    document.removeEventListener('pointerdown', OnOutside, true)
+    document.removeEventListener('visibilitychange', OnVisibility)
     MotionMedia?.removeEventListener('change', OnMotion)
     StopPreview()
     StopTiles()
@@ -786,11 +857,6 @@ app.use(createUi({
     transform: translateY(-2px);
 }
 
-.doc_morph_tile:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
-}
-
 .doc_morph_tile_icon {
     display: grid;
     width: 56px;
@@ -927,16 +993,18 @@ app.use(createUi({
     color: var(--wa_color_text);
 }
 
-.doc_icon_menu {
+/* * 1px 固定锚点只负责给 AppPopover 提供右键坐标，不参与布局 */
+.doc_icon_menu_anchor {
     position: fixed;
-    z-index: var(--wa_z_popover, 1000);
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+.doc_icon_menu {
     display: grid;
-    min-width: 150px;
-    padding: 4px;
-    border: 1px solid var(--wa_color_line);
-    border-radius: var(--wa_radius_control);
-    background: var(--wa_color_surface);
-    box-shadow: var(--wa_shadow_popover, 0 12px 28px #00000018);
+    gap: 2px;
+    min-width: 0;
 }
 
 .doc_icon_menu_item {
