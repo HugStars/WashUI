@@ -2,17 +2,19 @@
     <div class="wa_desk" :class="Classes" :style="ShellStyle">
         <div v-if="ShowTitle" class="wa_desk_title" :data-tauri-drag-region="DragRegion">
             <slot name="title">
-                <img v-if="TitleIconSrc" class="wa_desk_title_img" :src="TitleIconSrc" alt="" />
+                <img v-if="TitleIconSrc" class="wa_desk_title_img" :src="TitleIconSrc" alt="" draggable="false"
+                    :data-tauri-drag-region="DragRegion" />
                 <AppIcon v-else-if="Array.isArray(TitleIcon)" :icon="TitleIcon" :size="18" />
                 <AppIcon v-else-if="TitleIcon" :name="TitleIcon" :size="18" />
-                <span v-if="TitleText" class="wa_desk_title_text">{{ TitleText }}</span>
+                <span v-if="TitleText" class="wa_desk_title_text" :data-tauri-drag-region="DragRegion">{{ TitleText }}</span>
             </slot>
         </div>
 
         <header class="wa_desk_header" :data-tauri-drag-region="DragRegion">
-            <div class="wa_desk_header_left">
+            <div class="wa_desk_header_left" :data-tauri-drag-region="DragRegion">
                 <slot name="header-left">
-                    <span v-if="ShowHeaderTitle && HeaderTitle" class="wa_desk_header_title">{{ HeaderTitle }}</span>
+                    <span v-if="ShowHeaderTitle && HeaderTitle" class="wa_desk_header_title"
+                        :data-tauri-drag-region="DragRegion">{{ HeaderTitle }}</span>
                 </slot>
             </div>
 
@@ -326,6 +328,8 @@ function MergeConfig(base, patch) {
     height: 20px;
     flex: none;
     object-fit: contain;
+    pointer-events: none;
+    -webkit-user-drag: none;
 }
 
 .wa_desk_title_text {
@@ -371,6 +375,7 @@ function MergeConfig(base, patch) {
     justify-content: center;
     gap: 8px;
     min-width: 0;
+    -webkit-app-region: no-drag;
 }
 
 .wa_desk_header_actions {
