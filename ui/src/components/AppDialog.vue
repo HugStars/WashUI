@@ -24,8 +24,7 @@
                         <AppIcon name="close" :size="17" />
                     </button>
 
-                    <div ref="BodyEl" class="wa_dialog_body" @touchstart="OnBodyTouchStart"
-                        @touchmove="OnBodyTouchMove" @touchend="OnBodyTouchEnd" @touchcancel="OnBodyTouchCancel">
+                    <div ref="BodyEl" class="wa_dialog_body">
                         <div class="wa_dialog_content">
                             <slot />
                             <footer v-if="$slots.footer && FooterInContent"
@@ -163,6 +162,11 @@ const slots = useSlots()
 const TitleId = useId()
 const Uid = Symbol('wa_dialog')
 
+// section 触摸手势
+// * 触摸设备常驻监听，桌面端不绑定，避免 scroll-blocking 的 touchmove 警告
+// ! 用 maxTouchPoints 判断；pointer: coarse 在部分移动端/模拟器上不可靠
+const TouchDevice = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0
+
 const Visible = ref(props.open)
 const PanelEl = ref(null)
 const BodyEl = ref(null)
@@ -191,6 +195,33 @@ let PointerId = null
 let TouchId = null
 let TouchStartY = 0
 let TouchPulling = false
+let BoundBodyEl = null
+
+// touchmove 需要 preventDefault，必须显式 passive:false，避免浏览器报 non-passive 警告
+function BindBodyTouch() {
+    if (!TouchDevice) return
+
+    const el = BodyEl.value
+    if (!el || el === BoundBodyEl) return
+
+    UnbindBodyTouch()
+    el.addEventListener('touchstart', OnBodyTouchStart, { passive: true })
+    el.addEventListener('touchmove', OnBodyTouchMove, { passive: false })
+    el.addEventListener('touchend', OnBodyTouchEnd, { passive: true })
+    el.addEventListener('touchcancel', OnBodyTouchCancel, { passive: true })
+    BoundBodyEl = el
+}
+
+function UnbindBodyTouch() {
+    const el = BoundBodyEl
+    if (!el) return
+
+    el.removeEventListener('touchstart', OnBodyTouchStart)
+    el.removeEventListener('touchmove', OnBodyTouchMove)
+    el.removeEventListener('touchend', OnBodyTouchEnd)
+    el.removeEventListener('touchcancel', OnBodyTouchCancel)
+    BoundBodyEl = null
+}
 
 function Focusables() {
     const root = PanelEl.value
@@ -287,6 +318,7 @@ function OnMaskClick() {
 
 function OnAfterLeave() {
     ResetBodyDrag()
+    UnbindBodyTouch()
     Deactivate()
     emit('close')
 }
@@ -363,7 +395,8 @@ function OnBodyTouchMove(event) {
 
     if (!TouchPulling && distance < 4) return
 
-    event.preventDefault()
+    // warning 浏览器已开始滚动时 touchmove 不可取消，强行 preventDefault 会触发 Intervention
+    if (event.cancelable) event.preventDefault()
     TouchPulling = true
     Dragging.value = true
     DragY.value = distance
@@ -398,11 +431,13 @@ watch(() => props.open, (open) => {
         TouchStartY = 0
         TouchPulling = false
         Activate()
+        nextTick(BindBodyTouch)
     } else {
         Dragging.value = false
         PointerId = null
         TouchId = null
         TouchPulling = false
+        UnbindBodyTouch()
         document.removeEventListener('keydown', OnKeydown)
     }
 }, { immediate: true })
@@ -410,6 +445,7 @@ watch(() => props.open, (open) => {
 onUnmounted(() => {
     if (typeof document === 'undefined') return
 
+    UnbindBodyTouch()
     document.removeEventListener('keydown', OnKeydown)
     const index = Stack.indexOf(Uid)
     if (index >= 0) Stack.splice(index, 1)
@@ -422,11 +458,6 @@ onUnmounted(() => {
 </script>
 
 <style>
-.wa_dialog_close:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
-}
-
 .wa_dialog_mask {
     position: fixed;
     inset: 0;
@@ -441,18 +472,18 @@ onUnmounted(() => {
     content: '';
     position: absolute;
     inset: 0;
-    background: #0000006b;
+    background: var(--wa_color_mask);
     pointer-events: none;
 }
 
 .wa_dialog_mask.wa_dialog_frosted::before {
-    background: #00000033;
+    background: var(--wa_color_mask_soft);
 }
 
 .wa_dialog_frosted .wa_dialog {
     border-color: var(--wa_color_border);
     background: var(--wa_color_glass);
-    background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
+    background: var(--wa_glass_gradient);
     -webkit-backdrop-filter: blur(var(--wa_blur));
     backdrop-filter: blur(var(--wa_blur));
 }
@@ -598,6 +629,11 @@ onUnmounted(() => {
     /* 内容 scaleY 入场会撑出 20% 高度，先裁掉滚动溢出，避免动画期间闪出滚动条 */
     overflow: hidden;
     transition: transform .32s var(--wa_ease_spring);
+}
+
+/* warning 入场期间内容会 scaleY 放大，先禁止滚动，避免内部滚动条闪一下 */
+.wa_dialog_enter_active .wa_dialog_body {
+    overflow-y: hidden;
 }
 
 .wa_dialog_leave_active .wa_dialog {
