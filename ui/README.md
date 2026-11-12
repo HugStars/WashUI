@@ -397,10 +397,11 @@ pnpm dev:docs
 
 ## 发布
 
+在仓库根目录执行：
+
 ```bash
-pnpm build:ui
-cd ui
-pnpm publish
+npm login
+pnpm publish:ui
 ```
 
-首次发布先执行 `npm login`。`prepublishOnly` 会自动构建，`files` 只包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`。版本号在 `ui/package.json` 中修改。
+`pnpm publish:ui` 等价于 `pnpm --filter wash-ui publish`，不需要 `cd ui`。`prepublishOnly` 会自动构建，`files` 只包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`。版本号在 `ui/package.json` 中修改。

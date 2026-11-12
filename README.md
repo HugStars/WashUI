@@ -37,6 +37,7 @@ pnpm dev:docs
 | `pnpm build:docs` | 构建文档站到根目录 `dist` |
 | `pnpm preview:docs` | 预览文档站构建结果 |
 | `pnpm build:ui` | 构建库到 `ui/dist`，并生成 `ui/types` 声明 |
+| `pnpm publish:ui` | 构建并发布 `wash-ui` 到公共 npm |
 | `pnpm test` | 运行 Vitest 单元测试 |
 | `pnpm dev` | 等同 `pnpm dev:docs` |
 | `pnpm build` | 等同 `pnpm build:docs` |
@@ -361,13 +362,16 @@ import 'wash-ui/style.css'
 
 ## 构建与发布
 
+在仓库根目录执行：
+
 ```bash
-pnpm build:ui
-cd ui
-pnpm publish
+npm login
+pnpm publish:ui
 ```
 
-`ui/package.json` 的 `files` 包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`，文档不会发布。包名 `wash-ui` 发布到公共 npm，不需要作用域，首次发布前先执行 `npm login`。
+`pnpm publish:ui` 等价于 `pnpm --filter wash-ui publish`，不需要 `cd ui`，`prepublishOnly` 会自动构建 `dist` 和 `types`。`npm login` 只需在首次发布或登录过期时执行，之后每次发版只跑 `pnpm publish:ui`。
+
+`ui/package.json` 的 `files` 包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`，文档不会发布。包名 `wash-ui` 发布到公共 npm，不需要作用域。
 
 `pnpm build:ui` 会先用 `vue-tsc` 生成 `ui/types`，再由 `scripts/build-types.mjs` 从 `defineProps` 生成组件的 Props 声明。类型目录不提交到仓库，发布时由 `prepublishOnly` 重新生成。
 
