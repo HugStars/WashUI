@@ -10,14 +10,22 @@
 </template>
 
 <script setup>
-import { computed, inject, onMounted, onUnmounted, ref, unref } from 'vue'
+import { computed, inject, onMounted, onUnmounted, ref, unref, watch } from 'vue'
 import { HEADER_BAR_TARGET } from '../core/keys.js'
 
 defineOptions({ inheritAttrs: false })
 
-defineProps({
+const props = defineProps({
     /** 在标题栏中抵消 header 左右内边距，让内容横向铺满 */
     bleed: Boolean,
+    /**
+     * auto：移动端投递到 header；header：始终投递到 AppDeskShell / AppShell 的 header；inline：始终留在页面内
+     * @type {'auto' | 'header' | 'inline'}
+     */
+    placement: {
+        type: String,
+        default: 'auto',
+    },
 })
 
 const Target = inject(HEADER_BAR_TARGET, null)
@@ -25,11 +33,21 @@ const Media = typeof window !== 'undefined' && window.matchMedia
     ? window.matchMedia('(max-width: 860px)')
     : null
 const Mobile = ref(Media?.matches ?? false)
-const InHeader = computed(() => Mobile.value && Boolean(unref(Target)))
+const InHeader = computed(() => {
+    if (props.placement === 'inline') return false
+    if (props.placement === 'header') return Boolean(unref(Target))
+    return Mobile.value && Boolean(unref(Target))
+})
 
 function OnMedia(event) {
     Mobile.value = event.matches
 }
+
+watch(() => props.placement, value => {
+    if (value !== 'auto') return
+    if (!Media) return
+    Mobile.value = Media.matches
+})
 
 onMounted(() => {
     if (!Media) return

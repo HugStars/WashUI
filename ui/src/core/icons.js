@@ -84,6 +84,54 @@ export const defaultIcons = {
         ['line', { x1: 3, y1: 9, x2: 21, y2: 9 }],
         ['line', { x1: 9, y1: 9, x2: 9, y2: 20 }],
     ],
+    'panel-left': [
+        ['rect', { x: 3, y: 4, width: 18, height: 16, rx: 2 }],
+        ['line', { x1: 9, y1: 4, x2: 9, y2: 20 }],
+    ],
+    'panel-left-open': [
+        ['rect', { x: 3, y: 4, width: 18, height: 16, rx: 2 }],
+        ['line', { x1: 9, y1: 4, x2: 9, y2: 20 }],
+        ['polyline', { points: '13 9 16 12 13 15' }],
+    ],
+    'panel-left-close': [
+        ['rect', { x: 3, y: 4, width: 18, height: 16, rx: 2 }],
+        ['line', { x1: 9, y1: 4, x2: 9, y2: 20 }],
+        ['polyline', { points: '16 9 13 12 16 15' }],
+    ],
+    book: [
+        ['path', { d: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20' }],
+        ['path', { d: 'M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z' }],
+    ],
+    bookshelf: [
+        ['rect', { x: 3, y: 4, width: 18, height: 16, rx: 2 }],
+        ['line', { x1: 3, y1: 10, x2: 21, y2: 10 }],
+        ['line', { x1: 3, y1: 16, x2: 21, y2: 16 }],
+    ],
+    bookmark: [
+        ['path', { d: 'M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z' }],
+    ],
+    chart: [
+        ['line', { x1: 4, y1: 20, x2: 20, y2: 20 }],
+        ['rect', { x: 6, y: 11, width: 3, height: 6, rx: 1 }],
+        ['rect', { x: 11, y: 7, width: 3, height: 10, rx: 1 }],
+        ['rect', { x: 16, y: 4, width: 3, height: 13, rx: 1 }],
+    ],
+    ranking: [
+        ['path', { d: 'M8 21V10' }],
+        ['path', { d: 'M12 21V4' }],
+        ['path', { d: 'M16 21v-7' }],
+    ],
+    trend: [
+        ['polyline', { points: '3 17 9 11 13 15 21 7' }],
+        ['polyline', { points: '15 7 21 7 21 13' }],
+    ],
+    'qr-code': [
+        ['rect', { x: 3, y: 3, width: 7, height: 7, rx: 1 }],
+        ['rect', { x: 14, y: 3, width: 7, height: 7, rx: 1 }],
+        ['rect', { x: 3, y: 14, width: 7, height: 7, rx: 1 }],
+        ['path', { d: 'M14 14h3v3h-3z' }],
+        ['path', { d: 'M18 18h3v3h-3z' }],
+    ],
     grid: [
         ['rect', { x: 3, y: 3, width: 7, height: 7, rx: 1 }],
         ['rect', { x: 14, y: 3, width: 7, height: 7, rx: 1 }],
@@ -923,7 +971,7 @@ export const defaultIcons = {
 export const iconGroups = [
     {
         title: '方向与导航',
-        icons: ['home', 'arrow-up', 'arrow-down', 'arrow-left', 'arrow-right', 'chevron-up', 'chevron-down', 'chevron-left', 'chevron', 'caret-up', 'caret-down', 'caret-left', 'caret-right', 'fullscreen', 'fullscreen-exit', 'layout', 'grid', 'icons'],
+        icons: ['home', 'arrow-up', 'arrow-down', 'arrow-left', 'arrow-right', 'chevron-up', 'chevron-down', 'chevron-left', 'chevron', 'caret-up', 'caret-down', 'caret-left', 'caret-right', 'fullscreen', 'fullscreen-exit', 'layout', 'panel-left', 'panel-left-open', 'panel-left-close', 'grid', 'icons', 'book', 'bookshelf', 'bookmark', 'chart', 'ranking', 'trend', 'qr-code'],
     },
     {
         title: '操作与编辑',

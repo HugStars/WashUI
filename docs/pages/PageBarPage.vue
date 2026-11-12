@@ -1,6 +1,6 @@
 <template>
     <DocPage category="布局" name="PageBar" title="页面操作栏"
-        description="页面级操作栏。桌面端留在页面中书写的位置，移动端自动投递到 AppShell 顶部标题栏下方，并与标题栏共用磨砂背景。">
+        description="页面级操作栏。默认桌面端留在页面中，移动端自动投递到 AppShell 顶部标题栏下方；placement='header' 可强制投递到 AppShell / AppDeskShell 的 Header 中间。">
         <PageBar class="doc_page_bar" bleed>
             <AppTabs v-model="tab" transparent :items="tabs" overflow="more" :max="3"  />
         </PageBar>
@@ -13,7 +13,8 @@
         <h2 class="doc_h2">使用方式</h2>
         <AppCode :code="usageCode" lang="html" />
         <ul class="doc_list doc_gap">
-            <li>必须放在 AppShell 内，移动端才能找到顶部标题栏的投递目标。</li>
+            <li>必须放在 AppShell / AppDeskShell 内，投递时才能找到目标。</li>
+            <li><code>placement="header"</code> 时，桌面端也强制投递到 Header 中间，适合 AppDeskShell 的顶部路由操作。</li>
             <li>桌面端原地渲染，移动端（≤860px）Teleport 到标题栏下方，页面不会留下空占位。</li>
             <li>标题栏本身已有 backdrop-filter，PageBar 不再添加背景或模糊，避免两层玻璃。</li>
             <li><code>bleed</code> 会抵消标题栏左右内边距，并把同样的内边距写入 <code>--wa_page_bar_inset</code>；AppTabs 已内置适配，其他组件也可以读取这个变量。
@@ -48,8 +49,9 @@ const baseCode = `<PageBar bleed>
 </PageBar>`
 
 const usageCode = `<DocPage title="页面标题">
-    <PageBar bleed>
-        <AppTabs v-model="tab" transparent :items="tabs" />
+    <PageBar placement="header">
+        <AppButton>新增</AppButton>
+        <AppButton variant="line">导出</AppButton>
     </PageBar>
 
     <!-- 页面内容 -->
@@ -57,6 +59,7 @@ const usageCode = `<DocPage title="页面标题">
 
 const propsRows = [
     { name: 'bleed', type: 'boolean', default: 'false', desc: '移动端投递到标题栏时抵消 header 左右内边距，让内容横向铺满' },
+    { name: 'placement', type: 'auto | header | inline', default: 'auto', desc: 'auto 跟随断点；header 始终投递到顶栏；inline 始终留在页面内' },
 ]
 
 const slotRows = [

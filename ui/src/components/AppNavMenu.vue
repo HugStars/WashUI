@@ -59,6 +59,11 @@ const props = defineProps({
         type: String,
         default: 'md',
     },
+    /** 布局变化标识；变化时重新测量选中滑块，例如侧栏模式切换 */
+    layoutKey: {
+        type: [String, Number],
+        default: '',
+    },
     ariaLabel: {
         type: String,
         default: '导航菜单',
@@ -203,6 +208,7 @@ function UpdateGlider() {
 
 watch(ActiveKey, () => nextTick(UpdateGlider))
 watch(() => props.size, () => nextTick(UpdateGlider))
+watch(() => props.layoutKey, () => nextTick(UpdateGlider))
 
 onMounted(async () => {
     await nextTick()
@@ -231,6 +237,8 @@ onUnmounted(() => {
     --wa_nav_gap: var(--wa_space_2);
     --wa_nav_pad_y: var(--wa_space_2);
     --wa_nav_pad_x: var(--wa_space_3);
+    --wa_nav_hover_shift: 0px;
+    --wa_nav_active_shift: 0px;
 
     min-width: 0;
 }
@@ -325,6 +333,7 @@ onUnmounted(() => {
     text-decoration: none;
     cursor: pointer;
     transition:
+        padding-left var(--wa_duration_fast) var(--wa_ease_out),
         color var(--wa_duration_fast) var(--wa_ease_out),
         background var(--wa_duration_fast) var(--wa_ease_out);
 }
@@ -335,6 +344,7 @@ onUnmounted(() => {
 }
 
 .wa_nav_menu_link:hover {
+    padding-left: calc(var(--wa_nav_pad_x) + var(--wa_nav_hover_shift));
     color: var(--wa_color_text);
     background: var(--wa_color_hover);
 }
@@ -346,6 +356,7 @@ onUnmounted(() => {
 
 .wa_nav_menu_link.on,
 .wa_nav_menu_link.on:hover {
+    padding-left: calc(var(--wa_nav_pad_x) + var(--wa_nav_active_shift));
     color: var(--wa_color_on_text);
     background: transparent;
     font-weight: 600;
