@@ -66,6 +66,7 @@ import AppBadge from './AppBadge.vue'
 import AppIcon from './AppIcon.vue'
 import AppPopover from './AppPopover.vue'
 import AppSelectPanel from './AppSelectPanel.vue'
+import { usePressFeedback } from '../composables/usePressFeedback.js'
 
 const MORE_KEY = Symbol('wa-tabs-more')
 
@@ -160,8 +161,10 @@ const TabEls = new Map()
 const SliderStyle = ref({})
 const SliderReady = ref(false)
 const SliderBounce = ref(false)
-const SliderPress = ref(false)
-const PressedKey = ref(null)
+const { Press: SliderPress, PressedKey, Clear: ClearPress, Start: OnPressStart } = usePressFeedback(
+    '.wa_tabs_tab',
+    TabEls
+)
 const MoreOpen = ref(false)
 const BadgePosition = ref({})
 const Pull = ref(0)
@@ -171,7 +174,6 @@ const RootStyle = computed(() => ({
     '--wa_tabs_pull': `${Pull.value}px`,
 }))
 
-let PressTimer = null
 let BounceFrame = 0
 let ScrollFrame = 0
 let ResizeObserverInstance = null
@@ -181,6 +183,11 @@ let ScrollStartY = 0
 let ScrollStartLeft = 0
 let ScrollActive = false
 let SuppressTabClick = false
+let Unmounted = false
+
+const ReducedMotion = typeof window !== 'undefined' && window.matchMedia
+    ? window.matchMedia('(prefers-reduced-motion: reduce)')
+    : null
 
 function SetTabEl(name, el) {
     if (el) TabEls.set(name, el)
@@ -415,6 +422,8 @@ function PlayBounce() {
     cancelAnimationFrame(BounceFrame)
     SliderBounce.value = false
 
+    if (ReducedMotion?.matches) return
+
     BounceFrame = requestAnimationFrame(() => {
         BounceFrame = requestAnimationFrame(() => {
             SliderBounce.value = true
@@ -426,14 +435,9 @@ function OnSliderAnimationEnd(event) {
     if (event.target === event.currentTarget) SliderBounce.value = false
 }
 
-function ClearPress() {
-    clearTimeout(PressTimer)
-    PressTimer = null
-    SliderPress.value = false
-    PressedKey.value = null
-}
-
 function OnListPointerDown(event) {
+    // 上一次拖拽残留的拦截标记在本次按下时失效
+    SuppressTabClick = false
     OnPressStart(event)
 
     if (!Scrollable.value) return
@@ -511,38 +515,16 @@ function OnListPointerUp(event) {
     ScrollDragging.value = false
     Pull.value = 0
 
+    // 拖动结束后由捕获阶段的 click 消费，避免误触标签
     SuppressTabClick = true
-    setTimeout(() => {
-        SuppressTabClick = false
-    }, 0)
 }
 
 function OnListClickCapture(event) {
     if (!SuppressTabClick) return
+
+    SuppressTabClick = false
     event.preventDefault()
     event.stopPropagation()
-    SuppressTabClick = false
-}
-
-function OnPressStart(event) {
-    if (event.pointerType === 'mouse' && event.button !== 0) return
-
-    const tab = event.target.closest?.('.wa_tabs_tab')
-    if (!tab) return
-
-    ClearPress()
-
-    for (const [key, el] of TabEls) {
-        if (el === tab) {
-            PressedKey.value = key
-            break
-        }
-    }
-
-    PressTimer = setTimeout(() => {
-        PressTimer = null
-        SliderPress.value = true
-    }, 320)
 }
 
 onMounted(() => {
@@ -551,10 +533,10 @@ onMounted(() => {
         ScrollActiveIntoView()
     })
 
-    window.addEventListener('pointerup', ClearPress)
-    window.addEventListener('pointercancel', ClearPress)
     window.addEventListener('resize', Refresh)
-    document.fonts?.ready?.then(Refresh)
+    document.fonts?.ready?.then(() => {
+        if (!Unmounted) Refresh()
+    })
 
     ListEl.value?.addEventListener('scroll', OnListScroll, { passive: true })
 
@@ -565,15 +547,13 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    window.removeEventListener('pointerup', ClearPress)
-    window.removeEventListener('pointercancel', ClearPress)
+    Unmounted = true
     window.removeEventListener('resize', Refresh)
     ListEl.value?.removeEventListener('scroll', OnListScroll)
     ResizeObserverInstance?.disconnect()
     ResizeObserverInstance = null
     cancelAnimationFrame(BounceFrame)
     cancelAnimationFrame(ScrollFrame)
-    clearTimeout(PressTimer)
 })
 
 watch(ListEl, (el, old) => {

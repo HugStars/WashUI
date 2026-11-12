@@ -55,6 +55,7 @@ import AppIcon from '../components/AppIcon.vue'
 import AppPopover from '../components/AppPopover.vue'
 import AppSelectPanel from '../components/AppSelectPanel.vue'
 import { HEADER_BAR_TARGET, HEADER_TARGET } from '../core/keys.js'
+import { usePressFeedback } from '../composables/usePressFeedback.js'
 
 const MAX_NAV = 4
 const MORE_KEY = Symbol('wash-more')
@@ -106,12 +107,14 @@ const SliderTarget = computed(() => MoreActive.value ? MORE_KEY : props.active)
 const SliderStyle = ref({})
 const SliderReady = ref(false)
 const SliderBounce = ref(false)
-const SliderPress = ref(false)
-const PressedKey = ref(null)
+const { Press: SliderPress, PressedKey, Start: OnPressStart } = usePressFeedback(
+    '.wa_nav_item',
+    ItemEls
+)
 
-let PressTimer = null
 let BounceFrame = 0
 let NavResizeObserver = null
+let Unmounted = false
 
 function SetItemEl(name, el) {
     if (el) ItemEls.set(name, el)
@@ -154,33 +157,6 @@ function OnSliderAnimationEnd(event) {
     if (event.target === event.currentTarget) SliderBounce.value = false
 }
 
-function ClearPress() {
-    clearTimeout(PressTimer)
-    PressTimer = null
-    SliderPress.value = false
-    PressedKey.value = null
-}
-
-function OnPressStart(event) {
-    if (event.pointerType === 'mouse' && event.button !== 0) return
-    const item = event.target.closest?.('.wa_nav_item')
-    if (!item) return
-
-    ClearPress()
-
-    for (const [key, el] of ItemEls) {
-        if (el === item) {
-            PressedKey.value = key
-            break
-        }
-    }
-
-    PressTimer = setTimeout(() => {
-        PressTimer = null
-        SliderPress.value = true
-    }, 320)
-}
-
 function OnContextMenu(event) {
     // 触屏长按会触发 contextmenu，这里只保留导航自己的长按反馈
     if (Mobile.value || TouchMedia?.matches) event.preventDefault()
@@ -192,8 +168,6 @@ function OnMedia(event) {
 
 onMounted(async () => {
     Media?.addEventListener('change', OnMedia)
-    window.addEventListener('pointerup', ClearPress)
-    window.addEventListener('pointercancel', ClearPress)
     window.addEventListener('resize', UpdateSlider)
 
     if (typeof ResizeObserver !== 'undefined') {
@@ -203,18 +177,18 @@ onMounted(async () => {
 
     await nextTick()
     UpdateSlider()
-    document.fonts?.ready?.then(UpdateSlider)
+    document.fonts?.ready?.then(() => {
+        if (!Unmounted) UpdateSlider()
+    })
 })
 
 onUnmounted(() => {
+    Unmounted = true
     Media?.removeEventListener('change', OnMedia)
-    window.removeEventListener('pointerup', ClearPress)
-    window.removeEventListener('pointercancel', ClearPress)
     window.removeEventListener('resize', UpdateSlider)
     NavResizeObserver?.disconnect()
     NavResizeObserver = null
     cancelAnimationFrame(BounceFrame)
-    clearTimeout(PressTimer)
 })
 
 function SelectMore(item, close) {
