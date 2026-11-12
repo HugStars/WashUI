@@ -5,18 +5,20 @@
         <kbd class="doc_search_kbd" aria-hidden="true">{{ Shortcut }}</kbd>
     </button>
 
-    <AppDialog v-model:open="Visible" :width="640" :closable="false" aria-label="搜索文档">
+    <AppDialog v-model:open="Visible" :width="640" :closable="false" :gesture="false" aria-label="搜索文档">
         <div class="doc_search">
-            <div class="doc_search_field">
-                <AppIcon name="search" :size="18" />
-                <input ref="InputEl" v-model="Query" class="doc_search_input" type="text"
-                    placeholder="搜索组件、指南、能力…" aria-label="搜索文档" @keydown="OnKeydown">
-                <kbd class="doc_search_kbd" aria-hidden="true">Esc</kbd>
-            </div>
+            <div class="doc_search_head">
+                <div class="doc_search_field">
+                    <AppIcon name="search" :size="18" />
+                    <input ref="InputEl" v-model="Query" class="doc_search_input" type="text"
+                        placeholder="搜索组件、指南、能力…" aria-label="搜索文档" @keydown="OnKeydown">
+                    <kbd class="doc_search_kbd" aria-hidden="true">Esc</kbd>
+                </div>
 
-            <p class="doc_search_meta">
-                {{ Query.trim() ? `${Results.length} 个结果` : '快速跳转' }}
-            </p>
+                <p class="doc_search_meta">
+                    {{ Query.trim() ? `${Results.length} 个结果` : '快速跳转' }}
+                </p>
+            </div>
 
             <ul v-if="Results.length" class="doc_search_results" role="listbox" aria-label="搜索结果">
                 <li v-for="(item, index) in Results" :key="item.path" role="presentation">
@@ -39,7 +41,7 @@
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { AppDialog, AppIcon } from '@wash/ui'
+import { AppDialog, AppIcon } from 'wash-ui'
 import { searchDocs, searchItems } from '../search.js'
 
 const router = useRouter()
@@ -170,6 +172,17 @@ onUnmounted(() => {
     gap: 10px;
 }
 
+/* 输入框和结果数固定在滚动区域顶部，只让结果列表滚动 */
+.doc_search_head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: grid;
+    gap: 10px;
+    padding: 6px 0;
+    background: var(--wa_color_dialog);
+}
+
 .doc_search_field {
     display: flex;
     align-items: center;
@@ -202,8 +215,17 @@ onUnmounted(() => {
     outline: 0;
     color: var(--wa_color_text);
     background: transparent;
+    box-shadow: none;
     font: inherit;
     font-size: 14px;
+}
+
+/* 焦点环由外层 .doc_search_field:focus-within 统一绘制 */
+.doc_search_input:focus,
+.doc_search_input:focus-visible {
+    border: 0;
+    outline: 0;
+    box-shadow: none;
 }
 
 .doc_search_input::placeholder {
@@ -218,11 +240,8 @@ onUnmounted(() => {
 .doc_search_results {
     display: grid;
     gap: 3px;
-    max-height: min(50vh, 420px);
     margin: 0;
     padding: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
     list-style: none;
 }
 

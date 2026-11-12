@@ -10,7 +10,7 @@
             </slot>
         </span>
 
-        <AppDialog v-model:open="DialogOpen" :title="title" :aria-label="title || ariaLabel">
+        <AppDialog v-model:open="DialogOpen" :title="title" :aria-label="title || ariaLabel" :gesture="false">
             <AppCheckPanel :groups="groups" :options="options" :model-value="Values" :size="size"
                 :disabled="disabled" :empty-text="emptyText" @update:model-value="Update" />
             <template #footer>

@@ -102,6 +102,11 @@ summary:focus-visible,
     color: var(--wa_color_text_subtle);
 }
 
+/* 段落形式的提示默认与上方内容留出间距；行内 hint 和已有 doc_gap 的不重复加 */
+p.wa_hint:not(.doc_gap) {
+    margin-top: var(--wa_space_2);
+}
+
 :where(.wa_shell, .wa_dialog) :where(input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']), textarea, select) {
     width: 100%;
     padding: 6px 14px;

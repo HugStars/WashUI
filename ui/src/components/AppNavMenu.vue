@@ -226,6 +226,8 @@ onUnmounted(() => {
 
 <style>
 .wa_nav_menu {
+    --wa_nav_group_gap: calc(var(--wa_space_3) + var(--wa_space_1));
+    --wa_nav_title_gap: calc(var(--wa_space_3) + var(--wa_space_1));
     --wa_nav_gap: var(--wa_space_2);
     --wa_nav_pad_y: var(--wa_space_2);
     --wa_nav_pad_x: var(--wa_space_3);
@@ -234,6 +236,8 @@ onUnmounted(() => {
 }
 
 .wa_nav_menu_sm {
+    --wa_nav_group_gap: 10px;
+    --wa_nav_title_gap: 10px;
     --wa_nav_gap: 6px;
     --wa_nav_pad_y: 6px;
     --wa_nav_pad_x: 10px;
@@ -242,7 +246,7 @@ onUnmounted(() => {
 .wa_nav_menu_body {
     position: relative;
     display: grid;
-    gap: var(--wa_nav_gap);
+    gap: var(--wa_nav_group_gap);
     min-width: 0;
 }
 
@@ -269,7 +273,7 @@ onUnmounted(() => {
 
 .wa_nav_menu_group {
     display: grid;
-    gap: var(--wa_nav_gap);
+    gap: var(--wa_nav_title_gap);
     min-width: 0;
 }
 
@@ -282,23 +286,22 @@ onUnmounted(() => {
 .wa_nav_menu_title {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 0 var(--wa_nav_pad_x);
-    color: var(--wa_color_text_muted);
+    justify-self: start;
+    width: fit-content;
+    padding: 3px 9px;
+    border-radius: var(--wa_radius_pill);
+    color: var(--wa_color_text);
+    background: var(--wa_color_active);
     font-size: 11px;
     font-weight: 600;
-    letter-spacing: .06em;
+    letter-spacing: .04em;
     line-height: 1.5;
     white-space: nowrap;
 }
 
-/* 右侧细线把分组标题和菜单项分开，避免标题看起来像第一个选项 */
-.wa_nav_menu_title::after {
-    content: '';
-    flex: 1;
-    min-width: 12px;
-    height: 1px;
-    background: var(--wa_color_line);
+.wa_nav_menu_sm .wa_nav_menu_title {
+    padding: 2px 7px;
+    font-size: 11px;
 }
 
 .wa_nav_menu_link {

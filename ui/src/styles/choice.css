@@ -127,9 +127,6 @@
     z-index: 0;
     border-radius: var(--wa_segmented_radius);
     background: var(--wa_color_dialog);
-    box-shadow:
-        0 1px 2px #0000001a,
-        inset 0 0 0 1px var(--wa_color_line);
     opacity: 0;
     pointer-events: none;
     transition:
@@ -158,12 +155,22 @@
 }
 
 /* 面板 / 下拉复用列表 */
+/*
+ * 列表内部不设置 overscroll-behavior: contain：
+ * Dialog 内由 body 统一滚动；Popover 内滚到边界后允许继续滚动页面。
+ * 内容不足时加 contain 还会拦截滚轮，表现为“列表滚不动，页面也滚不动”。
+ */
 .wa_choice_list {
     display: grid;
     gap: 4px;
     max-height: min(320px, calc(100vh - 120px));
     overflow-y: auto;
-    overscroll-behavior: contain;
+}
+
+/* Dialog 内只保留 body 一层滚动，列表全部展开，避免嵌套滚动卡断 */
+.wa_dialog .wa_choice_list {
+    max-height: none;
+    overflow: visible;
 }
 
 .wa_choice_list_group {

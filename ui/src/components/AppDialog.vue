@@ -465,7 +465,7 @@ onUnmounted(() => {
     gap: 18px;
     max-width: 100%;
     max-height: 100%;
-    overflow: auto;
+    overflow: hidden;
     padding: 26px;
     border: 1px solid var(--wa_color_dialog_line);
     border-radius: var(--wa_radius_dialog);
@@ -533,7 +533,16 @@ onUnmounted(() => {
 }
 
 .wa_dialog_body {
+    flex: 1;
     min-width: 0;
+    min-height: 0;
+    /* 留出 6px 给输入框 focus ring，避免被滚动容器裁掉 */
+    padding: 6px;
+    margin: -6px;
+    overflow-y: auto;
+    /* 模态弹框：内部滚到边界后不把背景页面一起滚走 */
+    overscroll-behavior: contain;
+    touch-action: pan-y;
 }
 
 .wa_dialog_content {
@@ -733,8 +742,10 @@ onUnmounted(() => {
     .wa_dialog_body {
         flex: 1;
         min-height: 0;
-        padding: 16px 0;
+        padding: 16px 6px;
+        margin: 0 -6px;
         overflow-y: auto;
+        /* 模态弹框：内部滚到边界后不把背景页面一起滚走 */
         overscroll-behavior: contain;
         touch-action: pan-y;
     }

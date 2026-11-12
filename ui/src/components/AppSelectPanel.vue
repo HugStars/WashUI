@@ -252,6 +252,7 @@ const checkRender = computed(() => {
     min-width: 0;
     max-height: min(320px, calc(100vh - 120px));
     overflow-y: auto;
+    /* fixed 下拉浮层：滚到边界后不带动页面，否则浮层会随页面滚动重定位 */
     overscroll-behavior: contain;
     scrollbar-width: thin;
 }
