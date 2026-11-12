@@ -14,17 +14,14 @@
     "packageManager": "pnpm@12.18.0",
     "scripts": {
         "dev": "vite",
-        "dev:docs": "vite",
-        "dev:docs:force": "vite --force",
         "build": "vite build",
-        "build:docs": "vite build",
+        "preview": "vite preview",
         "build:ui": "pnpm --filter wash-ui build",
         "build:types": "pnpm --filter wash-ui build:types",
         "publish:ui": "pnpm --filter wash-ui publish",
+        "version:ui": "pnpm --filter wash-ui exec npm version",
         "test": "vitest run",
-        "test:watch": "vitest",
-        "preview": "vite preview",
-        "preview:docs": "vite preview"
+        "test:watch": "vitest"
     },
     "dependencies": {
         "wash-ui": "workspace:*",
