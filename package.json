@@ -20,6 +20,7 @@
         "build:docs": "vite build",
         "build:ui": "pnpm --filter wash-ui build",
         "build:types": "pnpm --filter wash-ui build:types",
+        "publish:ui": "pnpm --filter wash-ui publish",
         "test": "vitest run",
         "test:watch": "vitest",
         "preview": "vite preview",
