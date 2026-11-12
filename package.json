@@ -14,7 +14,7 @@
     "packageManager": "pnpm@12.18.0",
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
+        "build": "node scripts/clean-dist.mjs && vite build",
         "preview": "vite preview",
         "build:ui": "pnpm --filter wash-ui build",
         "build:types": "pnpm --filter wash-ui build:types",
