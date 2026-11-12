@@ -1,4 +1,5 @@
 import { getIcon } from './icons.js'
+import { sanitizeSvg } from '../utils/svg.js'
 
 const DEFAULT_TEXT = '加载中...'
 
@@ -83,7 +84,7 @@ function ApplyIcon(item) {
     iconEl.classList.toggle('spin', item.spin !== false)
 
     if (typeof icon === 'string') {
-        iconEl.innerHTML = icon
+        iconEl.innerHTML = sanitizeSvg(icon)
         return
     }
 
@@ -154,7 +155,8 @@ function Render() {
         return
     }
 
-    EnsureHost()
+    // 服务端渲染或非浏览器环境下没有 DOM 可操作
+    if (!EnsureHost()) return
 
     textEl.textContent = top.text
     ApplyIcon(top)

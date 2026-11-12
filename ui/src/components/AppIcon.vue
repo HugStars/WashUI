@@ -3,6 +3,7 @@ import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref
 import { svgToIcon } from 'morphicons/adapters'
 import { createMorph } from 'morphicons/dom'
 import { getIcon, getIconDefaults } from '../core/icons.js'
+import { sanitizeSvg } from '../utils/svg.js'
 
 const SPRING_PRESETS = {
     smooth: { stiffness: 170, damping: 26 },
@@ -36,7 +37,7 @@ function renderRaw(source, size, className, style, rest) {
         ...rest,
         class: ['wa_icon_raw', className],
         style: [{ width: size, height: size }, style],
-        innerHTML: source,
+        innerHTML: sanitizeSvg(source),
         'aria-hidden': 'true',
     })
 }
@@ -48,7 +49,7 @@ function normalizeIconData(data) {
 }
 
 function toIconData(icon) {
-    // 原始 SVG 先转成 24 网格，转换失败时保留原样渲染
+    // 原始 SVG 先转成 24 网格，转换失败时过滤后渲染
     if (typeof icon === 'string' && icon.trim().startsWith('<')) {
         try {
             return normalizeIconData(svgToIcon(icon))
