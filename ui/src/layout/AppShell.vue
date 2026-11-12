@@ -76,6 +76,7 @@ const props = defineProps({
         type: String,
         default: 'auto',
     },
+    // note 预留给顶部进度条；当前内置 AppRouteBar 已关闭，需要时单独挂载
     loading: {
         type: Boolean,
         default: undefined,
@@ -113,6 +114,7 @@ const { Press: SliderPress, PressedKey, Start: OnPressStart } = usePressFeedback
 )
 
 let BounceFrame = 0
+let SliderFrame = 0
 let NavResizeObserver = null
 let Unmounted = false
 
@@ -122,6 +124,10 @@ function SetItemEl(name, el) {
 }
 
 function UpdateSlider() {
+    // note 直接调用时取消排队中的帧，避免和 ResizeObserver 同帧重复读取 offsetLeft/offsetTop
+    cancelAnimationFrame(SliderFrame)
+    SliderFrame = 0
+
     const nav = NavEl.value
     const el = ItemEls.get(SliderTarget.value)
 
@@ -138,6 +144,15 @@ function UpdateSlider() {
         height: `${el.offsetHeight}px`,
     }
     SliderReady.value = true
+}
+
+// * resize 合并到 rAF，避免和 ResizeObserver 在同一帧重复测量导航滑块
+function ScheduleSlider() {
+    if (SliderFrame) return
+    SliderFrame = requestAnimationFrame(() => {
+        SliderFrame = 0
+        UpdateSlider()
+    })
 }
 
 function PlayBounce() {
@@ -168,7 +183,7 @@ function OnMedia(event) {
 
 onMounted(async () => {
     Media?.addEventListener('change', OnMedia)
-    window.addEventListener('resize', UpdateSlider)
+    window.addEventListener('resize', ScheduleSlider)
 
     if (typeof ResizeObserver !== 'undefined') {
         NavResizeObserver = new ResizeObserver(UpdateSlider)
@@ -185,10 +200,11 @@ onMounted(async () => {
 onUnmounted(() => {
     Unmounted = true
     Media?.removeEventListener('change', OnMedia)
-    window.removeEventListener('resize', UpdateSlider)
+    window.removeEventListener('resize', ScheduleSlider)
     NavResizeObserver?.disconnect()
     NavResizeObserver = null
     cancelAnimationFrame(BounceFrame)
+    cancelAnimationFrame(SliderFrame)
 })
 
 function SelectMore(item, close) {
@@ -295,7 +311,7 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
     border: 1px solid var(--wa_color_border);
     border-radius: 22px;
     background: var(--wa_color_glass);
-    background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
+    background: var(--wa_glass_gradient);
     -webkit-backdrop-filter: blur(var(--wa_blur)) saturate(1.35);
     backdrop-filter: blur(var(--wa_blur)) saturate(1.35);
     box-shadow: var(--wa_shadow_nav);
@@ -401,11 +417,6 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
     transform: scale(.94);
 }
 
-.wa_nav_item:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
-}
-
 .wa_nav_label {
     display: none;
 }
@@ -468,7 +479,8 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
     color: var(--wa_color_text_subtle);
     display: flex;
     justify-content: center;
-    gap: var(--doc_side_padding);
+    /* note 使用组件自己的变量并保留 10px 默认值，不再依赖文档站的 --doc_side_padding */
+    gap: var(--wa_footer_gap, 10px);
 }
 
 .wa_footer a {
