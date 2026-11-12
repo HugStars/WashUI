@@ -1,5 +1,5 @@
 <template>
-    <DocPage category="布局" name="AppShell" title="壳层" description="页面骨架，负责顶部栏、侧栏导航、页脚与路由进度条。">
+    <DocPage category="布局" name="AppShell" title="壳层" description="页面骨架，负责顶部栏、侧栏导航与页脚。">
         <h2 class="doc_h2">基本结构</h2>
         <AppCode :code="baseCode" lang="html" />
 
@@ -14,7 +14,7 @@
 
         <h2 class="doc_h2">加载状态</h2>
         <p class="doc_text">
-            loading 不传时自动跟随路由进度条，传 false 可以关闭。顶部进度条由 routeLoading 驱动，createAppRouter 会保证最短 320ms 的可见时间。
+            AppShell 的 loading 属性预留给顶部进度条；当前 AppShell 内置的 AppRouteBar 已关闭。需要顶部进度条时，请按「路由进度条」页单独使用 AppRouteBar，并由 routeLoading 驱动。
         </p>
 
         <template #api>
@@ -40,7 +40,7 @@ const propsRows = [
     { name: 'nav', type: 'Array', default: '[]', desc: '导航项 { name, label, icon }' },
     { name: 'active', type: 'string | symbol', default: "''", desc: '当前项 name' },
     { name: 'navLayout', type: 'auto | inline | stacked | icon | text', default: 'auto', desc: '导航布局' },
-    { name: 'loading', type: 'boolean', default: '跟随 routeLoading', desc: '顶部进度条状态' },
+    { name: 'loading', type: 'boolean', default: 'undefined', desc: '预留给顶部进度条；当前内置 AppRouteBar 已关闭' },
 ]
 
 const eventRows = [
