@@ -1,8 +1,17 @@
 # WashUI
 
-[![npm version](https://img.shields.io/npm/v/wash-ui)](https://www.npmjs.com/package/wash-ui)
-[![license](https://img.shields.io/npm/l/wash-ui)](./LICENSE)
-[![CI](https://github.com/HugStars/WashUI/actions/workflows/ci.yml/badge.svg)](https://github.com/HugStars/WashUI/actions/workflows/ci.yml)
+<p align="center">
+    <a href="https://www.npmjs.com/package/wash-ui"><img src="https://img.shields.io/npm/v/wash-ui" alt="npm version"></a>
+    <a href="./LICENSE"><img src="https://img.shields.io/npm/l/wash-ui" alt="license"></a>
+    <a href="https://www.npmjs.com/package/wash-ui"><img src="https://img.shields.io/badge/types-included-blue" alt="types"></a>
+    <br>
+    <a href="https://github.com/HugStars/WashUI/actions/workflows/ci.yml"><img src="https://github.com/HugStars/WashUI/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+    <a href="https://vuejs.org"><img src="https://img.shields.io/badge/Vue-3-42b883?logo=vue.js&amp;logoColor=white" alt="Vue 3"></a>
+    <a href="https://vite.dev"><img src="https://img.shields.io/badge/Vite-7-646cff?logo=vite&amp;logoColor=white" alt="Vite 7"></a>
+    <br>
+    <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node-%3E%3D20-339933?logo=node.js&amp;logoColor=white" alt="Node >=20"></a>
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Guide/Modules"><img src="https://img.shields.io/badge/module-ESM-f7df1e?logo=javascript&amp;logoColor=black" alt="ESM"></a>
+</p>
 
 `wash-ui` 前端设计系统。包含设计变量、Vue 3 组件、页面布局、Toast、路由工厂、工具函数与组合式函数。
 
@@ -173,7 +182,7 @@ import { AppButton, AppShell } from 'wash-ui'
 - `strokeWidth`：描边宽度，默认 `1.8`
 - `reducedMotion`：`never`、`user`（默认，跟随系统）、`always`
 - `icon`：直接传 IconNode 数组或 24 grid 的 `d` 字符串，优先级高于 `name`
-- 原始 `<svg>` 字符串会先通过 `svgToIcon` 转成 24 网格并参与形变；无法解析时回退为原样渲染
+- 原始 `<svg>` 字符串会先通过 `svgToIcon` 转成 24 网格并参与形变；无法转换时经安全过滤后渲染，无法安全解析时忽略
 
 全局配置形变默认值：
 
@@ -207,7 +216,7 @@ app.use(createUi({
 ```
 
 - 数组形式沿用 `strokeWidth`、`currentColor` 等规则
-- 字符串 SVG 会自动转换并参与形变；转换失败时原样渲染，尺寸仍由 `size` 控制
+- 字符串 SVG 会自动转换并参与形变；转换失败时经安全过滤后渲染，尺寸仍由 `size` 控制
 - 运行时使用 `configureIcons()`；传 `null` 可移除图标
 - `iconNames()` 返回当前图标名列表
 - `iconGroups` 提供内置图标的分类信息，可用于文档或图标选择器
@@ -390,7 +399,7 @@ import { formatBytes, formatSpeed, formatMbps, formatDuration, formatCount } fro
 
 ```bash
 pnpm install
-pnpm dev:docs
+pnpm dev
 ```
 
 访问 `http://localhost:5180`。构建与目录说明见根 `README.md`。
@@ -400,8 +409,10 @@ pnpm dev:docs
 在仓库根目录执行：
 
 ```bash
-npm login
+pnpm test
+pnpm build:ui
+pnpm version:ui patch   # 或 minor / major
 pnpm publish:ui
 ```
 
-`pnpm publish:ui` 等价于 `pnpm --filter wash-ui publish`，不需要 `cd ui`。`prepublishOnly` 会自动构建，`files` 只包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`。版本号在 `ui/package.json` 中修改。
+`pnpm version:ui` 会修改 `ui/package.json`、自动提交并打 tag；`pnpm publish:ui` 等价于 `pnpm --filter wash-ui publish`，`prepublishOnly` 会自动构建。首次发布或登录过期时先执行 `npm login`。`files` 只包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`。

@@ -178,7 +178,7 @@
         <h3 class="doc_h3">图标注册</h3>
         <AppCode :code="configCode" lang="js" />
         <p class="doc_text doc_gap">icons 支持数组、d 字符串和 SVG 字符串。SVG 会先通过 Morphicons 的 svgToIcon 转成 24
-            网格并参与形变；无法解析的标记才回退为原样渲染。</p>
+            网格并参与形变；无法解析的标记会经过安全过滤后渲染，无法安全解析时忽略。</p>
         <p class="doc_note doc_gap">运行时也可以调用 configureIcons({ name: 配置 }) 覆盖或新增图标，传 null 可以移除图标。</p>
 
         <template #api>

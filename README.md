@@ -1,12 +1,19 @@
 # WashUI
 
-[![npm version](https://img.shields.io/npm/v/wash-ui)](https://www.npmjs.com/package/wash-ui)
-[![license](https://img.shields.io/npm/l/wash-ui)](./LICENSE)
-[![CI](https://github.com/HugStars/WashUI/actions/workflows/ci.yml/badge.svg)](https://github.com/HugStars/WashUI/actions/workflows/ci.yml)
+<p align="center">
+    <a href="https://www.npmjs.com/package/wash-ui"><img src="https://img.shields.io/npm/v/wash-ui" alt="npm version"></a>
+    <a href="./LICENSE"><img src="https://img.shields.io/npm/l/wash-ui" alt="license"></a>
+    <a href="https://www.npmjs.com/package/wash-ui"><img src="https://img.shields.io/badge/types-included-blue" alt="types"></a>
+    <br>
+    <a href="https://github.com/HugStars/WashUI/actions/workflows/ci.yml"><img src="https://github.com/HugStars/WashUI/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+    <a href="https://vuejs.org"><img src="https://img.shields.io/badge/Vue-3-42b883?logo=vue.js&amp;logoColor=white" alt="Vue 3"></a>
+    <a href="https://vite.dev"><img src="https://img.shields.io/badge/Vite-7-646cff?logo=vite&amp;logoColor=white" alt="Vite 7"></a>
+    <br>
+    <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node-%3E%3D20-339933?logo=node.js&amp;logoColor=white" alt="Node >=20"></a>
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Guide/Modules"><img src="https://img.shields.io/badge/module-ESM-f7df1e?logo=javascript&amp;logoColor=black" alt="ESM"></a>
+</p>
 
-WashUI 是一个 Vue 3 设计系统与文档站，仓库：<https://github.com/HugStars/WashUI>。
-
-它由两部分组成：
+WashUI 是一个 Vue 3 设计系统与文档站，由 `ui/` 库与 `docs/` 文档站组成。
 
 - `ui/`：`wash-ui` 库，包含设计变量、组件、布局、主题、Toast、路由状态与工具
 - `docs/`：基于本库实现的文档站，根目录 Vite 配置直接指向 `docs/`
@@ -19,29 +26,26 @@ pnpm workspace · Vue 3 · Vite 7 · JavaScript · 纯 CSS 变量
 
 ```bash
 pnpm install
-pnpm dev:docs
+pnpm dev
 ```
 
 访问 `http://localhost:5180`。
 
-`pnpm dev` 是 `pnpm dev:docs` 的快捷方式。根目录就是文档站，不存在单独的 docs 包，所以文档命令都带 `:docs` 后缀。
-
-同一个 5180 端口只运行一个开发服务。修改包名或依赖后如果出现 `504 (Outdated Optimize Dep)`，先停掉所有 dev server，再执行 `pnpm dev:docs:force`。
+根目录就是文档站，只有一套开发命令。修改包名或依赖后如果出现 `504 (Outdated Optimize Dep)`，先停掉所有 dev server，再执行 `pnpm dev --force`。
 
 ### 命令
 
 | 命令 | 说明 |
 | --- | --- |
-| `pnpm dev:docs` | 启动文档站开发服务（5180） |
-| `pnpm dev:docs:force` | 强制重建依赖预构建后启动 |
-| `pnpm build:docs` | 构建文档站到根目录 `dist` |
-| `pnpm preview:docs` | 预览文档站构建结果 |
-| `pnpm build:ui` | 构建库到 `ui/dist`，并生成 `ui/types` 声明 |
-| `pnpm publish:ui` | 构建并发布 `wash-ui` 到公共 npm |
+| `pnpm dev` | 启动文档站开发服务（5180） |
+| `pnpm dev --force` | 强制重建依赖预构建后启动 |
+| `pnpm build` | 构建文档站到根目录 `dist` |
+| `pnpm preview` | 预览文档站构建结果 |
 | `pnpm test` | 运行 Vitest 单元测试 |
-| `pnpm dev` | 等同 `pnpm dev:docs` |
-| `pnpm build` | 等同 `pnpm build:docs` |
-| `pnpm preview` | 等同 `pnpm preview:docs` |
+| `pnpm test:watch` | 监听模式运行测试 |
+| `pnpm build:ui` | 构建库到 `ui/dist`，并生成 `ui/types` |
+| `pnpm version:ui patch` | 递增 `wash-ui` 版本，也可用 `minor` / `major` |
+| `pnpm publish:ui` | 构建并发布 `wash-ui` 到公共 npm |
 
 ## 设计理念
 
@@ -201,6 +205,7 @@ const rule = {
 - 默认触发：Input / Textarea 为 `blur`，Select 为 `change`。
 - `trigger` 支持 `blur`、`input`、`change` 或数组。
 - `error` 仍然保留，且优先于 rule 自动生成的文案，适合服务端错误。
+- `validator` 需要同步返回；返回 Promise 时会提示“暂不支持异步校验”，不会静默通过。
 - 组件内部使用 `useValidation`，也可以直接导入它构建自定义表单控件。
 
 ## 目录
@@ -308,7 +313,7 @@ import 'wash-ui/style.css'
 | 导航 | AppNavMenu（导航菜单） |
 | 加载 | AppSpinner（加载圈）、AppSkeleton（骨架屏） |
 | 数据 | AppTable（表格）、AppPagination（分页） |
-| 表单 | AppInput（输入框）、AppTextarea（文本域）、AppSwitch（开关）、AppCheck（复选框）、AppCheckGroup（复选框组）、AppRadio（单选框）、AppRadioGroup（单选框组）、AppSelect（下拉框）、AppSelectPanel（下拉面板）、AppChoiceList（选择列表）、AppCheckPanel（多选面板）、AppRadioPanel（单选面板）、AppUpload（上传） |
+| 表单 | AppSlider（滑块）、AppInput（输入框）、AppTextarea（文本域）、AppSwitch（开关）、AppCheck（复选框）、AppCheckGroup（复选框组）、AppRadio（单选框）、AppRadioGroup（单选框组）、AppSelect（下拉框）、AppSelectPanel（下拉面板）、AppChoiceList（选择列表）、AppCheckPanel（多选面板）、AppRadioPanel（单选面板）、AppUpload（上传） |
 | 反馈 | AppPanel（展示框）、AppPopover（弹出框）、AppDialog（弹框）、AppTooltip（文字提示）、AppCheckMenu（多选菜单）、Toast（轻提示）、Loading（加载） |
 | 布局 | AppShell（壳层）、AppRouteBar（路由进度条）、PageTransition（页面过渡）、PageHeader（页面标题）、PageBar（页面操作栏） |
 | 能力 | useTheme（主题）、useClipboard（剪贴板）、useRequest（请求）、useChoiceGroup（选择组状态）、useChoiceSummary（选择摘要）、useValidation（校验规则） |
@@ -324,7 +329,7 @@ import 'wash-ui/style.css'
 
 | 分类 | 计划 |
 | --- | --- |
-| 表单 | AppForm / AppFormItem（表单 / 表单项）、异步与跨字段校验、Slider（滑块）、Rate（评分）、ColorPicker（颜色选择）、DatePicker（日期选择）、TimePicker（时间选择）、Cascader（级联选择）、Transfer（穿梭框） |
+| 表单 | AppForm / AppFormItem（表单 / 表单项）、异步与跨字段校验、Rate（评分）、ColorPicker（颜色选择）、DatePicker（日期选择）、TimePicker（时间选择）、Cascader（级联选择）、Transfer（穿梭框） |
 | 数据展示 | AppTree（树）、AppTreeSelect（树选择）、AppVirtualList（虚拟列表）、AppVirtualTable（虚拟表格） |
 | 反馈与导航 | AppDrawer（抽屉）、AppNotification（通知）、AppTour（漫游引导）、AppMenu（菜单）、AppDropdown（下拉菜单）、Command（命令面板） |
 | 工程与质量 | 单元测试、视觉回归、SSR / Nuxt 适配、i18n、完整无障碍审计、发布流水线 |
@@ -360,18 +365,48 @@ import 'wash-ui/style.css'
 - [ ] 形成正式的版本迁移指南
 - [ ] 按路线图实现 Form、Tree 等计划组件
 
-## 构建与发布
+## 发版流程
 
-在仓库根目录执行：
+### 版本规则
+
+| 级别 | 命令 | 适用场景 |
+| --- | --- | --- |
+| patch | `pnpm version:ui patch` | 修复、样式调整、文档 |
+| minor | `pnpm version:ui minor` | 新增组件、新增参数或事件，保持兼容 |
+| major | `pnpm version:ui major` | 破坏性 API 变更 |
+
+### 发布步骤
 
 ```bash
-npm login
+# 1. 发布前检查
+pnpm test
+pnpm build:ui
+
+# 2. 递增版本（自动提交并创建 vX.Y.Z tag）
+pnpm version:ui patch
+
+# 3. 发布到 npm（首次或登录过期时先 npm login，账号需开启 2FA）
 pnpm publish:ui
+
+# 4. 推送提交与 tag
+git push --follow-tags
 ```
 
-`pnpm publish:ui` 等价于 `pnpm --filter wash-ui publish`，不需要 `cd ui`，`prepublishOnly` 会自动构建 `dist` 和 `types`。`npm login` 只需在首次发布或登录过期时执行，之后每次发版只跑 `pnpm publish:ui`。
+### 说明
 
-`ui/package.json` 的 `files` 包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`，文档不会发布。包名 `wash-ui` 发布到公共 npm，不需要作用域。
+- `pnpm version:ui` 会修改 `ui/package.json`、自动提交并打 tag；只想改版本号时加 `--no-git-tag-version`。
+- `pnpm publish:ui` 等价于 `pnpm --filter wash-ui publish`，`prepublishOnly` 会清理并重建 `dist` 与 `types`。
+- 发布前工作区必须干净，否则 `pnpm version:ui` 会拒绝执行。
+- `ui/package.json` 的 `files` 只包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`，文档站不会发布。
+
+### 发布后验证
+
+```bash
+npm view wash-ui version
+npm i wash-ui
+```
+
+再确认 <https://www.npmjs.com/package/wash-ui> 的版本、README 和文件列表是否正常。
 
 `pnpm build:ui` 会先用 `vue-tsc` 生成 `ui/types`，再由 `scripts/build-types.mjs` 从 `defineProps` 生成组件的 Props 声明。类型目录不提交到仓库，发布时由 `prepublishOnly` 重新生成。
 
