@@ -88,6 +88,15 @@ describe('AppDeskShell', () => {
         expect(wrapper.find('.wa_desk_toolbar').text()).toBe('状态栏')
     })
 
+    it('applies spacing to the grid gap and aside width', () => {
+        const wrapper = mount(AppDeskShell, {
+            props: { config: { ...baseConfig, spacing: 8 }, items },
+        })
+
+        expect(wrapper.element.style.getPropertyValue('--wa_desk_gap')).toBe('8px')
+        expect(wrapper.element.style.getPropertyValue('--wa_desk_aside_width')).toBe('180px')
+    })
+
     it('renders window controls from winAction and emits close mode', async () => {
         const wrapper = mount(AppDeskShell, {
             props: {

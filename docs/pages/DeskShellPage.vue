@@ -48,6 +48,10 @@
             </div>
         </DemoBlock>
 
+        <p class="doc_note doc_gap">
+            spacing 默认 0，不产生任何间隙；设置后通过 Grid gap 统一控制 Title / Header 底部、Aside 右侧和 Toolbar 顶部间距。
+        </p>
+
         <h2 class="doc_h2">基本结构</h2>
         <AppCode :code="baseCode" lang="html" />
 
@@ -117,9 +121,9 @@ const bookConfig = {
     aside: {
         mode: 'icon-text',
         variant: 'bordered',
-        iconWidth: 44,
-        iconTextWidth: 200,
-        textWidth: 160,
+        iconWidth: 56,
+        iconTextWidth:180,
+        textWidth: 164,
         navSize: 'md',
     },
     main: {
@@ -152,10 +156,10 @@ const flowConfig = {
     aside: {
         mode: 'icon',
         variant: 'bordered',
-        iconWidth: 44,
+        iconWidth: 56,
     },
     main: {
-        padded: true,
+        padded: false,
     },
     window: {
         height: 420,
@@ -176,6 +180,7 @@ const configRows = [
     { name: 'frosted', type: 'boolean', default: 'false', desc: 'Title / Header / Aside / Toolbar 使用磨砂玻璃' },
     { name: 'glass', type: 'string', default: "''", desc: '自定义磨砂面板颜色，空值时使用全局 --wa_color_glass' },
     { name: 'glassOpacity', type: 'number', default: '100', desc: '整体磨砂面板的相对不透明度，0-100' },
+    { name: 'spacing', type: 'number | string', default: '0', desc: '通过 Grid gap 控制 Title/Header 底部、Aside 右侧、Toolbar 顶部间距；0 不显示' },
     { name: 'title.show', type: 'boolean', default: 'true', desc: '是否显示 Title' },
     { name: 'title.text', type: 'string', default: "''", desc: '软件名称' },
     { name: 'title.icon', type: 'string | Array', default: "''", desc: 'AppIcon 名或 IconNode' },
@@ -189,9 +194,9 @@ const configRows = [
     { name: 'header.closeMode', type: 'window | app', default: 'window', desc: '关闭当前界面还是关闭应用；通过 close 事件抛给业务' },
     { name: 'aside.mode', type: 'icon | icon-text | text', default: 'icon-text', desc: 'Aside 展示模式' },
     { name: 'aside.variant', type: 'plain | bordered', default: 'plain', desc: '无背景或背景 + 右边框' },
-    { name: 'aside.iconWidth', type: 'number | string', default: '44', desc: 'icon 模式宽度' },
-    { name: 'aside.iconTextWidth', type: 'number | string', default: '200', desc: 'icon-text 模式宽度' },
-    { name: 'aside.textWidth', type: 'number | string', default: '160', desc: 'text 模式宽度' },
+    { name: 'aside.iconWidth', type: 'number | string', default: '56', desc: 'icon 模式宽度，按钮保持正方形' },
+    { name: 'aside.iconTextWidth', type: 'number | string', default: '180', desc: 'icon-text 模式宽度' },
+    { name: 'aside.textWidth', type: 'number | string', default: '180', desc: 'text 模式宽度' },
     { name: 'aside.navSize', type: 'md | sm', default: 'md', desc: 'AppNavMenu 尺寸' },
     { name: 'main.padded', type: 'boolean', default: 'false', desc: 'Main 是否加默认内边距' },
     { name: 'main.toolbar.show', type: 'boolean', default: 'false', desc: '是否显示底部 Toolbar' },

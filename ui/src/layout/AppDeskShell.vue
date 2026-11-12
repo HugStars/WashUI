@@ -66,6 +66,8 @@ const DEFAULT_CONFIG = {
     frosted: false,
     glass: '',
     glassOpacity: 100,
+    /** Title/Header 底部、Aside 右侧、Toolbar 顶部的统一间距；0 表示不显示 */
+    spacing: 0,
     title: {
         show: true,
         text: '',
@@ -84,9 +86,9 @@ const DEFAULT_CONFIG = {
     aside: {
         mode: 'icon-text',
         variant: 'plain',
-        iconWidth: 44,
-        iconTextWidth: 200,
-        textWidth: 160,
+        iconWidth: 56,
+        iconTextWidth: 180,
+        textWidth: 180,
         navSize: 'md',
     },
     main: {
@@ -200,15 +202,14 @@ const Classes = computed(() => ({
 
 const ShellStyle = computed(() => {
     const c = C.value
-    const topHeight = ShowTitle.value
-        ? `max(${ToSize(c.title.height, '46px')}, ${ToSize(c.header.height, '46px')})`
-        : ToSize(c.header.height, '46px')
+    const gap = ToSize(c.spacing, '0px')
+    const asideWidth = ToSize(AsideWidth.value, '180px')
 
     return {
         '--wa_desk_title_height': ToSize(c.title.height, '46px'),
         '--wa_desk_header_height': ToSize(c.header.height, '46px'),
-        '--wa_desk_top_height': topHeight,
-        '--wa_desk_aside_width': ToSize(AsideWidth.value, '44px'),
+        '--wa_desk_gap': gap,
+        '--wa_desk_aside_width': asideWidth,
         '--wa_desk_toolbar_height': ToSize(ShowToolbar.value ? c.main.toolbar.height : 0, '0px'),
         '--wa_desk_window_width': ToSize(c.window.width, '100%'),
         '--wa_desk_window_height': ToSize(c.window.height, '100vh'),
@@ -251,14 +252,15 @@ function MergeConfig(base, patch) {
 .wa_desk {
     --wa_desk_title_height: 46px;
     --wa_desk_header_height: 46px;
-    --wa_desk_top_height: 46px;
-    --wa_desk_aside_width: 200px;
+    --wa_desk_aside_width: 180px;
+    --wa_desk_gap: 0px;
     --wa_desk_toolbar_height: 0px;
     --wa_desk_glass: var(--wa_color_glass);
 
     display: grid;
     grid-template-columns: var(--wa_desk_aside_width) minmax(0, 1fr);
-    grid-template-rows: var(--wa_desk_top_height) minmax(0, 1fr) var(--wa_desk_toolbar_height);
+    /* * 顶部和底部按内容自动撑开，spacing 只通过 grid gap 控制，不给区域加 margin */
+    grid-template-rows: auto minmax(0, 1fr) auto;
     grid-template-areas:
         'title header'
         'aside main'
@@ -267,6 +269,7 @@ function MergeConfig(base, patch) {
     min-width: var(--wa_desk_window_min_width);
     height: var(--wa_desk_window_height);
     min-height: var(--wa_desk_window_min_height);
+    gap: var(--wa_desk_gap);
     overflow: hidden;
     color: var(--wa_color_text);
     background: var(--wa_color_canvas);
@@ -295,7 +298,7 @@ function MergeConfig(base, patch) {
 
 .wa_desk.wa_desk_no_aside {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: var(--wa_desk_title_height) var(--wa_desk_header_height) minmax(0, 1fr) var(--wa_desk_toolbar_height);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
     grid-template-areas:
         'title'
         'header'
@@ -304,11 +307,49 @@ function MergeConfig(base, patch) {
 }
 
 .wa_desk.wa_desk_no_aside.wa_desk_title_hide {
-    grid-template-rows: var(--wa_desk_header_height) minmax(0, 1fr) var(--wa_desk_toolbar_height);
+    grid-template-rows: auto minmax(0, 1fr) auto;
     grid-template-areas:
         'header'
         'main'
         'toolbar';
+}
+
+/*
+ * 没有 Toolbar 时删掉第三行，避免 row-gap 在底部留下一条空白；
+ * 各布局模式只需要覆盖行数和区域，不需要给区域加 margin。
+ */
+.wa_desk:not(.wa_desk_has_toolbar) {
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+        'title header'
+        'aside main';
+}
+
+.wa_desk:not(.wa_desk_has_toolbar).wa_desk_title_hide.wa_desk_fallback_header {
+    grid-template-areas:
+        'header header'
+        'aside main';
+}
+
+.wa_desk:not(.wa_desk_has_toolbar).wa_desk_title_hide.wa_desk_fallback_aside {
+    grid-template-areas:
+        'aside header'
+        'aside main';
+}
+
+.wa_desk:not(.wa_desk_has_toolbar).wa_desk_no_aside {
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-areas:
+        'title'
+        'header'
+        'main';
+}
+
+.wa_desk:not(.wa_desk_has_toolbar).wa_desk_no_aside.wa_desk_title_hide {
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+        'header'
+        'main';
 }
 
 .wa_desk_title {
@@ -317,6 +358,7 @@ function MergeConfig(base, patch) {
     align-items: center;
     gap: 8px;
     min-width: 0;
+    height: var(--wa_desk_title_height);
     padding: 0 12px;
     border-bottom: 1px solid var(--wa_color_line);
     background: var(--wa_color_surface);
@@ -348,6 +390,7 @@ function MergeConfig(base, patch) {
     align-items: center;
     gap: 12px;
     min-width: 0;
+    height: var(--wa_desk_header_height);
     padding: 0 12px;
     border-bottom: 1px solid var(--wa_color_line);
     background: var(--wa_color_surface);
@@ -402,9 +445,10 @@ function MergeConfig(base, patch) {
     grid-area: aside;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    /* * padding、aside 内部 gap 与 AppNavMenu 的 list gap 统一为 8px */
+    gap: var(--wa_space_2);
     min-width: 0;
-    padding: 8px 6px;
+    padding: var(--wa_space_2);
     overflow: hidden;
 }
 
@@ -426,7 +470,11 @@ function MergeConfig(base, patch) {
     backdrop-filter: blur(var(--wa_blur)) saturate(1.4);
 }
 
-.wa_desk_aside_nav {
+/* * 提高一级选择器优先级，覆盖 AppNavMenu 的尺寸预设（如 sm 的 6px） */
+.wa_desk_aside>.wa_desk_aside_nav {
+    /* * 侧栏 padding 为 8px，导航列表间距也统一为 8px，避免内外节奏不一致 */
+    --wa_nav_gap: var(--wa_space_2);
+
     min-width: 0;
 }
 
@@ -449,8 +497,7 @@ function MergeConfig(base, patch) {
 
 .wa_desk_aside_icon .wa_desk_aside_nav {
     --wa_nav_pad_x: 0px;
-    --wa_nav_gap: 4px;
-    --wa_nav_group_gap: 8px;
+    --wa_nav_group_gap: var(--wa_space_2);
     --wa_nav_hover_shift: 0px;
     --wa_nav_active_shift: 0px;
 }
@@ -458,9 +505,12 @@ function MergeConfig(base, patch) {
 .wa_desk_aside_icon .wa_desk_aside_nav .wa_nav_menu_link {
     justify-content: center;
     gap: 0;
-    min-height: 34px;
-    padding-left: 0;
-    padding-right: 0;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    /* * icon 模式强制宽高一致，宽高随 aside 内容宽度变化 */
+    aspect-ratio: 1;
 }
 
 .wa_desk_aside_icon .wa_desk_aside_nav .wa_nav_menu_text,
@@ -497,6 +547,7 @@ function MergeConfig(base, patch) {
 }
 
 .wa_desk_main_padded {
+    /* note 仅在 config.main.padded=true 时启用，默认 false，Main 自身不产生内边距 */
     padding: var(--wa_space_3);
 }
 
