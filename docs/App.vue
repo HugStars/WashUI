@@ -200,6 +200,11 @@ function go(item) {
     margin-top: 14px;
     margin-bottom: 14px;
 }
+
+/* note 同时带 doc_gap 的 hint 沿用文档间距，覆盖库默认的 8px */
+p.wa_hint.doc_gap {
+    margin-top: 14px;
+}
 .doc_text {
     max-width: 760px;
     font-size: 14px;
@@ -251,6 +256,15 @@ function go(item) {
     color: inherit;
     text-decoration: none;
 }
+
+/* * ComponentsPage 与 HomePage 共用卡片 hover 动画，边框颜色由各自页面覆盖 */
+.doc_card_link .wa_card {
+    transition:
+        transform var(--wa_duration_base) var(--wa_ease_out),
+        box-shadow var(--wa_duration_base) var(--wa_ease_out),
+        border-color var(--wa_duration_base) var(--wa_ease_out);
+}
+
 .doc_component_link .wa_card {
     display: flex;
     flex-direction: column;
@@ -259,11 +273,8 @@ function go(item) {
     border: 1px solid var(--wa_color_line);
     border-radius: var(--wa_radius_popover);
     background: var(--wa_color_canvas);
-    transition:
-        transform var(--wa_duration_base) var(--wa_ease_out),
-        box-shadow var(--wa_duration_base) var(--wa_ease_out),
-        border-color var(--wa_duration_base) var(--wa_ease_out);
 }
+
 .doc_component_link .wa_card_head {
     margin-bottom: 10px;
 }
@@ -273,23 +284,26 @@ function go(item) {
 .doc_component_link .wa_card_title::before {
     height: 13px;
 }
-.doc_component_link:hover .wa_card {
+.doc_card_link:hover .wa_card {
     transform: translateY(-2px);
+    box-shadow: var(--wa_shadow_card_hover);
+}
+
+.doc_component_link:hover .wa_card {
     border-color: var(--wa_color_line_strong);
-    box-shadow: 0 12px 28px #00000012;
 }
 
 .doc_component_link:active .wa_card {
     transform: translateY(-1px);
-    box-shadow: 0 8px 20px #00000010;
+    box-shadow: var(--wa_shadow_card_active);
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .doc_component_link .wa_card {
+    .doc_card_link .wa_card {
         transition: none;
     }
 
-    .doc_component_link:hover .wa_card,
+    .doc_card_link:hover .wa_card,
     .doc_component_link:active .wa_card {
         transform: none;
     }

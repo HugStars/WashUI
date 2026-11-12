@@ -5,9 +5,6 @@
     margin: 0;
     padding: 0;
     -webkit-tap-highlight-color: transparent;
-    -ms-tap-highlight-color: transparent;
-    -moz-tap-highlight-color: transparent;
-    -o-tap-highlight-color: transparent;
 }
 
 html {
@@ -102,8 +99,8 @@ summary:focus-visible,
     color: var(--wa_color_text_subtle);
 }
 
-/* 段落形式的提示默认与上方内容留出间距；行内 hint 和已有 doc_gap 的不重复加 */
-p.wa_hint:not(.doc_gap) {
+/* * 段落提示默认留出上间距；wa_hint_flush 是库级修饰类，不引用文档站的 .doc_gap */
+p.wa_hint:not(.wa_hint_flush) {
     margin-top: var(--wa_space_2);
 }
 

@@ -3,7 +3,8 @@
         <section v-for="group in componentGroups" :key="group.title">
             <h2 class="doc_h2">{{ group.title }}</h2>
             <div class="doc_component_grid">
-                <RouterLink v-for="item in group.items" :key="item.name" :to="item.path" class="doc_component_link">
+                <RouterLink v-for="item in group.items" :key="item.name" :to="item.path"
+                    class="doc_component_link doc_card_link">
                     <AppCard :title="item.label" compact>
                         <template #extra>
                             <code class="doc_component_name">{{ item.component }}</code>

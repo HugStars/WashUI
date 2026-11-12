@@ -21,7 +21,8 @@
         </section>
 
         <div class="doc_feature_grid">
-            <RouterLink v-for="item in features" :key="item.path" :to="item.path" class="doc_feature_link">
+            <RouterLink v-for="item in features" :key="item.path" :to="item.path"
+                class="doc_feature_link doc_card_link">
                 <AppCard compact>
                     <template #title>{{ item.title }}</template>
                     <template #extra>
@@ -135,13 +136,10 @@ const features = [
 
 .doc_feature_link .wa_card {
     border: 1px solid transparent;
-    transition: transform var(--wa_duration_base), border-color var(--wa_duration_base), box-shadow var(--wa_duration_base);
 }
 
 .doc_feature_link:hover .wa_card {
-    transform: translateY(-2px);
     border-color: var(--wa_color_line);
-    box-shadow: 0 12px 28px #00000012;
 }
 
 .doc_feature_arrow {

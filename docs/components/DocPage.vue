@@ -10,7 +10,8 @@
                         <code v-if="name" class="doc_title_name">{{ name }}</code>
                     </h1>
                     <p v-if="category" class="doc_meta">
-                        <span class="wa_tag">{{ category }}</span>
+                        <!-- * 统一用 AppTag，高度与 doc_title_name 的 22px 对齐 -->
+                        <AppTag :text="category" :expand="false" />
                     </p>
                 </div>
                 <p v-if="description" class="doc_desc">{{ description }}</p>
@@ -40,6 +41,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { AppTag } from 'wash-ui'
 import { pageLabel, pageNav, sections } from '../site.js'
 import DocSideNav from './DocSideNav.vue'
 
@@ -107,7 +109,8 @@ const next = computed(() => index.value >= 0 && index.value < pageNav.length - 1
 .doc_head_title {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    /* * 标题和分类标签按底边对齐；code 与标签统一 22px 高后不会错开 */
+    align-items: flex-end;
     gap: 12px;
 }
 
@@ -115,12 +118,14 @@ const next = computed(() => index.value >= 0 && index.value < pageNav.length - 1
     display: flex;
     align-items: center;
     gap: 8px;
+    height: 22px;
 }
 
 .doc_title {
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
+    /* * 标题与组件名 code 按底边对齐 */
+    align-items: flex-end;
     gap: 10px;
     font-size: clamp(26px, 4vw, 34px);
     font-weight: 600;
@@ -129,11 +134,15 @@ const next = computed(() => index.value >= 0 && index.value < pageNav.length - 1
 }
 
 .doc_title_name {
-    padding: 2px 7px;
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 7px;
     border-radius: 7px;
     background: var(--wa_color_field);
     font: 500 13px var(--wa_font_mono);
     letter-spacing: 0;
+    line-height: 1;
     color: var(--wa_color_text_subtle);
 }
 

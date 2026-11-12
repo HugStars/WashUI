@@ -26,7 +26,7 @@
                                 {{ cell.placement }}
                             </AppButton>
                         </template>
-                        <p class="wa_hint">浮层方位：{{ cell.placement }}</p>
+                        <p class="doc_popover_hint">浮层方位：{{ cell.placement }}</p>
                     </AppPopover>
                     <span v-else aria-hidden="true"></span>
                 </template>
@@ -111,5 +111,12 @@ const slotRows = [
 
 .doc_popover_btn {
     width: 100%;
+}
+
+/* note 浮层内提示不要复用 wa_hint，否则会继承 p.wa_hint 的 margin-top */
+.doc_popover_hint {
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--wa_color_text_subtle);
 }
 </style>
