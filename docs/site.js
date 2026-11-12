@@ -51,6 +51,7 @@ export const componentGroups = [
         items: [
             { name: 'input', label: '输入框', component: 'AppInput', page: 'InputPage', path: '/components/input', summary: '带标签、提示与校验的输入框。' },
             { name: 'switch', label: '开关', component: 'AppSwitch', page: 'SwitchPage', path: '/components/switch', summary: '二选一状态切换，支持标签对齐、尺寸与禁用。' },
+            { name: 'slider', label: '滑块', component: 'AppSlider', page: 'SliderPage', path: '/components/slider', summary: '连续区间内选择数值，支持步长吸附、键盘操作与数值展示。' },
             { name: 'check', label: '复选框', component: 'AppCheck', page: 'CheckPage', path: '/components/check', summary: '单个复选框 + 分组复选框，支持排列、对齐与半选。' },
             { name: 'radio', label: '单选框', component: 'AppRadio', page: 'RadioPage', path: '/components/radio', summary: '单个单选框 + 分组单选框，排版能力与复选框一致。' },
             { name: 'check-menu', label: '多选菜单', component: 'AppCheckMenu', page: 'CheckMenuPage', path: '/components/check-menu', summary: '按钮触发的多选，支持浮层与弹框两种形态。' },
