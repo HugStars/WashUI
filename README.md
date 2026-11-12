@@ -394,7 +394,7 @@ git push --follow-tags
 
 ### 说明
 
-- `pnpm version:ui` 会修改 `ui/package.json`、自动提交并打 tag；只想改版本号时加 `--no-git-tag-version`。
+- `pnpm version:ui` 会修改 `ui/package.json`、自动提交并打 tag；脚本要求工作区干净，否则会拒绝执行。
 - `pnpm publish:ui` 等价于 `pnpm --filter wash-ui publish`，`prepublishOnly` 会清理并重建 `dist` 与 `types`。
 - 发布前工作区必须干净，否则 `pnpm version:ui` 会拒绝执行。
 - `ui/package.json` 的 `files` 只包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`，文档站不会发布。

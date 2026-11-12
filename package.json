@@ -19,7 +19,7 @@
         "build:ui": "pnpm --filter wash-ui build",
         "build:types": "pnpm --filter wash-ui build:types",
         "publish:ui": "pnpm --filter wash-ui publish",
-        "version:ui": "pnpm --filter wash-ui exec npm version",
+        "version:ui": "node scripts/version-ui.mjs",
         "test": "vitest run",
         "test:watch": "vitest"
     },
