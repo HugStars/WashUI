@@ -119,6 +119,7 @@ const PanelStyles = computed(() => [PanelStyle.value, PaddingStyle.value].filter
 
 let Listening = false
 let PrevActive = null
+let PositionFrame = 0
 
 function FocusableTrigger() {
     const el = TriggerEl.value
@@ -147,6 +148,10 @@ function TriggerRect() {
 }
 
 function Position() {
+    // note 直接调用时取消排队中的帧，避免首帧定位和滚动定位重复执行
+    cancelAnimationFrame(PositionFrame)
+    PositionFrame = 0
+
     const rect = TriggerRect()
     const panel = PanelEl.value
     if (!rect || !panel) return
@@ -210,11 +215,21 @@ function Position() {
     }
 }
 
+// * 滚动与窗口 resize 可能在同帧触发多次，合并到下一帧再测量定位
+// ! Position 里的 offsetWidth/offsetHeight 会触发布局，不能在每个 scroll 事件里直接跑
+function SchedulePosition() {
+    if (PositionFrame) return
+    PositionFrame = requestAnimationFrame(() => {
+        PositionFrame = 0
+        Position()
+    })
+}
+
 function Listen() {
     if (Listening) return
     Listening = true
-    window.addEventListener('resize', Position)
-    window.addEventListener('scroll', Position, true)
+    window.addEventListener('resize', SchedulePosition)
+    window.addEventListener('scroll', SchedulePosition, true)
     document.addEventListener('pointerdown', OnPointerDown, true)
     document.addEventListener('keydown', OnKeydown)
 }
@@ -222,8 +237,10 @@ function Listen() {
 function Unlisten() {
     if (!Listening) return
     Listening = false
-    window.removeEventListener('resize', Position)
-    window.removeEventListener('scroll', Position, true)
+    cancelAnimationFrame(PositionFrame)
+    PositionFrame = 0
+    window.removeEventListener('resize', SchedulePosition)
+    window.removeEventListener('scroll', SchedulePosition, true)
     document.removeEventListener('pointerdown', OnPointerDown, true)
     document.removeEventListener('keydown', OnKeydown)
 }
@@ -328,7 +345,7 @@ onUnmounted(Unlisten)
     border: 1px solid var(--wa_color_border);
     border-radius: var(--wa_radius_popover);
     background: var(--wa_color_glass);
-    background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
+    background: var(--wa_glass_gradient);
     -webkit-backdrop-filter: blur(var(--wa_blur));
     backdrop-filter: blur(var(--wa_blur));
     box-shadow: var(--wa_shadow_nav);
