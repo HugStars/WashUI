@@ -5,10 +5,12 @@
         <article class="doc_article">
             <header class="doc_head">
                 <div class="doc_head_title">
-                    <h1 class="doc_title">{{ title }}</h1>
-                    <p v-if="category || name" class="doc_meta">
-                        <span v-if="category" class="wa_tag">{{ category }}</span>
-                        <code v-if="name" class="doc_meta_name">{{ name }}</code>
+                    <h1 class="doc_title">
+                        <span>{{ title }}</span>
+                        <code v-if="name" class="doc_title_name">{{ name }}</code>
+                    </h1>
+                    <p v-if="category" class="doc_meta">
+                        <span class="wa_tag">{{ category }}</span>
                     </p>
                 </div>
                 <p v-if="description" class="doc_desc">{{ description }}</p>
@@ -115,16 +117,24 @@ const next = computed(() => index.value >= 0 && index.value < pageNav.length - 1
     gap: 8px;
 }
 
-.doc_meta_name {
-    font: 12px var(--wa_font_mono);
-    color: var(--wa_color_text_subtle);
-}
-
 .doc_title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
     font-size: clamp(26px, 4vw, 34px);
     font-weight: 600;
     letter-spacing: -.02em;
     line-height: 1.2;
+}
+
+.doc_title_name {
+    padding: 2px 7px;
+    border-radius: 7px;
+    background: var(--wa_color_field);
+    font: 500 13px var(--wa_font_mono);
+    letter-spacing: 0;
+    color: var(--wa_color_text_subtle);
 }
 
 .doc_desc {

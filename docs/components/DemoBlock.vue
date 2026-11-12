@@ -6,7 +6,7 @@
         </header>
 
         <div class="doc_demo_frame">
-            <div class="doc_demo_view">
+            <div class="doc_demo_view" :class="{ 'doc_frosted_stage': frosted }">
                 <slot />
             </div>
 
@@ -58,6 +58,11 @@ const props = defineProps({
     },
     // 是否默认展开代码
     defaultExpanded: {
+        type: Boolean,
+        default: false,
+    },
+    // 使用彩色光斑舞台，适合磨砂 / 透明组件的示例
+    frosted: {
         type: Boolean,
         default: false,
     },
@@ -130,6 +135,13 @@ function OpenPlayground() {
     --doc_demo_padding: 20px;
 
     padding: var(--doc_demo_padding);
+}
+
+/* doc_frosted_stage 的负 margin 是给页面内包裹层用的，直接放在 view 上要归零 */
+.doc_demo_view.doc_frosted_stage {
+    margin: 0;
+    padding: var(--doc_demo_padding);
+    border-radius: 0;
 }
 
 .doc_demo_code {

@@ -1,6 +1,8 @@
 <template>
     <AppShell :nav="nav" :active="active" @navigate="go">
-        <PageHeader :title="title">
+        <PageHeader>
+            <span>{{ title }}</span>
+            <code v-if="currentName" class="doc_header_name">{{ currentName }}</code>
             <template #center>
                 <DocNavSelect v-if="Mobile" />
             </template>
@@ -31,7 +33,7 @@ import { AppThemeToggle } from 'wash-ui'
 import pkg from '../package.json'
 import DocNavSelect from './components/DocNavSelect.vue'
 import DocSearch from './components/DocSearch.vue'
-import { nav } from './site.js'
+import { nav, pageNav } from './site.js'
 
 const Version = pkg.version
 
@@ -39,6 +41,11 @@ const route = useRoute()
 const router = useRouter()
 const active = computed(() => route.meta.nav || route.name)
 const title = computed(() => route.meta.title || '文档')
+// 组件页在顶部标题后补一个组件名，概览页没有 component 或不以大写开头时自动省略
+const currentName = computed(() => {
+    const component = pageNav.find(item => item.name === route.name)?.component
+    return component && /^[A-Z]/.test(component) ? component : ''
+})
 // Header 导航下拉只在移动端使用，桌面端使用 DocSideNav。
 const Media = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(max-width: 860px)') : null
 const Mobile = ref(Media?.matches ?? false)
@@ -82,6 +89,17 @@ function go(item) {
     color: var(--wa_color_text_subtle);
 }
 
+.doc_header_name {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: var(--wa_color_field);
+    font: 500 12px var(--wa_font_mono);
+    color: var(--wa_color_text_subtle);
+    vertical-align: 3px;
+}
+
 @media (max-width: 640px) {
     .doc_version {
         display: none;
@@ -91,14 +109,14 @@ function go(item) {
 /* 彩色光斑背景：模糊层独立于内容，避免 filter 把子元素一起糊掉 */
 .doc_aurora,
 .doc_frosted_stage {
-    --doc_aurora_opacity: .55;
+    --doc_aurora_opacity: .68;
     position: relative;
     isolation: isolate;
     overflow: hidden;
 }
 
 .doc_frosted_stage {
-    --doc_aurora_opacity: .62;
+    --doc_aurora_opacity: .76;
 }
 
 .doc_aurora::before,
@@ -113,7 +131,7 @@ function go(item) {
         radial-gradient(40% 48% at 30% 78%, #7928ca61, #0000 70%),
         radial-gradient(36% 44% at 76% 74%, #ff008052, #0000 70%),
         radial-gradient(30% 38% at 52% 52%, #f9cb2840, #0000 70%);
-    filter: blur(36px) saturate(.9);
+    filter: blur(36px) saturate(1.15);
     opacity: var(--doc_aurora_opacity);
     pointer-events: none;
 }
@@ -132,16 +150,16 @@ function go(item) {
 }
 
 [data-theme='dark'] .doc_aurora {
-    --doc_aurora_opacity: .46;
+    --doc_aurora_opacity: .58;
 }
 
 [data-theme='dark'] .doc_frosted_stage {
-    --doc_aurora_opacity: .52;
+    --doc_aurora_opacity: .64;
 }
 
 [data-theme='dark'] .doc_aurora::before,
 [data-theme='dark'] .doc_frosted_stage::before {
-    filter: blur(40px) saturate(.9);
+    filter: blur(40px) saturate(1.1);
 }
 
 [data-theme='dark'] .doc_aurora::after,
