@@ -8,47 +8,19 @@
             <div ref="HeadScrollEl" class="wa_table_head_scroll" :class="ShadowClass"
                 :style="{ paddingRight: `${HeadPaddingRight}px` }">
                 <table ref="HeadTableEl" class="wa_table_el wa_table_fixed wa_table_head_table">
-                    <colgroup>
-                        <col v-if="selectable" class="wa_table_col_select" />
-                        <col v-for="column in columns" :key="column.key" :style="ColumnWidthStyle(column)" />
-                    </colgroup>
-
-                    <thead>
-                        <tr>
-                            <th v-if="selectable" scope="col"
-                                class="wa_table_th wa_table_select wa_table_sticky wa_table_sticky_left"
-                                :class="{ wa_table_sticky_edge_left: SelectIsLeftEdge }" :style="{ left: '0px' }">
-                                <AppCheck :model-value="AllSelected" :indeterminate="PartiallySelected"
-                                    :disabled="!SelectableKeys.length || loading" aria-label="全选当前页"
-                                    @update:model-value="ToggleAll" />
-                            </th>
-
-                            <th v-for="column in columns" :key="column.key" scope="col" class="wa_table_th"
-                                :class="HeaderClass(column)" :style="ColumnStyle(column)" :aria-sort="AriaSort(column)">
-                                <button v-if="column.sortable" type="button" class="wa_table_sort"
-                                    @click="ToggleSort(column)">
-                                    <span class="wa_table_sort_label">
-                                        <slot :name="`header-${column.key}`" :column="column">{{ column.title }}</slot>
-                                    </span>
-                                    <span class="wa_table_sort_icons" aria-hidden="true">
-                                        <svg class="wa_table_sort_arrow" :class="{ on: IsSortActive(column, 'asc') }"
-                                            viewBox="0 0 10 6" fill="currentColor" stroke="currentColor" stroke-width="1.2"
-                                            stroke-linejoin="round">
-                                            <path d="M5 1.2 L8.8 4.8 L1.2 4.8 Z" />
-                                        </svg>
-                                        <svg class="wa_table_sort_arrow" :class="{ on: IsSortActive(column, 'desc') }"
-                                            viewBox="0 0 10 6" fill="currentColor" stroke="currentColor" stroke-width="1.2"
-                                            stroke-linejoin="round">
-                                            <path d="M1.2 1.2 L8.8 1.2 L5 4.8 Z" />
-                                        </svg>
-                                    </span>
-                                </button>
-                                <template v-else>
-                                    <slot :name="`header-${column.key}`" :column="column">{{ column.title }}</slot>
-                                </template>
-                            </th>
-                        </tr>
-                    </thead>
+                    <TableColgroup :columns="columns" :selectable="selectable"
+                        :column-width-style="ColumnWidthStyle" />
+                    <!-- * $slots 原样透传，header-* 才能命中 TableHead 里的动态插槽 -->
+                    <TableHead :columns="columns" :selectable="selectable" :all-selected="AllSelected"
+                        :partially-selected="PartiallySelected"
+                        :select-all-disabled="!SelectableKeys.length || loading"
+                        :select-is-left-edge="SelectIsLeftEdge" :header-class="HeaderClass"
+                        :column-style="ColumnStyle" :is-sort-active="IsSortActive"
+                        :toggle-sort="ToggleSort" :toggle-all="ToggleAll" :sort-aria="AriaSort">
+                        <template v-for="(_, name) in $slots" #[name]="slotProps">
+                            <slot :name="name" v-bind="slotProps || {}" />
+                        </template>
+                    </TableHead>
                 </table>
             </div>
 
@@ -56,68 +28,23 @@
                 @scroll="OnBodyScroll">
                 <table ref="TableEl" class="wa_table_el wa_table_fixed" :aria-label="ariaLabel"
                     :aria-busy="loading ? 'true' : undefined">
-                    <colgroup>
-                        <col v-if="selectable" class="wa_table_col_select" />
-                        <col v-for="column in columns" :key="column.key" :style="ColumnWidthStyle(column)" />
-                    </colgroup>
-
-                    <tbody>
-                        <template v-if="loading">
-                            <tr v-for="row in Math.max(1, loadingRows)" :key="`loading-${row}`"
-                                class="wa_table_tr wa_table_loading_row" aria-hidden="true">
-                                <td v-if="selectable"
-                                    class="wa_table_td wa_table_select wa_table_sticky wa_table_sticky_left"
-                                    :class="{ wa_table_sticky_edge_left: SelectIsLeftEdge }" :style="{ left: '0px' }">
-                                    <AppSkeleton :width="16" :height="16" radius="5px" />
-                                </td>
-                                <td v-for="(column, index) in columns" :key="column.key" class="wa_table_td"
-                                    :class="ColumnClass(column)" :style="ColumnStyle(column)">
-                                    <AppSkeleton :width="SkeletonWidth(index)" :height="12" />
-                                </td>
-                            </tr>
+                    <TableColgroup :columns="columns" :selectable="selectable"
+                        :column-width-style="ColumnWidthStyle" />
+                    <!-- * cell-* 与 empty 插槽同样透传，否则自定义单元格会退回默认文本 -->
+                    <TableBody :columns="columns" :rows="SortedData" :loading="loading"
+                        :loading-rows="loadingRows" :selectable="selectable" :empty-text="emptyText"
+                        :col-span="ColSpan" :select-is-left-edge="SelectIsLeftEdge"
+                        :get-row-key="GetRowKey" :original-index="OriginalIndex"
+                        :get-row-class="GetRowClass" :is-row-selected="IsRowSelected"
+                        :is-row-selectable="IsRowSelectable" :toggle-row="ToggleRow"
+                        :column-class="ColumnClass" :column-style="ColumnStyle"
+                        :format-cell="FormatCell" :get-value="GetValue"
+                        :get-tooltip-text="GetTooltipText" :skeleton-width="SkeletonWidth"
+                        :handle-row-click="OnRowClick" :handle-cell-click="OnCellClick">
+                        <template v-for="(_, name) in $slots" #[name]="slotProps">
+                            <slot :name="name" v-bind="slotProps || {}" />
                         </template>
-
-                        <tr v-else-if="!SortedData.length" class="wa_table_empty_row">
-                            <td :colspan="ColSpan" class="wa_table_td wa_table_empty_cell">
-                                <slot name="empty">
-                                    <AppEmpty class="wa_table_empty" :text="emptyText" />
-                                </slot>
-                            </td>
-                        </tr>
-
-                        <template v-else>
-                            <tr v-for="(row, index) in SortedData" :key="GetRowKey(row, OriginalIndex(row, index))"
-                                class="wa_table_tr"
-                                :class="[GetRowClass(row, index), { on: IsRowSelected(row, OriginalIndex(row, index)) }]"
-                                @click="OnRowClick(row, index, $event)">
-                                <td v-if="selectable"
-                                    class="wa_table_td wa_table_select wa_table_sticky wa_table_sticky_left"
-                                    :class="{ wa_table_sticky_edge_left: SelectIsLeftEdge }" :style="{ left: '0px' }"
-                                    @click.stop>
-                                    <AppCheck :model-value="IsRowSelected(row, OriginalIndex(row, index))"
-                                        :disabled="!IsRowSelectable(row, OriginalIndex(row, index))"
-                                        :aria-label="`选择第 ${index + 1} 行`"
-                                        @update:model-value="ToggleRow(row, OriginalIndex(row, index))" />
-                                </td>
-
-                                <td v-for="column in columns" :key="column.key" class="wa_table_td"
-                                    :class="ColumnClass(column)" :style="ColumnStyle(column)"
-                                    @click="OnCellClick(row, column, index, $event)">
-                                    <AppTooltip v-if="column.tooltip" fill placement="bottom"
-                                        :content="GetTooltipText(row, column, index)">
-                                        <slot :name="`cell-${column.key}`" :row="row" :column="column"
-                                            :value="GetValue(row, column)" :index="index">
-                                            {{ FormatCell(row, column, index) }}
-                                        </slot>
-                                    </AppTooltip>
-                                    <slot v-else :name="`cell-${column.key}`" :row="row" :column="column"
-                                        :value="GetValue(row, column)" :index="index">
-                                        {{ FormatCell(row, column, index) }}
-                                    </slot>
-                                </td>
-                            </tr>
-                        </template>
-                    </tbody>
+                    </TableBody>
                 </table>
             </div>
         </div>
@@ -126,104 +53,33 @@
             @scroll="UpdateScrollShadow">
             <table ref="TableEl" class="wa_table_el" :class="{ wa_table_fixed: IsFixedLayout }"
                 :aria-label="ariaLabel" :aria-busy="loading ? 'true' : undefined">
-                <colgroup>
-                    <col v-if="selectable" class="wa_table_col_select" />
-                    <col v-for="column in columns" :key="column.key" :style="ColumnWidthStyle(column)" />
-                </colgroup>
-
-                <thead>
-                    <tr>
-                        <th v-if="selectable" scope="col"
-                            class="wa_table_th wa_table_select wa_table_sticky wa_table_sticky_left"
-                            :class="{ wa_table_sticky_edge_left: SelectIsLeftEdge }" :style="{ left: '0px' }">
-                            <AppCheck :model-value="AllSelected" :indeterminate="PartiallySelected"
-                                :disabled="!SelectableKeys.length || loading" aria-label="全选当前页"
-                                @update:model-value="ToggleAll" />
-                        </th>
-
-                        <th v-for="column in columns" :key="column.key" scope="col" class="wa_table_th"
-                            :class="HeaderClass(column)" :style="ColumnStyle(column)" :aria-sort="AriaSort(column)">
-                            <button v-if="column.sortable" type="button" class="wa_table_sort" @click="ToggleSort(column)">
-                                <span class="wa_table_sort_label">
-                                    <slot :name="`header-${column.key}`" :column="column">{{ column.title }}</slot>
-                                </span>
-                                <span class="wa_table_sort_icons" aria-hidden="true">
-                                    <svg class="wa_table_sort_arrow" :class="{ on: IsSortActive(column, 'asc') }"
-                                        viewBox="0 0 10 6" fill="currentColor" stroke="currentColor" stroke-width="1.2"
-                                        stroke-linejoin="round">
-                                        <path d="M5 1.2 L8.8 4.8 L1.2 4.8 Z" />
-                                    </svg>
-                                    <svg class="wa_table_sort_arrow" :class="{ on: IsSortActive(column, 'desc') }"
-                                        viewBox="0 0 10 6" fill="currentColor" stroke="currentColor" stroke-width="1.2"
-                                        stroke-linejoin="round">
-                                        <path d="M1.2 1.2 L8.8 1.2 L5 4.8 Z" />
-                                    </svg>
-                                </span>
-                            </button>
-                            <template v-else>
-                                <slot :name="`header-${column.key}`" :column="column">{{ column.title }}</slot>
-                            </template>
-                        </th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <template v-if="loading">
-                        <tr v-for="row in Math.max(1, loadingRows)" :key="`loading-${row}`"
-                            class="wa_table_tr wa_table_loading_row" aria-hidden="true">
-                            <td v-if="selectable"
-                                class="wa_table_td wa_table_select wa_table_sticky wa_table_sticky_left"
-                                :class="{ wa_table_sticky_edge_left: SelectIsLeftEdge }" :style="{ left: '0px' }">
-                                <AppSkeleton :width="16" :height="16" radius="5px" />
-                            </td>
-                            <td v-for="(column, index) in columns" :key="column.key" class="wa_table_td"
-                                :class="ColumnClass(column)" :style="ColumnStyle(column)">
-                                <AppSkeleton :width="SkeletonWidth(index)" :height="12" />
-                            </td>
-                        </tr>
+                <TableColgroup :columns="columns" :selectable="selectable"
+                    :column-width-style="ColumnWidthStyle" />
+                <TableHead :columns="columns" :selectable="selectable" :all-selected="AllSelected"
+                    :partially-selected="PartiallySelected"
+                    :select-all-disabled="!SelectableKeys.length || loading"
+                    :select-is-left-edge="SelectIsLeftEdge" :header-class="HeaderClass"
+                    :column-style="ColumnStyle" :is-sort-active="IsSortActive"
+                    :toggle-sort="ToggleSort" :toggle-all="ToggleAll" :sort-aria="AriaSort">
+                    <template v-for="(_, name) in $slots" #[name]="slotProps">
+                        <slot :name="name" v-bind="slotProps || {}" />
                     </template>
+                </TableHead>
 
-                    <tr v-else-if="!SortedData.length" class="wa_table_empty_row">
-                        <td :colspan="ColSpan" class="wa_table_td wa_table_empty_cell">
-                            <slot name="empty">
-                                <AppEmpty class="wa_table_empty" :text="emptyText" />
-                            </slot>
-                        </td>
-                    </tr>
-
-                    <template v-else>
-                        <tr v-for="(row, index) in SortedData" :key="GetRowKey(row, OriginalIndex(row, index))"
-                            class="wa_table_tr"
-                            :class="[GetRowClass(row, index), { on: IsRowSelected(row, OriginalIndex(row, index)) }]"
-                            @click="OnRowClick(row, index, $event)">
-                            <td v-if="selectable"
-                                class="wa_table_td wa_table_select wa_table_sticky wa_table_sticky_left"
-                                :class="{ wa_table_sticky_edge_left: SelectIsLeftEdge }" :style="{ left: '0px' }"
-                                @click.stop>
-                                <AppCheck :model-value="IsRowSelected(row, OriginalIndex(row, index))"
-                                    :disabled="!IsRowSelectable(row, OriginalIndex(row, index))"
-                                    :aria-label="`选择第 ${index + 1} 行`"
-                                    @update:model-value="ToggleRow(row, OriginalIndex(row, index))" />
-                            </td>
-
-                            <td v-for="column in columns" :key="column.key" class="wa_table_td"
-                                :class="ColumnClass(column)" :style="ColumnStyle(column)"
-                                @click="OnCellClick(row, column, index, $event)">
-                                <AppTooltip v-if="column.tooltip" fill placement="bottom"
-                                    :content="GetTooltipText(row, column, index)">
-                                    <slot :name="`cell-${column.key}`" :row="row" :column="column"
-                                        :value="GetValue(row, column)" :index="index">
-                                        {{ FormatCell(row, column, index) }}
-                                    </slot>
-                                </AppTooltip>
-                                <slot v-else :name="`cell-${column.key}`" :row="row" :column="column"
-                                    :value="GetValue(row, column)" :index="index">
-                                    {{ FormatCell(row, column, index) }}
-                                </slot>
-                            </td>
-                        </tr>
+                <TableBody :columns="columns" :rows="SortedData" :loading="loading"
+                    :loading-rows="loadingRows" :selectable="selectable" :empty-text="emptyText"
+                    :col-span="ColSpan" :select-is-left-edge="SelectIsLeftEdge"
+                    :get-row-key="GetRowKey" :original-index="OriginalIndex"
+                    :get-row-class="GetRowClass" :is-row-selected="IsRowSelected"
+                    :is-row-selectable="IsRowSelectable" :toggle-row="ToggleRow"
+                    :column-class="ColumnClass" :column-style="ColumnStyle"
+                    :format-cell="FormatCell" :get-value="GetValue"
+                    :get-tooltip-text="GetTooltipText" :skeleton-width="SkeletonWidth"
+                    :handle-row-click="OnRowClick" :handle-cell-click="OnCellClick">
+                    <template v-for="(_, name) in $slots" #[name]="slotProps">
+                        <slot :name="name" v-bind="slotProps || {}" />
                     </template>
-                </tbody>
+                </TableBody>
             </table>
         </div>
 
@@ -235,10 +91,15 @@
 
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import AppCheck from './AppCheck.vue'
-import AppEmpty from './AppEmpty.vue'
-import AppSkeleton from './AppSkeleton.vue'
-import AppTooltip from './AppTooltip.vue'
+import TableBody from './table/TableBody.vue'
+import TableColgroup from './table/TableColgroup.vue'
+import TableHead from './table/TableHead.vue'
+
+// section 表格结构
+// * 固定表头视图和普通视图只保留外层滚动容器差异，列宽、表头、表体统一复用 table 子组件
+// - table/ 下的子组件仅供 AppTable 内部使用，不加入公共组件导出
+// ! table / colgroup 的 ref 仍留在父组件，MeasureColumns 依赖 HeadTableEl 或 TableEl
+// ! TableHead / TableBody 通过 $slots 原样透传插槽，header-* 和 cell-* 才能在子组件内命中
 
 const SELECT_WIDTH = 48
 const SKELETON_WIDTHS = ['72%', '54%', '86%', '64%', '78%', '48%']
@@ -397,6 +258,7 @@ const ViewportStyle = computed(() => {
     return Object.keys(style).length ? style : undefined
 })
 
+// * 有 height / minHeight / maxHeight 时启用固定表头双 table 视图
 const HasViewport = computed(() => Boolean(ViewportStyle.value))
 
 const ScrollStyle = computed(() => {
@@ -930,11 +792,11 @@ watch(ScrollEl, (el, old) => {
 }
 
 .wa_table_shadow_left .wa_table_sticky_edge_left {
-    box-shadow: 8px 0 12px -10px #00000040;
+    box-shadow: 8px 0 12px -10px var(--wa_color_sticky_shadow);
 }
 
 .wa_table_shadow_right .wa_table_sticky_edge_right {
-    box-shadow: -8px 0 12px -10px #00000040;
+    box-shadow: -8px 0 12px -10px var(--wa_color_sticky_shadow);
 }
 
 .wa_table_tr {
@@ -1008,11 +870,6 @@ watch(ScrollEl, (el, old) => {
     font-weight: inherit;
     cursor: pointer;
     transition: color var(--wa_duration_fast) var(--wa_ease_out);
-}
-
-.wa_table_sort:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
 }
 
 .wa_table_sort_label {
