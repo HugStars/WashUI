@@ -112,7 +112,7 @@ pnpm dev
 ### 组件
 
 - 公共组件：`AppXxx`，例如 `AppButton`、`AppCheckGroup`、`AppChoiceList`。
-- 布局组件：`AppShell`、`PageHeader`、`PageBar`、`PageTransition`、`AppRouteBar`。
+- 布局组件：`AppShell`、`AppDeskShell`、`PageHeader`、`PageBar`、`PageTransition`、`AppRouteBar`。
 - 单个选择项与分组：`AppCheck` / `AppCheckGroup`、`AppRadio` / `AppRadioGroup`。
 - 面板封装：`AppCheckPanel`、`AppRadioPanel`；共享核心为 `AppChoiceList`。
 
@@ -225,7 +225,7 @@ WashUI/
 │  │  │  ├─ AppNavMenu.vue      导航菜单
 │  │  │  ├─ AppTable.vue        数据表格
 │  │  │  └─ AppPagination.vue   分页
-│  │  ├─ layout/                AppShell、PageHeader、PageBar、AppRouteBar、PageTransition
+│  │  ├─ layout/                AppShell、AppDeskShell、PageHeader、PageBar、AppRouteBar、PageTransition
 │  │  ├─ composables/           useClipboard、useRequest、useChoiceGroup、useChoiceSummary
 │  │  ├─ core/                  图标、主题、Toast、Loading、路由状态、插件
 │  │  ├─ router/                createAppRouter
@@ -309,13 +309,13 @@ import 'wash-ui/style.css'
 
 | 分类 | 组件 |
 | --- | --- |
-| 基础 | AppButton（按钮）、AppCard（卡片）、AppCode（代码）、AppChip（标记）、AppTag（标签）、AppBadge（消息角标）、AppTabs（标签页）、AppStat（统计）、AppNumber（数字跳动）、AppEmpty（空状态）、AppThemeToggle（主题切换） |
+| 基础 | AppButton（按钮）、AppIconButton（图标按钮）、AppCard（卡片）、AppCode（代码）、AppChip（标记）、AppTag（标签）、AppBadge（消息角标）、AppTabs（标签页）、AppStat（统计）、AppNumber（数字跳动）、AppEmpty（空状态）、AppThemeToggle（主题切换） |
 | 导航 | AppNavMenu（导航菜单） |
 | 加载 | AppSpinner（加载圈）、AppSkeleton（骨架屏） |
 | 数据 | AppTable（表格）、AppPagination（分页） |
 | 表单 | AppSlider（滑块）、AppInput（输入框）、AppTextarea（文本域）、AppSwitch（开关）、AppCheck（复选框）、AppCheckGroup（复选框组）、AppRadio（单选框）、AppRadioGroup（单选框组）、AppSelect（下拉框）、AppSelectPanel（下拉面板）、AppChoiceList（选择列表）、AppCheckPanel（多选面板）、AppRadioPanel（单选面板）、AppUpload（上传） |
 | 反馈 | AppPanel（展示框）、AppPopover（弹出框）、AppDialog（弹框）、AppTooltip（文字提示）、AppCheckMenu（多选菜单）、Toast（轻提示）、Loading（加载） |
-| 布局 | AppShell（壳层）、AppRouteBar（路由进度条）、PageTransition（页面过渡）、PageHeader（页面标题）、PageBar（页面操作栏） |
+| 布局 | AppShell（壳层）、AppDeskShell（桌面壳层）、AppWindowControls（窗口按钮）、AppRouteBar（路由进度条）、PageTransition（页面过渡）、PageHeader（页面标题）、PageBar（页面操作栏） |
 | 能力 | useTheme（主题）、useClipboard（剪贴板）、useRequest（请求）、useChoiceGroup（选择组状态）、useChoiceSummary（选择摘要）、useValidation（校验规则） |
 | 基础能力 | 图标、tokens、代码高亮、主题切换 |
 
@@ -382,22 +382,27 @@ import 'wash-ui/style.css'
 pnpm test
 pnpm build:ui
 
-# 2. 递增版本（自动提交并创建 vX.Y.Z tag）
+# 2. 递增版本，自动提交并创建 vX.Y.Z tag
 pnpm version:ui patch
 
-# 3. 发布到 npm（首次或登录过期时先 npm login，账号需开启 2FA）
-pnpm publish:ui
+# 3. 先推送分支，确保默认分支已有最新 workflow
+git push
 
-# 4. 推送提交与 tag
+# 4. 再推送 tag，触发 GitHub Actions 自动发布
 git push --follow-tags
 ```
 
-### 说明
+### 注意项
 
-- `pnpm version:ui` 会修改 `ui/package.json`、自动提交并打 tag；脚本要求工作区干净，否则会拒绝执行。
-- `pnpm publish:ui` 等价于 `pnpm --filter wash-ui publish`，`prepublishOnly` 会清理并重建 `dist` 与 `types`。
-- 发布前工作区必须干净，否则 `pnpm version:ui` 会拒绝执行。
-- `ui/package.json` 的 `files` 只包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`，文档站不会发布。
+- `pnpm version:ui` 会修改 `ui/package.json`、自动提交并打 tag；脚本要求工作区干净，否则会拒绝执行
+- 必须先 `git push` 分支，再 `git push --follow-tags`；tag 先到、workflow 后到时 GitHub 不会触发发布
+- 仓库需要在 **Settings → Secrets and variables → Actions** 配置 `NPM_TOKEN`
+- workflow 会校验 tag 与 `ui/package.json` 版本一致，不一致会直接失败
+- 该版本已经存在于 npm 时，发布步骤会自动跳过
+- 启用 CI 发布后，不要同时在本地执行 `pnpm publish:ui`，避免重复发布
+- 如果 Actions 不可用，可以本地 `pnpm publish:ui` 作为备选，此时不要再推 tag
+- npm 发布后 registry 传播可能需要几分钟，用 `npm view wash-ui version` 确认
+- `ui/package.json` 的 `files` 只包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`，文档站不会发布
 
 ### 发布后验证
 
