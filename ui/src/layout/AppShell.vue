@@ -259,8 +259,8 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
     margin: 0 -24px 18px;
     padding: 16px var(--wa_header_pad_x) 12px;
     background: linear-gradient(to bottom, var(--wa_color_canvas), transparent);
-    -webkit-backdrop-filter: blur(var(--wa_blur));
-    backdrop-filter: blur(var(--wa_blur));
+    -webkit-backdrop-filter: blur(var(--wa_blur)) saturate(1.35);
+    backdrop-filter: blur(var(--wa_blur)) saturate(1.35);
 }
 
 .wa_header_slot {
@@ -296,8 +296,8 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
     border-radius: 22px;
     background: var(--wa_color_glass);
     background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
-    -webkit-backdrop-filter: blur(var(--wa_blur));
-    backdrop-filter: blur(var(--wa_blur));
+    -webkit-backdrop-filter: blur(var(--wa_blur)) saturate(1.35);
+    backdrop-filter: blur(var(--wa_blur)) saturate(1.35);
     box-shadow: var(--wa_shadow_nav);
 }
 

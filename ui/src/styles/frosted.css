@@ -7,8 +7,8 @@
 .wa_card.wa_frosted {
     background: var(--wa_color_glass);
     background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
-    -webkit-backdrop-filter: blur(var(--wa_blur));
-    backdrop-filter: blur(var(--wa_blur));
+    -webkit-backdrop-filter: blur(var(--wa_blur)) saturate(1.35);
+    backdrop-filter: blur(var(--wa_blur)) saturate(1.35);
 }
 
 .wa_btn.wa_frosted {
