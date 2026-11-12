@@ -40,7 +40,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { AppChip } from '@wash/ui'
+import { AppChip } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const filter = ref('all')

@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
-import '@wash/ui/style.css'
-import { createUi } from '@wash/ui'
+import 'wash-ui/style.css'
+import { createUi } from 'wash-ui'
 import App from './App.vue'
 import { createDocsRouter } from './router.js'
 

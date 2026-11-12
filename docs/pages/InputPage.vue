@@ -67,7 +67,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { AppInput } from '@wash/ui'
+import { AppInput } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const name = ref('')

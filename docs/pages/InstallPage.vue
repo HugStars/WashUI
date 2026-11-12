@@ -1,5 +1,5 @@
 <template>
-    <DocPage category="指南" name="@wash/ui" title="安装" description="安装包、引入样式，并在应用入口完成组件注册与主题配置。">
+    <DocPage category="指南" name="wash-ui" title="安装" description="安装包、引入样式，并在应用入口完成组件注册与主题配置。">
         <h2 class="doc_h2">环境要求</h2>
         <ul class="doc_list">
             <li>Node.js 20.19 或更高版本（Vite 7 要求）</li>
@@ -8,10 +8,10 @@
         </ul>
 
         <h2 class="doc_h2">安装</h2>
-        <AppCode lang="bash" code="pnpm add @wash/ui" />
+        <AppCode lang="bash" code="pnpm add wash-ui" />
 
         <h2 class="doc_h2">引入样式</h2>
-        <AppCode lang="js" code="import '@wash/ui/style.css'" />
+        <AppCode lang="js" code="import 'wash-ui/style.css'" />
 
         <p class="doc_text doc_gap">style.css 已经包含 tokens.css，Vue 项目只需要引这一行。只使用变量或非 Vue 项目时，改为引入 tokens.css，两者不要同时引入。
         </p>
@@ -31,7 +31,7 @@
         <AppCode lang="js" :code="onDemandCode" />
 
         <p class="doc_text doc_gap">也可以在主入口使用命名导入；打包器可 tree-shake 未使用的组件。createUi 会全量注册，不需要 tree-shaking 时更省事。</p>
-        <AppCode lang="js" code="import { AppButton, AppCard, AppDialog } from '@wash/ui'" />
+        <AppCode lang="js" code="import { AppButton, AppCard, AppDialog } from 'wash-ui'" />
 
         <h2 class="doc_h2">子路径</h2>
         <ApiTable kind="values" :rows="exports" />
@@ -44,26 +44,26 @@
 import { DocPage, ApiTable } from '../components/index.js'
 
 const exports = [
-    { name: '@wash/ui', desc: '主入口：组件、createUi、toast、主题、组合式函数与工具' },
-    { name: '@wash/ui/style.css', desc: '全部样式，已包含 tokens.css' },
-    { name: '@wash/ui/tokens.css', desc: '仅设计变量与暗色主题' },
-    { name: '@wash/ui/tokens.js', desc: '图表配色、断点与层级常量' },
-    { name: '@wash/ui/router', desc: 'createAppRouter 路由工厂' },
-    { name: '@wash/ui/utils', desc: '纯格式化函数' },
-    { name: '@wash/ui/components/*', desc: '单个组件的独立入口，例如 AppButton' },
-    { name: '@wash/ui/layout/*', desc: '单个布局的独立入口，例如 AppShell' },
+    { name: 'wash-ui', desc: '主入口：组件、createUi、toast、主题、组合式函数与工具' },
+    { name: 'wash-ui/style.css', desc: '全部样式，已包含 tokens.css' },
+    { name: 'wash-ui/tokens.css', desc: '仅设计变量与暗色主题' },
+    { name: 'wash-ui/tokens.js', desc: '图表配色、断点与层级常量' },
+    { name: 'wash-ui/router', desc: 'createAppRouter 路由工厂' },
+    { name: 'wash-ui/utils', desc: '纯格式化函数' },
+    { name: 'wash-ui/components/*', desc: '单个组件的独立入口，例如 AppButton' },
+    { name: 'wash-ui/layout/*', desc: '单个布局的独立入口，例如 AppShell' },
 ]
 
 const onDemandCode = `import { createApp } from 'vue'
-import '@wash/ui/style.css'
-import AppButton from '@wash/ui/components/AppButton'
-import AppShell from '@wash/ui/layout/AppShell'
+import 'wash-ui/style.css'
+import AppButton from 'wash-ui/components/AppButton'
+import AppShell from 'wash-ui/layout/AppShell'
 
 const app = createApp(App)
 app.component('AppButton', AppButton)
 app.component('AppShell', AppShell)`
 
-const iconCode = `import { configureIcons } from '@wash/ui'
+const iconCode = `import { configureIcons } from 'wash-ui'
 
 // 任意 IconNode 数组都可以注册
 configureIcons({
@@ -74,8 +74,8 @@ configureIcons({
 })`
 
 const initCode = `import { createApp } from 'vue'
-import '@wash/ui/style.css'
-import { createUi } from '@wash/ui'
+import 'wash-ui/style.css'
+import { createUi } from 'wash-ui'
 import App from './App.vue'
 
 const app = createApp(App)

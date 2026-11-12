@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { useClipboard } from '@wash/ui'
+import { useClipboard } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const sampleText = 'WashUI'
@@ -32,7 +32,7 @@ const clipboardRows = [
     { name: 'copy(text)', desc: '复制文本，返回 Promise<boolean>' },
 ]
 
-const clipboardCode = `import { useClipboard } from '@wash/ui'
+const clipboardCode = `import { useClipboard } from 'wash-ui'
 
 const { copied, copy } = useClipboard({ resetDelay: 1500 })
 const ok = await copy('要复制的文本')`

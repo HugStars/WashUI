@@ -53,7 +53,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useTheme } from '@wash/ui'
+import { useTheme } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const { theme, setTheme } = useTheme()

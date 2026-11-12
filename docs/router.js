@@ -1,4 +1,4 @@
-import { createAppRouter } from '@wash/ui/router'
+import { createAppRouter } from 'wash-ui/router'
 import { componentPages, composablePages, guidePages, layoutPages, servicePages } from './site.js'
 
 const pages = import.meta.glob('./pages/*.vue')

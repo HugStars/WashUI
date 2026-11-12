@@ -18,7 +18,7 @@
 
 <script setup>
 import { onUnmounted, ref } from 'vue'
-import { routeLoading } from '@wash/ui'
+import { routeLoading } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const loading = ref(false)
@@ -42,7 +42,7 @@ const propsRows = [
 
 const autoCode = `<AppRouteBar />`
 
-const manualCode = `import { routeLoading } from '@wash/ui'
+const manualCode = `import { routeLoading } from 'wash-ui'
 
 routeLoading.value = true
 

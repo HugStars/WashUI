@@ -20,7 +20,7 @@
         </DemoBlock>
 
         <DemoBlock title="行内代码" description="inline 只输出高亮文字，适合嵌入正文。" :code="inlineCode">
-            <p class="doc_text">安装命令：<AppCode inline code="pnpm add @wash/ui" /></p>
+            <p class="doc_text">安装命令：<AppCode inline code="pnpm add wash-ui" /></p>
         </DemoBlock>
 
         <template #api>
@@ -32,7 +32,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { codeLanguages } from '@wash/ui'
+import { codeLanguages } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const lang = ref('js')
@@ -149,5 +149,5 @@ const cardCode = `<AppCode :code="code" lang="css" show-line-numbers :max-height
 
 const headlessCode = `<AppCode plain :code="code" lang="css" :show-lang="false" :copyable="false" :max-height="180" />`
 
-const inlineCode = `<AppCode inline code="pnpm add @wash/ui" />`
+const inlineCode = `<AppCode inline code="pnpm add wash-ui" />`
 </script>

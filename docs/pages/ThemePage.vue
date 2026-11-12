@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { useTheme } from '@wash/ui'
+import { useTheme } from 'wash-ui'
 import { DocPage, DemoBlock } from '../components/index.js'
 
 const { mode, theme, setTheme, toggleTheme } = useTheme()
@@ -53,7 +53,7 @@ const colors = [
     { name: '--wa_color_danger' },
 ]
 
-const themeCode = `import { useTheme } from '@wash/ui'
+const themeCode = `import { useTheme } from 'wash-ui'
 
 const { mode, theme, setTheme, toggleTheme } = useTheme()
 

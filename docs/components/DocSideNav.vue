@@ -6,7 +6,7 @@
 <script setup>
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { AppNavMenu } from '@wash/ui'
+import { AppNavMenu } from 'wash-ui'
 import { pageLabel } from '../site.js'
 
 const props = defineProps({

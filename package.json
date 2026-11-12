@@ -1,5 +1,5 @@
 {
-    "name": "wash-ui",
+    "name": "washui-monorepo",
     "version": "0.1.0",
     "private": true,
     "author": {
@@ -11,22 +11,22 @@
         "type": "git",
         "url": "git+https://github.com/HugStars/WashUI.git"
     },
-    "packageManager": "pnpm@12.14.0",
+    "packageManager": "pnpm@12.18.0",
     "scripts": {
         "dev": "vite",
         "dev:docs": "vite",
         "dev:docs:force": "vite --force",
         "build": "vite build",
         "build:docs": "vite build",
-        "build:ui": "pnpm --filter @wash/ui build",
-        "build:types": "pnpm --filter @wash/ui build:types",
+        "build:ui": "pnpm --filter wash-ui build",
+        "build:types": "pnpm --filter wash-ui build:types",
         "test": "vitest run",
         "test:watch": "vitest",
         "preview": "vite preview",
         "preview:docs": "vite preview"
     },
     "dependencies": {
-        "@wash/ui": "workspace:*",
+        "wash-ui": "workspace:*",
         "vue": "^3.5.28",
         "vue-router": "^4.5.1"
     },

@@ -7,7 +7,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { AppSelect } from '@wash/ui'
+import { AppSelect } from 'wash-ui'
 import { pageLabel, sections } from '../site.js'
 
 const route = useRoute()

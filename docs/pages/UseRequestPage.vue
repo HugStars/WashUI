@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { formatBytes, toast, useRequest } from '@wash/ui'
+import { formatBytes, toast, useRequest } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 import { fetchItems } from '../api/mock.js'
 
@@ -69,7 +69,7 @@ const requestRows = [
     { name: 'reset()', desc: '取消并恢复初始数据' },
 ]
 
-const requestCode = `import { useRequest } from '@wash/ui'
+const requestCode = `import { useRequest } from 'wash-ui'
 
 const { data, error, loading, run, cancel, reset } = useRequest(
     (params, { signal }) => fetchItems({ ...params, signal }),

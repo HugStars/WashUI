@@ -35,7 +35,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { toast } from '@wash/ui'
+import { toast } from 'wash-ui'
 import { OpenInPlayground } from '../playground-bridge.js'
 
 const props = defineProps({

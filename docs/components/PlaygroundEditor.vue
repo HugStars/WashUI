@@ -19,7 +19,7 @@
 
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { highlightCode } from '@wash/ui'
+import { highlightCode } from 'wash-ui'
 
 const props = defineProps({
     modelValue: {

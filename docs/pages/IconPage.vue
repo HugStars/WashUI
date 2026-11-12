@@ -197,7 +197,7 @@
 
 <script setup>
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
-import { AppRadioGroup, AppStepper, iconGroups, iconNames, toast, useClipboard } from '@wash/ui'
+import { AppRadioGroup, AppStepper, iconGroups, iconNames, toast, useClipboard } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const icons = computed(() => iconNames())
@@ -490,7 +490,7 @@ const propsRows = [
     { name: 'reducedMotion', type: 'string', default: 'user', desc: '减少动画策略：never、user、always；可全局配置' },
 ]
 
-const externalCode = `import { configureIcons } from '@wash/ui'
+const externalCode = `import { configureIcons } from 'wash-ui'
 
 // 任意 IconNode 数组都可以注册
 configureIcons({
@@ -500,7 +500,7 @@ configureIcons({
     ],
 })`
 
-const motionConfigCode = `import { createUi } from '@wash/ui'
+const motionConfigCode = `import { createUi } from 'wash-ui'
 
 app.use(createUi({
     iconDefaults: {
@@ -511,7 +511,7 @@ app.use(createUi({
     },
 }))`
 
-const configCode = `import { createUi } from '@wash/ui'
+const configCode = `import { createUi } from 'wash-ui'
 
 app.use(createUi({
     icons: {

@@ -92,7 +92,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { AppRadio, AppRadioGroup, AppRadioPanel } from '@wash/ui'
+import { AppRadio, AppRadioGroup, AppRadioPanel } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const options = [

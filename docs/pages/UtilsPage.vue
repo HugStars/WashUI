@@ -1,8 +1,8 @@
 <template>
-    <DocPage title="工具函数" description="无副作用的纯函数，可从主入口或 @wash/ui/utils 子路径导入。">
+    <DocPage title="工具函数" description="无副作用的纯函数，可从主入口或 wash-ui/utils 子路径导入。">
         <h2 class="doc_h2">导入</h2>
         <AppCode lang="js"
-            code="import { formatBytes, formatSpeed, formatMbps, formatDuration, formatCount } from '@wash/ui/utils'" />
+            code="import { formatBytes, formatSpeed, formatMbps, formatDuration, formatCount } from 'wash-ui/utils'" />
 
         <h2 class="doc_h2">结果</h2>
         <div class="doc_kv">
@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { formatBytes, formatCount, formatDuration, formatMbps, formatSpeed } from '@wash/ui/utils'
+import { formatBytes, formatCount, formatDuration, formatMbps, formatSpeed } from 'wash-ui/utils'
 import { ApiTable, DocPage } from '../components/index.js'
 
 const values = [

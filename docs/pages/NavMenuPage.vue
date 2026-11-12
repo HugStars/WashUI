@@ -67,7 +67,7 @@
 <script setup>
 import { ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { AppNavMenu } from '@wash/ui'
+import { AppNavMenu } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const route = useRoute()

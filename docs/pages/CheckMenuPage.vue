@@ -52,7 +52,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { AppCheckMenu } from '@wash/ui'
+import { AppCheckMenu } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const options = [

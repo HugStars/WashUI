@@ -31,7 +31,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { AppCheckPanel, AppChoiceList, AppRadioPanel } from '@wash/ui'
+import { AppCheckPanel, AppChoiceList, AppRadioPanel } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const groups = [

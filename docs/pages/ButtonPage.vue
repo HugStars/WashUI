@@ -53,7 +53,7 @@
 
 <script setup>
 import { onUnmounted, ref } from 'vue'
-import { toast } from '@wash/ui'
+import { toast } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const saving = ref(false)

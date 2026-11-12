@@ -87,7 +87,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { toast } from '@wash/ui'
+import { toast } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const rows = [

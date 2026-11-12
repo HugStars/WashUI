@@ -79,7 +79,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { AppSelect } from '@wash/ui'
+import { AppSelect } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const env = ref('prod')

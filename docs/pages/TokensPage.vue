@@ -86,7 +86,7 @@ const zRows = [
     { name: '--wa_z_route', desc: '路由进度条' },
 ]
 
-const tokenCode = `import { chartColors, breakpoints, zIndex } from '@wash/ui/tokens.js'
+const tokenCode = `import { chartColors, breakpoints, zIndex } from 'wash-ui/tokens.js'
 
 chartColors.accent
 breakpoints.mobile

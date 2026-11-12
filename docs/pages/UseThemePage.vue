@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { useTheme } from '@wash/ui'
+import { useTheme } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const { mode, theme, setTheme } = useTheme()
@@ -29,7 +29,7 @@ const themeRows = [
     { name: 'toggleTheme()', desc: '在亮色与暗色之间切换' },
 ]
 
-const themeCode = `import { useTheme } from '@wash/ui'
+const themeCode = `import { useTheme } from 'wash-ui'
 
 const { mode, theme, setTheme, toggleTheme } = useTheme()`
 </script>

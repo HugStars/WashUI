@@ -63,7 +63,7 @@
 
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
-import { loading } from '@wash/ui'
+import { loading } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const info = ref('无加载任务')

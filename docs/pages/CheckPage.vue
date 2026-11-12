@@ -87,7 +87,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { AppCheck, AppCheckGroup } from '@wash/ui'
+import { AppCheck, AppCheckGroup } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const options = [

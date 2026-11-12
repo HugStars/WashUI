@@ -17,8 +17,8 @@
         <ul class="doc_list">
             <li>PageHeader 必须放在 AppShell 内，并且要放在 RouterView 与 PageTransition 外。</li>
             <li>PageTransition 要求页面组件是单根元素；多块内容请用一个元素包住。</li>
-            <li>主入口不自动加载发布后的 CSS，必须显式引入 @wash/ui/style.css。</li>
-            <li>需要 tree-shaking 时使用 @wash/ui/components/* 和 @wash/ui/layout/* 子路径；createUi 会全量注册。</li>
+            <li>主入口不自动加载发布后的 CSS，必须显式引入 wash-ui/style.css。</li>
+            <li>需要 tree-shaking 时使用 wash-ui/components/* 和 wash-ui/layout/* 子路径；createUi 会全量注册。</li>
             <li>createAppRouter 设置 home 后，主页进入非主页使用 push，非主页之间使用 replace，回主页优先 back；侧边栏等内容导航可用 router.navigate(path, { mode: 'push' }) 强制写入历史栈。</li>
             <li>AppDialog 是受控组件，关闭需要绑定 v-model:open。</li>
         </ul>
@@ -31,9 +31,9 @@
 import { DocPage } from '../components/index.js'
 
 const mainCode = `import { createApp } from 'vue'
-import '@wash/ui/style.css'
-import { createUi } from '@wash/ui'
-import { createAppRouter } from '@wash/ui/router'
+import 'wash-ui/style.css'
+import { createUi } from 'wash-ui'
+import { createAppRouter } from 'wash-ui/router'
 import App from './App.vue'
 import Home from './views/Home.vue'
 
@@ -85,7 +85,7 @@ const pageCode = `<template>
     </div>
 </template>`
 
-const routerCode = `import { createAppRouter } from '@wash/ui/router'
+const routerCode = `import { createAppRouter } from 'wash-ui/router'
 
 const router = createAppRouter({
     routes,

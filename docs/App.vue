@@ -18,7 +18,7 @@
         </RouterView>
 
         <template #footer>
-            <span class="wa_mono">@wash/ui</span>
+            <span class="wa_mono">wash-ui</span>
             <a href="https://hugstars.top" target="_blank" rel="noopener noreferrer">✨ By Hugstars.</a>
         </template>
     </AppShell>
@@ -27,7 +27,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { AppThemeToggle } from '@wash/ui'
+import { AppThemeToggle } from 'wash-ui'
 import pkg from '../package.json'
 import DocNavSelect from './components/DocNavSelect.vue'
 import DocSearch from './components/DocSearch.vue'

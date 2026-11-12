@@ -74,7 +74,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { AppTextarea } from '@wash/ui'
+import { AppTextarea } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const basic = ref('')

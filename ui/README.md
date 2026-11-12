@@ -1,33 +1,28 @@
 # WashUI
 
-`@wash/ui` 前端设计系统。包含设计变量、Vue 3 组件、页面布局、Toast、路由工厂、工具函数与组合式函数。
+`wash-ui` 前端设计系统。包含设计变量、Vue 3 组件、页面布局、Toast、路由工厂、工具函数与组合式函数。
 
 - 纯 CSS 变量 + 原生 CSS，不依赖 Tailwind、UI 框架或预处理器
 - 组件与布局分离：`components/` 是 UI 组件，`layout/` 是页面结构
 - 只发布 ESM，面向现代浏览器与 Vite
+- MIT 许可
 
 ## 安装
 
 ```bash
-pnpm add @wash/ui
-```
-
-私有源需要先在项目 `.npmrc` 中配置作用域：
-
-```ini
-@wash:registry=https://你的私有源地址
+pnpm add wash-ui
 ```
 
 ## 引入
 
 ```js
-import '@wash/ui/style.css'
+import 'wash-ui/style.css'
 ```
 
 `style.css` 已包含 `tokens.css`。只使用变量时改为：
 
 ```js
-import '@wash/ui/tokens.css'
+import 'wash-ui/tokens.css'
 ```
 
 两者不要同时引入。
@@ -38,8 +33,8 @@ import '@wash/ui/tokens.css'
 
 ```js
 import { createApp } from 'vue'
-import '@wash/ui/style.css'
-import { createUi } from '@wash/ui'
+import 'wash-ui/style.css'
+import { createUi } from 'wash-ui'
 import App from './App.vue'
 
 const app = createApp(App)
@@ -125,7 +120,7 @@ PageHeader 必须放在 AppShell 内，并且放在 RouterView 与 PageTransitio
 `AppCode` 基于 Speed-highlight，`lang` 支持 `js`、`ts`、`html`、`css`、`json`、`md`、`py`、`bash`、`sql`、`go`、`java`、`c`、`rs`、`yaml`、`xml` 等 34 种语言，也接受 `javascript`、`python`、`shell` 等常见别名。完整列表与标签从 `codeLanguages` 导入：
 
 ```js
-import { codeLanguages } from '@wash/ui'
+import { codeLanguages } from 'wash-ui'
 
 // [{ value: 'js', label: 'JavaScript' }, ...]
 ```
@@ -141,15 +136,15 @@ import { codeLanguages } from '@wash/ui'
 组件与布局都有独立子路径入口，构建后保留独立模块，便于打包器做 JS tree-shaking：
 
 ```js
-import AppButton from '@wash/ui/components/AppButton'
-import AppShell from '@wash/ui/layout/AppShell'
-import '@wash/ui/style.css'
+import AppButton from 'wash-ui/components/AppButton'
+import AppShell from 'wash-ui/layout/AppShell'
+import 'wash-ui/style.css'
 ```
 
 也可以继续从主入口按需导入：
 
 ```js
-import { AppButton, AppShell } from '@wash/ui'
+import { AppButton, AppShell } from 'wash-ui'
 ```
 
 样式统一抽取在 `dist/style.css`，按需引入组件时仍需引入一次。
@@ -242,7 +237,7 @@ app.use(createUi({
 ## Toast
 
 ```js
-import { toast } from '@wash/ui'
+import { toast } from 'wash-ui'
 
 toast('普通提示')
 toast.success('已保存')
@@ -264,7 +259,7 @@ Toast 使用 `textContent` 写入内容，不解析 HTML。
 ## Loading
 
 ```js
-import { loading, loadingManager } from '@wash/ui'
+import { loading, loadingManager } from 'wash-ui'
 
 loading.show('save', '保存中...', {
     priority: 1,
@@ -297,7 +292,7 @@ loading.clear()
 ## 主题
 
 ```js
-import { useTheme } from '@wash/ui'
+import { useTheme } from 'wash-ui'
 
 const { mode, theme, setTheme, toggleTheme } = useTheme()
 ```
@@ -308,7 +303,7 @@ const { mode, theme, setTheme, toggleTheme } = useTheme()
 - 运行时修改 tokens：
 
 ```js
-import { configureTokens } from '@wash/ui'
+import { configureTokens } from 'wash-ui'
 
 configureTokens({
     tokens: { color_accent: '#6366f1' },
@@ -331,7 +326,7 @@ configureTokens({
 ## 路由
 
 ```js
-import { createAppRouter } from '@wash/ui/router'
+import { createAppRouter } from 'wash-ui/router'
 
 const router = createAppRouter({
     routes,
@@ -349,8 +344,8 @@ const router = createAppRouter({
 ## 组合式函数与工具
 
 ```js
-import { useClipboard, useRequest } from '@wash/ui'
-import { formatBytes, formatSpeed, formatMbps, formatDuration, formatCount } from '@wash/ui/utils'
+import { useClipboard, useRequest } from 'wash-ui'
+import { formatBytes, formatSpeed, formatMbps, formatDuration, formatCount } from 'wash-ui/utils'
 ```
 
 - `useClipboard` 返回 `{ copied, copy }`
@@ -401,7 +396,7 @@ pnpm dev:docs
 ```bash
 pnpm build:ui
 cd ui
-pnpm publish --registry=https://你的私有源地址
+pnpm publish
 ```
 
-`prepublishOnly` 会自动构建。`files` 只包含 `dist`、`tokens.css`、`tokens.js` 与 `README.md`。
+首次发布先执行 `npm login`。`prepublishOnly` 会自动构建，`files` 只包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`。版本号在 `ui/package.json` 中修改。

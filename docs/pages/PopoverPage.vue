@@ -43,7 +43,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { toast } from '@wash/ui'
+import { toast } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const actions = ['查看详情', '复制链接', '删除记录']

@@ -1,12 +1,29 @@
 {
-    "name": "@wash/ui",
+    "name": "wash-ui",
     "version": "0.1.0",
     "description": "WashUI 前端设计系统：设计变量、Vue 组件、布局、Toast、路由与工具",
-    "license": "UNLICENSED",
+    "license": "MIT",
+    "author": {
+        "name": "HugStars",
+        "email": "super@hugstars.top"
+    },
     "type": "module",
+    "keywords": [
+        "vue",
+        "vue3",
+        "ui",
+        "design-system",
+        "components",
+        "vite"
+    ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/HugStars/WashUI.git"
+        "url": "git+https://github.com/HugStars/WashUI.git",
+        "directory": "ui"
+    },
+    "homepage": "https://github.com/HugStars/WashUI#readme",
+    "bugs": {
+        "url": "https://github.com/HugStars/WashUI/issues"
     },
     "sideEffects": [
         "**/*.css"
@@ -16,6 +33,7 @@
         "types",
         "tokens.css",
         "tokens.js",
+        "LICENSE",
         "README.md"
     ],
     "main": "./dist/index.js",
@@ -66,9 +84,6 @@
         "@vitejs/plugin-vue": "^6.0.4",
         "vite": "^7.3.1",
         "vue": "^3.5.28"
-    },
-    "publishConfig": {
-        "access": "restricted"
     },
     "engines": {
         "node": ">=20.19"

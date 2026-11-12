@@ -4,7 +4,7 @@ WashUI 是一个 Vue 3 设计系统与文档站，仓库：<https://github.com/H
 
 它由两部分组成：
 
-- `ui/`：`@wash/ui` 库，包含设计变量、组件、布局、主题、Toast、路由状态与工具
+- `ui/`：`wash-ui` 库，包含设计变量、组件、布局、主题、Toast、路由状态与工具
 - `docs/`：基于本库实现的文档站，根目录 Vite 配置直接指向 `docs/`
 
 ## 技术栈
@@ -202,7 +202,7 @@ const rule = {
 
 ```text
 WashUI/
-├─ ui/                          @wash/ui 库
+├─ ui/                          wash-ui 库
 │  ├─ src/
 │  │  ├─ components/            基础、加载、表单、反馈组件
 │  │  │  ├─ AppCheck.vue        单个复选框
@@ -284,14 +284,14 @@ app.use(createUi({
 ## 按需引入
 
 ```js
-import AppButton from '@wash/ui/components/AppButton'
-import { AppCheck, AppCheckGroup } from '@wash/ui'
-import '@wash/ui/style.css'
+import AppButton from 'wash-ui/components/AppButton'
+import { AppCheck, AppCheckGroup } from 'wash-ui'
+import 'wash-ui/style.css'
 ```
 
 `createUi()` 会全量注册所有组件；不使用它时手动注册即可。样式统一抽取为 `dist/style.css`。
 
-组件子路径同时提供类型声明（`types/components/*.d.ts`），`@wash/ui/components/AppButton` 可以直接获得 Props 与事件提示。
+组件子路径同时提供类型声明（`types/components/*.d.ts`），`wash-ui/components/AppButton` 可以直接获得 Props 与事件提示。
 
 ## 组件状态
 
@@ -360,12 +360,16 @@ import '@wash/ui/style.css'
 ```bash
 pnpm build:ui
 cd ui
-pnpm publish --registry=https://你的私有源地址
+pnpm publish
 ```
 
-`ui/package.json` 的 `files` 包含 `dist`、`types`、`tokens.css`、`tokens.js` 与 `README.md`，文档不会发布。发布前需要在私有源拥有 `@wash` 作用域。
+`ui/package.json` 的 `files` 包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`，文档不会发布。包名 `wash-ui` 发布到公共 npm，不需要作用域，首次发布前先执行 `npm login`。
 
 `pnpm build:ui` 会先用 `vue-tsc` 生成 `ui/types`，再由 `scripts/build-types.mjs` 从 `defineProps` 生成组件的 Props 声明。类型目录不提交到仓库，发布时由 `prepublishOnly` 重新生成。
+
+## 许可证
+
+[MIT](./LICENSE)
 
 ## 提交约定
 

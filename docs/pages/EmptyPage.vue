@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { toast } from '@wash/ui'
+import { toast } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const propsRows = [

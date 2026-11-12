@@ -40,7 +40,7 @@
 
 <script setup>
 import { nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
-import { loading } from '@wash/ui'
+import { loading } from 'wash-ui'
 import { PLAYGROUND_CHANNEL } from '../playground-bridge.js'
 import { ExtractDeclaredNames, ExtractImportNames, StripImports } from '../sfc-code.js'
 import PlaygroundEditor from '../components/PlaygroundEditor.vue'
@@ -108,8 +108,8 @@ function LoadRuntime() {
     if (!runtimePromise) {
         runtimePromise = Promise.all([
             import('vue/dist/vue.esm-bundler.js'),
-            import('@wash/ui'),
-            import('@wash/ui/utils'),
+            import('wash-ui'),
+            import('wash-ui/utils'),
         ])
     }
     return runtimePromise

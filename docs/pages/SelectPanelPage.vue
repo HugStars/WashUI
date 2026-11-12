@@ -105,7 +105,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { AppSelectPanel } from '@wash/ui'
+import { AppSelectPanel } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const singleValue = ref('dev')
