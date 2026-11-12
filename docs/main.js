@@ -10,4 +10,5 @@ const router = createDocsRouter()
 app.use(createUi({ theme: 'auto' }))
 app.use(router)
 
+// ! 必须挂载到 body，禁止改回 #app（用户明确要求）
 router.isReady().then(() => app.mount('body'))
