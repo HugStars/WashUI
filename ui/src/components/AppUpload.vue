@@ -105,6 +105,7 @@ function OnDragLeave(event) {
 
 function OnDrop(event) {
     Dragging.value = false
+    if (props.disabled) return
     Add(event.dataTransfer?.files)
 }
 

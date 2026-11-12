@@ -405,9 +405,12 @@ const ScrollStyle = computed(() => {
     return value ? { maxHeight: value } : undefined
 })
 
+// 无 rowKey 字段时以首次出现的原始索引兜底，data 中不要重复引用同一个行对象
 const OriginalIndexMap = computed(() => {
     const map = new Map()
-    props.data.forEach((row, index) => map.set(row, index))
+    props.data.forEach((row, index) => {
+        if (!map.has(row)) map.set(row, index)
+    })
     return map
 })
 
@@ -494,7 +497,7 @@ function CompareValue(a, b) {
 function AriaSort(column) {
     if (!column.sortable) return undefined
     const state = SortState.value
-    if (!state || state.key !== column.key || !state.order) return undefined
+    if (!state || state.key !== column.key || !state.order) return 'none'
     return state.order === 'asc' ? 'ascending' : 'descending'
 }
 
@@ -735,11 +738,14 @@ function OnResize() {
 }
 
 let ResizeObserverInstance = null
+let Unmounted = false
 
 onMounted(() => {
     nextTick(OnResize)
     window.addEventListener('resize', OnResize)
-    document.fonts?.ready?.then(OnResize)
+    document.fonts?.ready?.then(() => {
+        if (!Unmounted) OnResize()
+    })
 
     if (typeof ResizeObserver !== 'undefined' && ScrollEl.value) {
         ResizeObserverInstance = new ResizeObserver(OnResize)
@@ -748,6 +754,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+    Unmounted = true
     window.removeEventListener('resize', OnResize)
     ResizeObserverInstance?.disconnect()
     ResizeObserverInstance = null

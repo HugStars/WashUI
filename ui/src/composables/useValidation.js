@@ -41,6 +41,10 @@ function CheckRule(rule, value) {
     if (typeof rule.validator === 'function') {
         try {
             const result = rule.validator(value)
+            // 异步规则无法在同步校验中等待，明确提示而不是静默通过
+            if (result && typeof result.then === 'function') {
+                return '暂不支持异步校验，请改用同步 validator'
+            }
             if (result === false) return rule.message || '校验未通过'
             if (typeof result === 'string') return result
             if (result instanceof Error) return result.message || rule.message || '校验未通过'

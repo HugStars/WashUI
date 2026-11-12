@@ -4,6 +4,7 @@ const DEFAULT_KEY = 'wa_theme'
 
 let storageKey = DEFAULT_KEY
 let inited = false
+let mediaBound = false
 
 const mode = ref('auto')
 const theme = ref('light')
@@ -61,20 +62,23 @@ function isValid(value) {
 }
 
 export function initTheme(initial = 'auto', key) {
-    if (key) storageKey = key
-    if (inited) return
+    const nextKey = key || storageKey
+    if (inited && nextKey === storageKey) return
 
+    storageKey = nextKey
     inited = true
     if (typeof window === 'undefined') return
 
+    if (!mediaBound) {
+        mediaBound = true
+        window.matchMedia('(prefers-color-scheme: dark)')
+            .addEventListener('change', () => {
+                if (mode.value === 'auto') apply()
+            })
+    }
+
     const saved = readStored()
     mode.value = isValid(saved) ? saved : (isValid(initial) ? initial : 'auto')
-
-    const media = window.matchMedia('(prefers-color-scheme: dark)')
-    media.addEventListener('change', () => {
-        if (mode.value === 'auto') apply()
-    })
-
     apply()
 }
 

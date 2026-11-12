@@ -217,6 +217,7 @@ watch(() => props.disabled, value => {
 
 onUnmounted(() => {
     ClearTimer()
+    DetachDescription()
     Unlisten()
 })
 </script>

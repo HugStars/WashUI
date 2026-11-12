@@ -14,7 +14,7 @@
                 @input="HandleInput" @blur="HandleBlur">
             <Transition enter-active-class="wa_input_clear_enter_active"
                 leave-active-class="wa_input_clear_leave_active">
-                <button v-if="clearable && modelValue" type="button" class="wa_input_clear" aria-label="清空"
+                <button v-if="clearable && HasValue" type="button" class="wa_input_clear" aria-label="清空"
                     :disabled="disabled || readonly" @click="Clear">
                     <AppIcon name="close" :size="14" />
                 </button>
@@ -84,6 +84,9 @@ const InputId = useId()
 const HintId = `${InputId}-hint`
 const ErrorId = `${InputId}-error`
 const InputEl = ref(null)
+const HasValue = computed(
+    () => props.modelValue !== '' && props.modelValue !== null && props.modelValue !== undefined
+)
 const { DisplayError, OnBlur: ValidateBlur, OnInput: ValidateInput } = useValidation(
     props,
     () => props.modelValue,

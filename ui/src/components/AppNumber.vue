@@ -60,12 +60,14 @@ const target = computed(() => {
 
 const decimals = computed(() => Math.max(0, Math.min(20, Math.floor(props.decimals || 0))))
 
+const Formatter = computed(() => new Intl.NumberFormat('zh-CN', {
+    useGrouping: props.separator,
+    minimumFractionDigits: decimals.value,
+    maximumFractionDigits: decimals.value,
+}))
+
 function Format(value) {
-    return new Intl.NumberFormat('zh-CN', {
-        useGrouping: props.separator,
-        minimumFractionDigits: decimals.value,
-        maximumFractionDigits: decimals.value,
-    }).format(value)
+    return Formatter.value.format(value)
 }
 
 const display = computed(() => `${props.prefix}${Format(current.value)}${props.suffix}`)

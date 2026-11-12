@@ -16,6 +16,8 @@ export function useRequest(service, options = {}) {
     let sequence = 0
 
     function cancel() {
+        // 递增序号让不响应 abort 的请求也无法写回结果
+        sequence += 1
         if (controller) {
             controller.abort()
             controller = null
@@ -58,7 +60,6 @@ export function useRequest(service, options = {}) {
 
     function reset() {
         cancel()
-        sequence += 1
         data.value = initialData
         error.value = null
     }

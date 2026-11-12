@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { createChoiceGroup, provideChoiceGroup } from '../composables/useChoiceGroup.js'
 import AppCheck from './AppCheck.vue'
 import AppRadio from './AppRadio.vue'
@@ -85,4 +85,7 @@ function ScrollCheckedToCenter() {
 }
 
 onMounted(() => nextTick(ScrollCheckedToCenter))
+
+// 选项异步到达时重新滚动到已选项
+watch([() => props.options, () => props.groups], () => nextTick(ScrollCheckedToCenter))
 </script>

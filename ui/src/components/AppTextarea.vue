@@ -4,14 +4,14 @@
             <slot name="label">{{ label }}</slot>
         </label>
 
-        <div class="wa_textarea" :style="{ resize }" :class="[`wa_textarea_${size}`, {
+        <div class="wa_textarea" :class="[`wa_textarea_${size}`, {
             on: DisplayError,
             off: disabled || readonly,
             wa_frosted: frosted,
         }]">
             <textarea :id="TextareaId" ref="TextareaEl" v-bind="$attrs" class="wa_textarea_control"
                 :value="modelValue ?? ''" :rows="rows" :cols="cols" :wrap="wrap" :maxlength="maxlength"
-                :disabled="disabled" :readonly="readonly"
+                :style="{ resize }" :disabled="disabled" :readonly="readonly"
                 :aria-invalid="DisplayError ? 'true' : undefined" :aria-describedby="DescribedBy"
                 :aria-label="label ? undefined : ariaLabel" @input="HandleInput" @blur="HandleBlur"></textarea>
         </div>
@@ -215,7 +215,6 @@ function HandleBlur() {
     font: inherit;
     font-size: 13px;
     line-height: 1.6;
-    resize: none;
 }
 
 .wa_textarea_md .wa_textarea_control {
