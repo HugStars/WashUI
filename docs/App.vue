@@ -30,7 +30,7 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { AppThemeToggle } from 'wash-ui'
-import pkg from '../package.json'
+import pkg from '../ui/package.json'
 import DocNavSelect from './components/DocNavSelect.vue'
 import DocSearch from './components/DocSearch.vue'
 import { nav, pageNav } from './site.js'
