@@ -135,6 +135,7 @@ function Select() {
     background: var(--wa_color_field);
     cursor: pointer;
     transition:
+        color var(--wa_duration_fast) var(--wa_ease_out),
         background var(--wa_duration_base) var(--wa_ease_out),
         box-shadow var(--wa_duration_base) var(--wa_ease_out),
         transform var(--wa_duration_fast) var(--wa_ease_out);
@@ -162,11 +163,6 @@ function Select() {
     transform: scale(.9);
 }
 
-.wa_radio:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
-}
-
 .wa_radio:disabled {
     opacity: .45;
     cursor: not-allowed;
@@ -187,6 +183,8 @@ function Select() {
 /* 分段单选：由 AppRadioGroup variant="segmented" 启用 */
 .wa_radio.wa_radio_segmented {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: auto;
     min-height: var(--wa_segmented_height, 36px);
@@ -197,12 +195,26 @@ function Select() {
     background: transparent;
     font-size: var(--wa_segmented_font, 13px);
     line-height: 1.4;
+    user-select: none;
+    -webkit-user-select: none;
+    /* * 按下缩放与 AppTabs 使用同一套时长和弹性曲线 */
+    transition:
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
 .wa_radio.wa_radio_segmented:hover:not(:disabled) {
-    color: var(--wa_color_text);
-    background: var(--wa_color_hover);
+    /* 触屏上 hover 会残留，颜色和背景只在精确指针设备上生效 */
+    background: transparent;
     box-shadow: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .wa_radio.wa_radio_segmented:hover:not(:disabled) {
+        color: var(--wa_color_text);
+        background: var(--wa_color_hover);
+    }
 }
 
 .wa_radio.wa_radio_segmented.on,
@@ -212,8 +224,10 @@ function Select() {
     box-shadow: none;
 }
 
-.wa_radio.wa_radio_segmented:active:not(:disabled) {
-    transform: none;
+/* * 与 AppTabs 一致：按下立即缩放；长按滑块缩放由 AppRadioGroup 的 press 状态控制 */
+.wa_radio.wa_radio_segmented:active:not(:disabled),
+.wa_choice_row.pressed .wa_radio.wa_radio_segmented {
+    transform: scale(.94);
 }
 
 .wa_radio_segmented_text {
@@ -238,11 +252,14 @@ function Select() {
 
 @media (prefers-reduced-motion: reduce) {
     .wa_radio,
+    .wa_radio.wa_radio_segmented,
     .wa_radio_dot {
         transition: none;
     }
 
-    .wa_radio:active:not(:disabled) {
+    .wa_radio:active:not(:disabled),
+    .wa_radio.wa_radio_segmented:active:not(:disabled),
+    .wa_choice_row.pressed .wa_radio.wa_radio_segmented {
         transform: none;
     }
 }

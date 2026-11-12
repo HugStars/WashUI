@@ -67,11 +67,12 @@
 
 /* 分段单选：AppRadioGroup variant="segmented" */
 .wa_choice_group_segmented {
-    --wa_segmented_pad: 3px;
-    --wa_segmented_gap: 2px;
-    --wa_segmented_height: 36px;
-    --wa_segmented_pad_y: 8px;
-    --wa_segmented_pad_x: 16px;
+    /* * 外框 padding 与选项 gap 都取 AppTabs 默认值 8px，避免两处尺寸不一致 */
+    --wa_segmented_pad: 8px;
+    --wa_segmented_gap: 8px;
+    --wa_segmented_height: 34px;
+    --wa_segmented_pad_y: 0;
+    --wa_segmented_pad_x: 14px;
     --wa_segmented_font: 13px;
     --wa_segmented_radius: var(--wa_radius_pill);
 
@@ -88,8 +89,11 @@
 }
 
 .wa_choice_group_segmented_sm {
+    /* * sm 保持紧凑，但 padding 与 gap 仍然相等 */
+    --wa_segmented_pad: 6px;
+    --wa_segmented_gap: 6px;
     --wa_segmented_height: 30px;
-    --wa_segmented_pad_y: 6px;
+    --wa_segmented_pad_y: 0;
     --wa_segmented_pad_x: 12px;
     --wa_segmented_font: 12px;
 }
@@ -119,30 +123,86 @@
     flex: 0 0 auto;
 }
 
-/* 选中背景单独一层，切换时在选项之间滑动 */
+/* 选中背景单独一层，切换时在选项之间滑动；结构与 AppTabs 的滑块一致 */
 .wa_choice_group_glider {
     position: absolute;
     top: 0;
     left: 0;
     z-index: 0;
+    width: 0;
+    height: 0;
     border-radius: var(--wa_segmented_radius);
-    background: var(--wa_color_dialog);
     opacity: 0;
     pointer-events: none;
+    /* * ready 前保持 0 尺寸，测量完成后由 left/top/width/height 过渡展开 */
     transition:
-        transform var(--wa_duration_base) var(--wa_ease_in_out),
-        width var(--wa_duration_base) var(--wa_ease_in_out),
-        height var(--wa_duration_base) var(--wa_ease_in_out),
-        opacity var(--wa_duration_fast) var(--wa_ease_out);
+        left var(--wa_duration_slow) var(--wa_ease_spring),
+        top var(--wa_duration_slow) var(--wa_ease_spring),
+        width var(--wa_duration_slow) var(--wa_ease_spring),
+        height var(--wa_duration_slow) var(--wa_ease_spring),
+        opacity var(--wa_duration_fast) linear;
 }
 
 .wa_choice_group_glider.ready {
     opacity: 1;
 }
 
+/* * 背景放在内层：回弹和按压缩放只作用于内层，不影响外层定位 */
+.wa_choice_group_glider_inner {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--wa_color_dialog);
+    transform-origin: center;
+    transition: transform var(--wa_duration_base) var(--wa_ease_spring);
+}
+
+.wa_choice_group_glider_inner.press {
+    transform: scale(.9);
+}
+
+.wa_choice_group_glider_inner.bounce {
+    animation: wa_choice_group_bounce .45s cubic-bezier(.22, .61, .36, 1);
+}
+
+@keyframes wa_choice_group_bounce {
+    0% {
+        scale: 1 1;
+    }
+
+    35% {
+        scale: 1.08 .93;
+    }
+
+    58% {
+        scale: .98 1.02;
+    }
+
+    78% {
+        scale: 1.015 .99;
+    }
+
+    100% {
+        scale: 1 1;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .wa_choice_group_glider {
+        transition: opacity var(--wa_duration_fast) linear;
+    }
+
+    .wa_choice_group_glider_inner {
         transition: none;
+    }
+
+    .wa_choice_group_glider_inner.bounce {
+        animation: none;
+    }
+
+    .wa_choice_group_glider_inner.press {
+        transform: none;
     }
 }
 

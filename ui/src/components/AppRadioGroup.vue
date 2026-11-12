@@ -9,20 +9,25 @@
             'wa_choice_group_segmented_md': variant === 'segmented' && SegmentedSize === 'md',
             'wa_choice_group_segmented_rect': variant === 'segmented' && shape === 'rect',
         },
-    ]" role="radiogroup" :aria-label="ariaLabel">
-        <span v-if="variant === 'segmented'" class="wa_choice_group_glider" :class="{ ready: GliderReady }"
-            :style="GliderStyle" aria-hidden="true"></span>
+    ]" role="radiogroup" :aria-label="ariaLabel" @pointerdown="OnPressStart">
+        <span v-if="variant === 'segmented'" class="wa_choice_group_glider"
+            :class="{ ready: GliderReady }" :style="GliderStyle" aria-hidden="true">
+            <span class="wa_choice_group_glider_inner" :class="{ bounce: GliderBounce, press: GliderPress }"
+                @animationend="OnGliderAnimationEnd"></span>
+        </span>
 
         <slot />
 
-        <AppRadio v-for="item in options" :key="item.value" :value="item.value" :label="item.label"
-            :disabled="item.disabled" />
+        <AppRadio v-for="item in options" :key="item.value" :ref="el => SetRowEl(item.value, el)"
+            :value="item.value" :label="item.label" :disabled="item.disabled"
+            :class="{ pressed: variant === 'segmented' && PressedKey === item.value }" />
     </div>
 </template>
 
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { createChoiceGroup, provideChoiceGroup } from '../composables/useChoiceGroup.js'
+import { usePressFeedback } from '../composables/usePressFeedback.js'
 import AppRadio from './AppRadio.vue'
 
 const props = defineProps({
@@ -95,14 +100,34 @@ const { group, IsBetween } = createChoiceGroup(props, emit, false)
 provideChoiceGroup(group)
 
 const GroupEl = ref(null)
+const RowEls = new Map()
 const GliderReady = ref(false)
+const GliderBounce = ref(false)
 const GliderStyle = ref({})
+const { Press: GliderPress, PressedKey, Start: OnPressStart } = usePressFeedback(
+    '.wa_choice_row',
+    RowEls
+)
 const SegmentedSize = computed(() => props.size === 'sm' ? 'sm' : 'md')
+const ReducedMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)')
+    : null
 let ResizeObserverInstance = null
-let FirstPaint = true
-let FirstTimer = 0
+let GliderFrame = 0
+let BounceFrame = 0
+
+// 记录每个选项的外层行元素，供长按反馈匹配当前按下的是哪一项
+function SetRowEl(value, instance) {
+    const el = instance?.$el || instance
+    if (el) RowEls.set(value, el)
+    else RowEls.delete(value)
+}
 
 function UpdateGlider() {
+    // note 直接调用时取消排队中的帧，避免重复读取 offset 尺寸
+    cancelAnimationFrame(GliderFrame)
+    GliderFrame = 0
+
     const groupEl = GroupEl.value
     const selected = groupEl?.querySelector('.wa_radio_segmented.on')
 
@@ -111,30 +136,51 @@ function UpdateGlider() {
         return
     }
 
-    const groupRect = groupEl.getBoundingClientRect()
-    const rect = selected.getBoundingClientRect()
-    const next = {
-        transform: `translate(${rect.left - groupRect.left}px, ${rect.top - groupRect.top}px)`,
-        width: `${rect.width}px`,
-        height: `${rect.height}px`,
+    // * 与 AppTabs 一致：用布局尺寸定位，首帧从 0 尺寸过渡到选中项，不受按压缩放影响
+    const target = selected.closest('.wa_choice_row') || selected
+    GliderStyle.value = {
+        left: `${target.offsetLeft}px`,
+        top: `${target.offsetTop}px`,
+        width: `${target.offsetWidth}px`,
+        height: `${target.offsetHeight}px`,
     }
-
-    if (FirstPaint) {
-        FirstPaint = false
-        GliderStyle.value = { ...next, transition: 'none' }
-        GliderReady.value = true
-        FirstTimer = setTimeout(() => {
-            GliderStyle.value = next
-        }, 0)
-        return
-    }
-
-    GliderStyle.value = next
     GliderReady.value = true
 }
 
+// * resize 合并到 rAF，避免和 ResizeObserver 在同一帧重复测量滑块位置
+function ScheduleGlider() {
+    if (GliderFrame) return
+    GliderFrame = requestAnimationFrame(() => {
+        GliderFrame = 0
+        UpdateGlider()
+    })
+}
+
+// * 与 AppTabs 一致：切换后让选中背景轻微回弹，缩放围绕自身中心，不改变定位
+function PlayBounce() {
+    cancelAnimationFrame(BounceFrame)
+    GliderBounce.value = false
+
+    if (ReducedMotion?.matches) return
+
+    BounceFrame = requestAnimationFrame(() => {
+        BounceFrame = requestAnimationFrame(() => {
+            GliderBounce.value = true
+        })
+    })
+}
+
+function OnGliderAnimationEnd(event) {
+    if (event.target === event.currentTarget) GliderBounce.value = false
+}
+
+watch(() => props.modelValue, () => nextTick(() => {
+    UpdateGlider()
+    PlayBounce()
+}))
+
 watch(
-    [() => props.modelValue, () => props.options, () => props.size, () => props.shape, () => props.variant],
+    [() => props.options, () => props.size, () => props.shape, () => props.variant],
     () => nextTick(UpdateGlider),
     { deep: true }
 )
@@ -148,12 +194,13 @@ onMounted(async () => {
         ResizeObserverInstance.observe(GroupEl.value)
     }
 
-    window.addEventListener('resize', UpdateGlider)
+    window.addEventListener('resize', ScheduleGlider)
 })
 
 onUnmounted(() => {
-    clearTimeout(FirstTimer)
     ResizeObserverInstance?.disconnect()
-    window.removeEventListener('resize', UpdateGlider)
+    window.removeEventListener('resize', ScheduleGlider)
+    cancelAnimationFrame(GliderFrame)
+    cancelAnimationFrame(BounceFrame)
 })
 </script>
