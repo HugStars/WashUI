@@ -43,7 +43,17 @@ jobs:
       - name: Build library
         run: pnpm build:ui
 
+      - name: Check published version
+        id: published
+        run: |
+          if npm view wash-ui@${GITHUB_REF_NAME#v} version >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish
+        if: steps.published.outputs.exists != 'true'
         run: pnpm publish:ui --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
