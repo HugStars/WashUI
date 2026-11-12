@@ -79,6 +79,7 @@ const ItemEls = new Map()
 let ResizeObserverInstance = null
 let FirstPaint = true
 let FirstTimer = 0
+let GliderFrame = 0
 
 const NormalizedGroups = computed(() => {
     const groups = props.groups.map((group, index) => ({
@@ -175,6 +176,10 @@ function OnClick(item, index, event) {
 }
 
 function UpdateGlider() {
+    // note 直接调用时取消排队中的帧，避免 ResizeObserver 和 resize 同帧重复测量
+    cancelAnimationFrame(GliderFrame)
+    GliderFrame = 0
+
     const body = BodyEl.value
     const el = ItemEls.get(ActiveKey.value)
 
@@ -206,26 +211,64 @@ function UpdateGlider() {
     GliderReady.value = true
 }
 
-watch(ActiveKey, () => nextTick(UpdateGlider))
+// * resize 合并到 rAF，避免和 ResizeObserver 在同一帧重复测量菜单滑块
+function ScheduleGlider() {
+    if (GliderFrame) return
+    GliderFrame = requestAnimationFrame(() => {
+        GliderFrame = 0
+        UpdateGlider()
+    })
+}
+
+// section 选中项定位
+// * 滚动容器通常在组件外部（例如文档侧栏 .doc_side），这里只找最近的可滚动祖先
+// ! 不要改成 scrollIntoView，否则可能把整个页面一起滚走
+function ScrollActiveIntoView() {
+    const el = ItemEls.get(ActiveKey.value)
+    if (!el) return
+
+    let parent = el.parentElement
+    while (parent) {
+        const style = getComputedStyle(parent)
+        if (/(auto|scroll)/.test(style.overflowY)) {
+            const max = parent.scrollHeight - parent.clientHeight
+            if (max <= 0) return
+
+            const parentRect = parent.getBoundingClientRect()
+            const rect = el.getBoundingClientRect()
+            const top = rect.top - parentRect.top + parent.scrollTop
+            parent.scrollTop = Math.max(0, Math.min(max, top - (parent.clientHeight - rect.height) / 2))
+            return
+        }
+        parent = parent.parentElement
+    }
+}
+
+watch(ActiveKey, () => nextTick(() => {
+    UpdateGlider()
+    ScrollActiveIntoView()
+}))
 watch(() => props.size, () => nextTick(UpdateGlider))
 watch(() => props.layoutKey, () => nextTick(UpdateGlider))
 
 onMounted(async () => {
     await nextTick()
     UpdateGlider()
+    ScrollActiveIntoView()
 
     if (typeof ResizeObserver !== 'undefined' && BodyEl.value) {
         ResizeObserverInstance = new ResizeObserver(UpdateGlider)
         ResizeObserverInstance.observe(BodyEl.value)
     }
 
-    window.addEventListener('resize', UpdateGlider)
+    window.addEventListener('resize', ScheduleGlider)
 })
 
 onUnmounted(() => {
     clearTimeout(FirstTimer)
     ResizeObserverInstance?.disconnect()
-    window.removeEventListener('resize', UpdateGlider)
+    window.removeEventListener('resize', ScheduleGlider)
+    cancelAnimationFrame(GliderFrame)
     ItemEls.clear()
 })
 </script>
@@ -347,11 +390,6 @@ onUnmounted(() => {
     padding-left: calc(var(--wa_nav_pad_x) + var(--wa_nav_hover_shift));
     color: var(--wa_color_text);
     background: var(--wa_color_hover);
-}
-
-.wa_nav_menu_link:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
 }
 
 .wa_nav_menu_link.on,
