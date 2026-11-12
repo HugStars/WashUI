@@ -25,7 +25,7 @@
 
                 <div class="doc_demo_code_body">
                     <div class="doc_demo_code_inner">
-                        <AppCode :code="code" :lang="lang" />
+                        <AppCode v-if="codeMounted" :code="code" :lang="lang" />
                     </div>
                 </div>
             </div>
@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { toast } from 'wash-ui'
 import { OpenInPlayground } from '../playground-bridge.js'
 
@@ -84,7 +84,14 @@ const props = defineProps({
 })
 
 const expanded = ref(props.defaultExpanded)
+// * 首次展开前不挂载代码块，避免未展开的示例也执行语法高亮
+// ! 展开过之后不要卸载，否则收起动画和代码内容都会丢
+const codeMounted = ref(props.defaultExpanded)
 const HasPlayground = computed(() => props.playground !== false)
+
+watch(expanded, value => {
+    if (value) codeMounted.value = true
+})
 
 function OpenPlayground() {
     const source = typeof props.playground === 'string'
@@ -175,11 +182,6 @@ function OpenPlayground() {
 .doc_demo_toggle:hover {
     color: var(--wa_color_text);
     background: var(--wa_color_active);
-}
-
-.doc_demo_toggle:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 2px;
 }
 
 .doc_demo_chevron {

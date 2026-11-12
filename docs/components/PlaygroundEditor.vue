@@ -10,8 +10,8 @@
             <div class="pg_editor_inner">
                 <pre ref="HighlightEl" class="pg_highlight" aria-hidden="true"><code v-html="highlighted"></code></pre>
                 <textarea ref="TextareaEl" class="pg_textarea" :value="modelValue" spellcheck="false" wrap="off"
-                    :placeholder="placeholder" @input="OnInput" @keydown.tab.prevent="OnTab"
-                    @scroll="SyncScroll"></textarea>
+                    :aria-label="`${label} 代码编辑器`" :placeholder="placeholder" @input="OnInput"
+                    @keydown.tab.prevent="OnTab" @scroll="SyncScroll"></textarea>
             </div>
         </div>
     </section>
