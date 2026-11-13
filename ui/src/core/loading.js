@@ -1,7 +1,7 @@
 import { getIcon } from './icons.js'
 import { sanitizeSvg } from '../utils/svg.js'
 
-const DEFAULT_TEXT = '加载中...'
+const DEFAULT_TEXT = '加载中'
 
 const items = new Map()
 let order = 0
@@ -10,6 +10,7 @@ let host = null
 let ringEl = null
 let iconEl = null
 let textEl = null
+let dotsEl = null
 let pageLocked = false
 let lockedScrollY = 0
 
@@ -34,7 +35,16 @@ function EnsureHost() {
     textEl = document.createElement('span')
     textEl.className = 'wa_loading_text'
 
-    box.append(ringEl, iconEl, textEl)
+    // * 三个点独立渲染：动画时只改透明度与位移，占位宽度始终不变
+    dotsEl = document.createElement('span')
+    dotsEl.className = 'wa_loading_dots'
+    dotsEl.innerHTML = '<i></i><i></i><i></i>'
+
+    const textWrap = document.createElement('span')
+    textWrap.className = 'wa_loading_text_wrap'
+    textWrap.append(textEl, dotsEl)
+
+    box.append(ringEl, iconEl, textWrap)
     host.append(box)
     document.body.appendChild(host)
 
@@ -160,11 +170,18 @@ function Render() {
     if (!EnsureHost()) return
 
     textEl.textContent = top.text
+    dotsEl.hidden = !top.dots
     ApplyIcon(top)
     ApplyOverlay(top)
     topId = top.id
 
     ShowHost()
+}
+
+function NormalizeText(value) {
+    const text = value == null || value === '' ? DEFAULT_TEXT : String(value)
+    // 文案自带的尾部省略号交给三点动画，避免出现六个点
+    return text.replace(/[.。]{2,}$/, '').trimEnd()
 }
 
 function NormalizeOptions(text, options) {
@@ -177,11 +194,12 @@ function NormalizeOptions(text, options) {
     }
 
     return {
-        text: value == null || value === '' ? DEFAULT_TEXT : String(value),
+        text: NormalizeText(value),
         priority: Number(config.priority) || 0,
         icon: config.icon || '',
         spin: config.spin !== false,
-        gradient: config.gradient === true,
+        dots: config.dots !== false,
+        gradient: config.gradient !== false,
         blur: Math.max(0, Number(config.blur) || 0),
     }
 }
@@ -203,6 +221,7 @@ export const loading = {
             priority: config.priority,
             icon: config.icon,
             spin: config.spin,
+            dots: config.dots,
             gradient: config.gradient,
             blur: config.blur,
             order: ++order,
@@ -222,13 +241,14 @@ export const loading = {
         if (!item) return false
 
         if (typeof text === 'string') {
-            item.text = text || DEFAULT_TEXT
+            item.text = NormalizeText(text)
         } else if (text && typeof text === 'object') {
-            if (text.text !== undefined) item.text = text.text || DEFAULT_TEXT
+            if (text.text !== undefined) item.text = NormalizeText(text.text)
             if (text.priority !== undefined) item.priority = Number(text.priority) || 0
             if (text.icon !== undefined) item.icon = text.icon || ''
             if (text.spin !== undefined) item.spin = text.spin !== false
-            if (text.gradient !== undefined) item.gradient = text.gradient === true
+            if (text.dots !== undefined) item.dots = text.dots !== false
+            if (text.gradient !== undefined) item.gradient = text.gradient !== false
             if (text.blur !== undefined) item.blur = Math.max(0, Number(text.blur) || 0)
         }
 

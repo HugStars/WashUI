@@ -54,7 +54,7 @@ html.wa_loading_active {
     border: 2px solid var(--wa_color_line_strong);
     border-top-color: var(--wa_color_text);
     border-radius: 50%;
-    animation: wa_loading_spin .8s linear infinite;
+    animation: wa_loading_spin var(--wa_duration_loop) linear infinite;
 }
 
 .wa_loading_icon {
@@ -81,6 +81,14 @@ html.wa_loading_active {
     animation: wa_loading_spin 1s linear infinite;
 }
 
+.wa_loading_text_wrap {
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: center;
+    max-width: 100%;
+    min-width: 0;
+}
+
 .wa_loading_text {
     max-width: 100%;
     overflow-wrap: anywhere;
@@ -93,6 +101,53 @@ html.wa_loading_active {
     display: none;
 }
 
+.wa_loading_dots {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 1em;
+    margin-left: 2px;
+    padding-bottom: .18em;
+}
+
+.wa_loading_dots[hidden] {
+    display: none;
+}
+
+.wa_loading_dots i {
+    display: block;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: currentColor;
+    color: var(--wa_color_text_muted);
+    opacity: .45;
+    animation: wa_loading_dot 1.05s var(--wa_ease_in_out) infinite;
+}
+
+.wa_loading_dots i:nth-child(2) {
+    animation-delay: .14s;
+}
+
+.wa_loading_dots i:nth-child(3) {
+    animation-delay: .28s;
+}
+
+@keyframes wa_loading_dot {
+
+    0%,
+    60%,
+    100% {
+        opacity: .35;
+        translate: 0 0;
+    }
+
+    30% {
+        opacity: 1;
+        translate: 0 -3px;
+    }
+}
+
 @keyframes wa_loading_spin {
     to {
         transform: rotate(360deg);
@@ -103,7 +158,12 @@ html.wa_loading_active {
 
     .wa_loading_ring,
     .wa_loading_icon.spin {
-        animation-duration: 2.4s;
+        animation-duration: calc(var(--wa_duration_loop) * 3);
+    }
+
+    .wa_loading_dots i {
+        animation: none;
+        opacity: .6;
     }
 
     .wa_loading_box {

@@ -1,5 +1,5 @@
 <template>
-    <section class="wa_panel" :class="[`wa_panel_${tone}`, { wa_panel_compact: compact }]">
+    <section class="wa_panel" :class="[`wa_panel_${variant}`, `wa_panel_${tone}`, { wa_panel_compact: compact }]">
         <header v-if="title || description || $slots.title || $slots.actions" class="wa_panel_head">
             <div class="wa_panel_text">
                 <h2 v-if="title || $slots.title" class="wa_panel_title">
@@ -38,6 +38,15 @@ defineProps({
         default: 'default',
     },
     compact: Boolean,
+    /**
+     * default：带左侧色条的展示框；tip：浅色文本提示条；
+     * soft：灰色半透明内容块；plain：透明背景 + 细边框内容块
+     * @type {'default' | 'tip' | 'soft' | 'plain'}
+     */
+    variant: {
+        type: String,
+        default: 'default',
+    },
 })
 </script>
 
@@ -50,13 +59,78 @@ defineProps({
     padding: 20px;
     border: 1px solid var(--wa_color_line);
     border-left: 3px solid var(--wa_panel_tone);
-    border-radius: var(--wa_radius_control);
+    border-radius: var(--wa_radius_popover);
     background: var(--wa_color_surface);
 }
 
 .wa_panel_compact {
     gap: 10px;
     padding: 14px 16px;
+}
+
+/* * tip：文本提示条。去掉左侧粗色条，改成整块淡色底 + 细边框 */
+.wa_panel_tip {
+    --wa_panel_tone: var(--wa_color_text_faint);
+
+    gap: 6px;
+    padding: 10px 14px;
+    border: 1px solid color-mix(in srgb, var(--wa_panel_tone) 26%, transparent);
+    border-radius: var(--wa_radius_popover);
+    background: color-mix(in srgb, var(--wa_panel_tone) 7%, var(--wa_color_surface));
+}
+
+.wa_panel_tip.wa_panel_compact {
+    padding: 8px 12px;
+}
+
+.wa_panel_tip .wa_panel_title {
+    font-size: 13px;
+}
+
+.wa_panel_tip .wa_panel_body {
+    font-size: 12.5px;
+    line-height: 1.65;
+}
+
+.wa_panel_tip .wa_panel_desc {
+    font-size: 12px;
+}
+
+/* * soft：灰色半透明内容块，参考 WebApp 设置页的分组卡片 */
+.wa_panel_soft {
+    gap: 10px;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: var(--wa_radius_popover);
+    background: var(--wa_color_soft);
+}
+
+/* * plain：透明背景 + 细边框，标题使用正文色 */
+.wa_panel_plain {
+    gap: 10px;
+    padding: 12px 16px;
+    border: 1px solid var(--wa_color_line);
+    border-radius: var(--wa_radius_popover);
+    background: transparent;
+}
+
+.wa_panel_soft .wa_panel_title,
+.wa_panel_plain .wa_panel_title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--wa_color_text);
+
+}
+
+.wa_panel_soft .wa_panel_body,
+.wa_panel_plain .wa_panel_body {
+    font-size: 12.5px;
+    line-height: 1.65;
+}
+
+.wa_panel_soft.wa_panel_compact,
+.wa_panel_plain.wa_panel_compact {
+    padding: 10px 14px;
 }
 
 .wa_panel_success {

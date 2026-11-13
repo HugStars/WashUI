@@ -23,11 +23,20 @@ const props = defineProps({
         default: '',
     },
     /**
+     * 垂直方向；默认显示在触发器下方，空间不足时自动翻到上方
      * @type {'top' | 'bottom'}
      */
     placement: {
         type: String,
-        default: 'top',
+        default: 'bottom',
+    },
+    /**
+     * 水平对齐；默认右对齐，贴近右下角
+     * @type {'start' | 'center' | 'end'}
+     */
+    align: {
+        type: String,
+        default: 'end',
     },
     /** 悬停多久后出现，模拟浏览器 title 的延迟 */
     delay: {
@@ -194,15 +203,21 @@ function Position() {
     let top = placement === 'top' ? rect.top - height - gap : rect.bottom + gap
     let left = rect.left + rect.width / 2 - width / 2
 
+    if (props.align === 'start') left = rect.left
+    else if (props.align === 'end') left = Math.max(rect.left, rect.right - width)
+
     left = Math.min(Math.max(edge, left), Math.max(edge, window.innerWidth - width - edge))
     top = Math.min(Math.max(edge, top), Math.max(edge, window.innerHeight - height - edge))
+
+    const originY = placement === 'top' ? 'bottom' : 'top'
+    const originX = props.align === 'start' ? 'left' : props.align === 'end' ? 'right' : 'center'
 
     PanelStyle.value = {
         position: 'fixed',
         left: `${left}px`,
         top: `${top}px`,
         maxWidth: MaxWidth.value,
-        transformOrigin: placement === 'top' ? 'bottom center' : 'top center',
+        transformOrigin: `${originY} ${originX}`,
         visibility: 'visible',
     }
 }
@@ -238,15 +253,12 @@ onUnmounted(() => {
     position: fixed;
     z-index: var(--wa_z_toast);
     max-width: min(280px, calc(100vw - 16px));
-    padding: 4px 8px;
-    border: 1px solid var(--wa_color_border);
+    padding: 5px 9px;
+    border: 1px solid transparent;
     border-radius: var(--wa_radius_control);
-    color: var(--wa_color_text);
-    background: var(--wa_color_glass);
-    background: var(--wa_glass_gradient);
-    -webkit-backdrop-filter: blur(var(--wa_blur));
-    backdrop-filter: blur(var(--wa_blur));
-    box-shadow: var(--wa_shadow_nav);
+    color: var(--wa_color_on_tooltip);
+    background: var(--wa_color_tooltip);
+    box-shadow: var(--wa_shadow_toast);
     font-size: 12px;
     line-height: 1.4;
     white-space: normal;
