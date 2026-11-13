@@ -134,20 +134,20 @@ describe('AppSlider', () => {
         expect(wrapper.find('.wa_slider_thumb').attributes('tabindex')).toBe('-1')
     })
 
-    it('uses md by default and applies sm size', () => {
+    it('uses sm by default and applies md size', () => {
         wrapper = mount(AppSlider, {
             props: { modelValue: 0.5, valueDisplay: 'always', min: 0, max: 1, step: 0.1 },
         })
 
-        expect(wrapper.classes()).not.toContain('wa_slider_sm')
+        expect(wrapper.classes()).toContain('wa_slider_sm')
         expect(wrapper.find('.wa_slider_value').text()).toBe('0.5')
 
         wrapper.unmount()
         wrapper = mount(AppSlider, {
-            props: { modelValue: 50, size: 'sm' },
+            props: { modelValue: 50, size: 'md' },
         })
 
-        expect(wrapper.classes()).toContain('wa_slider_sm')
+        expect(wrapper.classes()).not.toContain('wa_slider_sm')
     })
 
     it('keeps keyboard values inside allowed ranges', async () => {
