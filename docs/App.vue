@@ -12,6 +12,7 @@
                     rel="noopener noreferrer" aria-label="GitHub 仓库" title="GitHub 仓库">
                     <AppIcon name="github" :size="18" />
                 </a>
+
                 <AppThemeToggle />
             </template>
         </PageHeader>
@@ -103,9 +104,11 @@ function go(item) {
     flex: none;
     width: 32px;
     height: 32px;
-    border-radius: var(--wa_radius_control);
-    color: var(--wa_color_text_muted);
     text-decoration: none;
+    border: 1px solid var(--wa_color_line);
+    border-radius: var(--wa_radius_control);
+    color: var(--wa_color_text_subtle);
+    background: var(--wa_color_field);
     transition:
         color var(--wa_duration_fast) var(--wa_ease_out),
         background var(--wa_duration_fast) var(--wa_ease_out),

@@ -40,7 +40,7 @@ defineProps({
     gap: 10px;
 }
 
-.doc_entry_group + .doc_entry_group {
+.doc_entry_group+.doc_entry_group {
     margin-top: 26px;
 }
 
@@ -96,7 +96,7 @@ defineProps({
 .doc_entry_name {
     font: 11px var(--wa_font_mono);
     line-height: 1.5;
-    color: var(--wa_color_text_faint);
+    color: var(--wa_color_text_muted);
 }
 
 .doc_entry_desc {
@@ -149,6 +149,7 @@ defineProps({
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .doc_entry,
     .doc_entry_arrow {
         transition: none;
