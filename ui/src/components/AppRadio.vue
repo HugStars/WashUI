@@ -97,7 +97,7 @@ watch(Checked, (checked, wasChecked) => {
     Closing.value = true
     CloseTimer = setTimeout(() => {
         Closing.value = false
-    }, 280)
+    }, 220)
 })
 
 onUnmounted(() => clearTimeout(CloseTimer))
@@ -147,12 +147,12 @@ function Select() {
 }
 
 .wa_radio.on {
-    box-shadow: inset 0 0 0 var(--wa_radio_border) var(--wa_color_text);
+    box-shadow: inset 0 0 0 var(--wa_radio_border) var(--wa_color_highlight);
 }
 
 /* 取消选中：外圈保持选中，圆点缩小后再释放 */
 .wa_radio.closing {
-    box-shadow: inset 0 0 0 var(--wa_radio_border) var(--wa_color_text);
+    box-shadow: inset 0 0 0 var(--wa_radio_border) var(--wa_color_highlight);
 }
 
 .wa_radio.on:hover:not(:disabled) {
@@ -169,15 +169,15 @@ function Select() {
 }
 
 .wa_radio_dot {
-    width: 46%;
-    height: 46%;
+    width: 52%;
+    height: 52%;
     border-radius: 50%;
     background: currentColor;
     opacity: 0;
     transform: scale(.2);
     transition:
-        opacity .26s var(--wa_ease_out),
-        transform .3s var(--wa_ease_in_out);
+        opacity var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_fast) var(--wa_ease_in);
 }
 
 /* 分段单选：由 AppRadioGroup variant="segmented" 启用 */
@@ -224,6 +224,12 @@ function Select() {
     box-shadow: none;
 }
 
+/* * 滑块就位后选中文字反色，与 AppTabs 的选中态一致 */
+.wa_choice_group_segmented.glider_ready .wa_radio.wa_radio_segmented.on,
+.wa_choice_group_segmented.glider_ready .wa_radio.wa_radio_segmented.on:hover:not(:disabled) {
+    color: var(--wa_color_on_highlight);
+}
+
 /* * 与 AppTabs 一致：按下立即缩放；长按滑块缩放由 AppRadioGroup 的 press 状态控制 */
 .wa_radio.wa_radio_segmented:active:not(:disabled),
 .wa_choice_row.pressed .wa_radio.wa_radio_segmented {
@@ -246,8 +252,17 @@ function Select() {
     opacity: 1;
     transform: scale(1);
     transition:
-        opacity var(--wa_duration_fast) var(--wa_ease_out),
-        transform var(--wa_duration_base) var(--wa_ease_spring);
+        opacity var(--wa_duration_instant) var(--wa_ease_out),
+        transform var(--wa_duration_medium) var(--wa_ease_spring);
+}
+
+/* * 取消选中：圆点先干脆收回，外圈滞后一拍再释放 */
+.wa_radio.closing .wa_radio_dot {
+    opacity: 0;
+    transform: scale(.1);
+    transition:
+        opacity var(--wa_duration_fast) var(--wa_ease_in),
+        transform var(--wa_duration_base) var(--wa_ease_in);
 }
 
 @media (prefers-reduced-motion: reduce) {

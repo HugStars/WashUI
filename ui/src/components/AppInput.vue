@@ -23,13 +23,17 @@
                 <slot name="suffix" />
             </span>
         </div>
-        <p v-if="DisplayError" :id="ErrorId" class="wa_field_error">{{ DisplayError }}</p>
-        <p v-else-if="hint" :id="HintId" class="wa_field_hint">{{ hint }}</p>
+        <div class="wa_field_message" :class="{ show: Message }">
+            <div class="wa_field_message_inner">
+                <p v-if="MessageIsError" :id="ErrorId" class="wa_field_error">{{ MessageText }}</p>
+                <p v-else :id="HintId" class="wa_field_hint">{{ MessageText }}</p>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { computed, ref, useId } from 'vue'
+import { computed, onUnmounted, ref, useId, watch } from 'vue'
 import { useValidation } from '../composables/useValidation.js'
 import AppIcon from './AppIcon.vue'
 
@@ -93,6 +97,27 @@ const { DisplayError, OnBlur: ValidateBlur, OnInput: ValidateInput } = useValida
     { defaultTrigger: 'blur' }
 )
 const DescribedBy = computed(() => (DisplayError.value ? ErrorId : props.hint ? HintId : undefined))
+const Message = computed(() => Boolean(DisplayError.value || props.hint))
+const MessageText = ref('')
+const MessageIsError = ref(false)
+let MessageTimer = 0
+
+// * 消息收起时延迟清空文本，让容器高度过渡能完整播放
+watch([DisplayError, () => props.hint], ([error, hint]) => {
+    clearTimeout(MessageTimer)
+
+    if (error || hint) {
+        MessageIsError.value = Boolean(error)
+        MessageText.value = error || hint
+        return
+    }
+
+    MessageTimer = setTimeout(() => {
+        MessageText.value = ''
+    }, 220)
+}, { immediate: true })
+
+onUnmounted(() => clearTimeout(MessageTimer))
 
 function HandleInput(event) {
     const value = event.target.value
@@ -219,8 +244,8 @@ function Clear() {
 .wa_input_clear_enter_active,
 .wa_input_clear_leave_active {
     transition:
-        opacity .12s var(--wa_ease_out),
-        transform .16s var(--wa_ease_spring);
+        opacity var(--wa_duration_instant) var(--wa_ease_out),
+        transform var(--wa_duration_fast) var(--wa_ease_spring);
 }
 
 .wa_input_clear_enter_from,

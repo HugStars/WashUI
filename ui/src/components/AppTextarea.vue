@@ -16,16 +16,20 @@
                 :aria-label="label ? undefined : ariaLabel" @input="HandleInput" @blur="HandleBlur"></textarea>
         </div>
 
-        <div v-if="showCount || DisplayError || hint" class="wa_textarea_meta">
-            <p v-if="DisplayError" :id="`${TextareaId}-error`" class="wa_field_error">{{ DisplayError }}</p>
-            <p v-else-if="hint" :id="`${TextareaId}-hint`" class="wa_field_hint">{{ hint }}</p>
+        <div v-if="showCount || Message" class="wa_textarea_meta">
+            <div class="wa_field_message" :class="{ show: Message }">
+                <div class="wa_field_message_inner">
+                    <p v-if="MessageIsError" :id="`${TextareaId}-error`" class="wa_field_error">{{ MessageText }}</p>
+                    <p v-else :id="`${TextareaId}-hint`" class="wa_field_hint">{{ MessageText }}</p>
+                </div>
+            </div>
             <span v-if="showCount" class="wa_textarea_count">{{ CountText }}</span>
         </div>
     </div>
 </template>
 
 <script setup>
-import { computed, ref, useId } from 'vue'
+import { computed, onUnmounted, ref, useId, watch } from 'vue'
 import { useValidation } from '../composables/useValidation.js'
 
 defineOptions({ inheritAttrs: false })
@@ -118,6 +122,27 @@ const HasMaxlength = computed(
 const CountText = computed(() => HasMaxlength.value
     ? `${Length.value} / ${props.maxlength}`
     : `${Length.value}`)
+const Message = computed(() => Boolean(DisplayError.value || props.hint))
+const MessageText = ref('')
+const MessageIsError = ref(false)
+let MessageTimer = 0
+
+// * 消息收起时延迟清空文本，让容器高度过渡能完整播放
+watch([DisplayError, () => props.hint], ([error, hint]) => {
+    clearTimeout(MessageTimer)
+
+    if (error || hint) {
+        MessageIsError.value = Boolean(error)
+        MessageText.value = error || hint
+        return
+    }
+
+    MessageTimer = setTimeout(() => {
+        MessageText.value = ''
+    }, 220)
+}, { immediate: true })
+
+onUnmounted(() => clearTimeout(MessageTimer))
 
 function HandleInput(event) {
     const value = event.target.value
@@ -181,6 +206,11 @@ function HandleBlur() {
     display: flex;
     align-items: baseline;
     gap: 8px;
+    min-width: 0;
+}
+
+.wa_textarea_meta>.wa_field_message {
+    flex: 1;
     min-width: 0;
 }
 

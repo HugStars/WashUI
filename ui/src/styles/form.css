@@ -27,3 +27,52 @@
 .wa_field_error {
     color: var(--wa_color_danger);
 }
+
+/* * 校验信息容器：0fr → 1fr 过渡高度，文字再补一段上浮动画 */
+.wa_field_message {
+    display: grid;
+    grid-template-rows: 0fr;
+    margin-top: -6px;
+    opacity: 0;
+    transition:
+        grid-template-rows var(--wa_duration_base) var(--wa_ease_out),
+        margin-top var(--wa_duration_base) var(--wa_ease_out),
+        opacity var(--wa_duration_fast) linear;
+}
+
+.wa_field_message.show {
+    grid-template-rows: 1fr;
+    margin-top: 0;
+    opacity: 1;
+}
+
+.wa_field_message_inner {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.wa_field_message.show .wa_field_message_inner>* {
+    animation: wa_field_message_in var(--wa_duration_base) var(--wa_ease_spring) both;
+}
+
+@keyframes wa_field_message_in {
+    from {
+        opacity: 0;
+        translate: 0 -3px;
+    }
+
+    to {
+        opacity: 1;
+        translate: 0 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wa_field_message {
+        transition: none;
+    }
+
+    .wa_field_message.show .wa_field_message_inner>* {
+        animation: none;
+    }
+}

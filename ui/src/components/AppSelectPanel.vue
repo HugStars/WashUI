@@ -311,7 +311,11 @@ const checkRender = computed(() => {
     font-size: 13px;
     text-align: left;
     cursor: pointer;
-    transition: color var(--wa_duration_fast), background var(--wa_duration_fast);
+    transition:
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        padding-left var(--wa_duration_fast) var(--wa_ease_out),
+        box-shadow var(--wa_duration_fast) var(--wa_ease_out);
 }
 
 .wa_select_option:hover {
@@ -346,13 +350,14 @@ const checkRender = computed(() => {
 
 .wa_select_option.on,
 .wa_select_option.on:hover {
-    color: var(--wa_color_on_text);
-    background: var(--wa_color_text);
+    color: var(--wa_color_on_highlight);
+    background: var(--wa_color_highlight);
     font-weight: 600;
 }
 
 .wa_select_option:disabled {
-    opacity: .45;
+    color: var(--wa_color_text_faint);
+    opacity: .55;
     cursor: not-allowed;
 }
 
@@ -362,8 +367,8 @@ const checkRender = computed(() => {
 }
 
 .wa_select_option.on .wa_select_badge.wa_badge_neutral {
-    --wa_badge_bg: var(--wa_color_on_text);
-    --wa_badge_color: var(--wa_color_text);
+    --wa_badge_bg: var(--wa_color_on_highlight);
+    --wa_badge_color: var(--wa_color_highlight);
 }
 
 .wa_select_check {
@@ -372,27 +377,24 @@ const checkRender = computed(() => {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    width: 1em;
+    width: 0;
     height: 1em;
+    overflow: hidden;
+    opacity: 0;
     font-size: 12px;
     line-height: 1;
-    animation: wa_select_check_in .18s var(--wa_ease_spring) both;
+    transition:
+        width var(--wa_duration_fast) var(--wa_ease_out),
+        opacity var(--wa_duration_fast) var(--wa_ease_out);
+}
+
+.wa_select_check.present {
+    width: 1em;
+    opacity: 1;
 }
 
 .wa_select_check_before {
     order: 1;
-}
-
-@keyframes wa_select_check_in {
-    from {
-        opacity: 0;
-        transform: scale(.5);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
 }
 
 .wa_select_check svg {
@@ -426,12 +428,10 @@ const checkRender = computed(() => {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .wa_select_option {
-        transition: none;
-    }
 
+    .wa_select_option,
     .wa_select_check {
-        animation: none;
+        transition: none;
     }
 }
 </style>

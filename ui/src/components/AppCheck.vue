@@ -201,7 +201,7 @@ function Toggle() {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: var(--wa_color_text);
+    background: var(--wa_color_highlight);
     opacity: 0;
     transform: scale(.35);
     pointer-events: none;
@@ -218,8 +218,8 @@ function Toggle() {
 
 .wa_check.on {
     box-shadow: inset 0 0 0 var(--wa_check_border) var(--wa_color_text);
-    color: var(--wa_color_on_text);
-    background: var(--wa_color_text);
+    color: var(--wa_color_on_highlight);
+    background: var(--wa_color_highlight);
 }
 
 .wa_check.on::before {
@@ -255,8 +255,8 @@ function Toggle() {
     transform: scale(.9);
     pointer-events: none;
     transition:
-        opacity .12s var(--wa_ease_out),
-        transform .14s var(--wa_ease_out);
+        opacity var(--wa_duration_instant) var(--wa_ease_out),
+        transform var(--wa_duration_fast) var(--wa_ease_out);
 }
 
 .wa_check_line {
@@ -293,52 +293,52 @@ function Toggle() {
     opacity: 1;
     transform: scale(1);
     transition:
-        opacity .12s var(--wa_ease_out),
-        transform .18s var(--wa_ease_spring);
+        opacity var(--wa_duration_instant) var(--wa_ease_out),
+        transform var(--wa_duration_fast) var(--wa_ease_spring);
 }
 
 .wa_check.on .wa_check_line_a {
     width: calc(29.4629% + var(--wa_check_r));
     transition:
-        left .14s var(--wa_ease_out),
-        top .14s var(--wa_ease_out),
-        width .14s var(--wa_ease_out),
-        opacity .12s var(--wa_ease_out),
-        transform .16s var(--wa_ease_out);
+        left var(--wa_duration_fast) var(--wa_ease_out),
+        top var(--wa_duration_fast) var(--wa_ease_out),
+        width var(--wa_duration_fast) var(--wa_ease_out),
+        opacity var(--wa_duration_instant) var(--wa_ease_out),
+        transform var(--wa_duration_fast) var(--wa_ease_out);
 }
 
 .wa_check.on .wa_check_line_b {
     width: calc(64.8179% + var(--wa_check_r));
     transition:
-        left .14s var(--wa_ease_out),
-        top .14s var(--wa_ease_out),
-        width .14s var(--wa_ease_out),
-        opacity .12s var(--wa_ease_out),
-        transform .16s var(--wa_ease_out);
+        left var(--wa_duration_fast) var(--wa_ease_out),
+        top var(--wa_duration_fast) var(--wa_ease_out),
+        width var(--wa_duration_fast) var(--wa_ease_out),
+        opacity var(--wa_duration_instant) var(--wa_ease_out),
+        transform var(--wa_duration_fast) var(--wa_ease_out);
 }
 
 /* 从空白状态选中时才播放“短横 → 长横”的手写顺序 */
 .wa_check.on.drawing .wa_check_line_a {
     transition:
-        width .12s var(--wa_ease_out),
-        opacity .12s var(--wa_ease_out),
-        transform .16s var(--wa_ease_out);
+        width var(--wa_duration_instant) var(--wa_ease_out),
+        opacity var(--wa_duration_instant) var(--wa_ease_out),
+        transform var(--wa_duration_fast) var(--wa_ease_out);
 }
 
 .wa_check.on.drawing .wa_check_line_b {
     transition:
-        width .2s var(--wa_ease_out) .1s,
-        opacity .12s var(--wa_ease_out) .06s,
-        transform .16s var(--wa_ease_out);
+        width var(--wa_duration_base) var(--wa_ease_out) .1s,
+        opacity var(--wa_duration_instant) var(--wa_ease_out) .06s,
+        transform var(--wa_duration_fast) var(--wa_ease_out);
 }
 
 /* 取消选中：两段线分别延展/移动到 × 的位置，再整体缩放渐隐 */
 .wa_check.closing .wa_check_line {
     transition:
-        left .14s var(--wa_ease_out),
-        top .14s var(--wa_ease_out),
-        width .14s var(--wa_ease_out),
-        transform .14s var(--wa_ease_out);
+        left var(--wa_duration_fast) var(--wa_ease_out),
+        top var(--wa_duration_fast) var(--wa_ease_out),
+        width var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_fast) var(--wa_ease_out);
 }
 
 .wa_check.closing .wa_check_line_a {
@@ -369,24 +369,24 @@ function Toggle() {
     background: var(--wa_color_field);
     box-shadow: inset 0 0 0 var(--wa_check_border) var(--wa_color_line_strong);
     transition:
-        background .16s var(--wa_ease_out) .14s,
-        box-shadow .16s var(--wa_ease_out) .14s;
+        background var(--wa_duration_fast) var(--wa_ease_out) var(--wa_duration_fast),
+        box-shadow var(--wa_duration_fast) var(--wa_ease_out) var(--wa_duration_fast);
 }
 
 .wa_check.on.closing::before {
     opacity: 0;
     transform: scale(.35);
     transition:
-        opacity .14s var(--wa_ease_out) .14s,
-        transform .16s var(--wa_ease_out) .14s;
+        opacity var(--wa_duration_fast) var(--wa_ease_out) var(--wa_duration_fast),
+        transform var(--wa_duration_fast) var(--wa_ease_out) var(--wa_duration_fast);
 }
 
 .wa_check.closing .wa_check_mark {
     opacity: 0;
     transform: scale(0);
     transition:
-        opacity .16s var(--wa_ease_out) .14s,
-        transform .16s var(--wa_ease_out) .14s;
+        opacity var(--wa_duration_fast) var(--wa_ease_out) var(--wa_duration_fast),
+        transform var(--wa_duration_fast) var(--wa_ease_out) var(--wa_duration_fast);
 }
 
 @media (prefers-reduced-motion: reduce) {

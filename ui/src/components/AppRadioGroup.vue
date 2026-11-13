@@ -8,6 +8,7 @@
             'wa_choice_group_segmented_sm': variant === 'segmented' && SegmentedSize === 'sm',
             'wa_choice_group_segmented_md': variant === 'segmented' && SegmentedSize === 'md',
             'wa_choice_group_segmented_rect': variant === 'segmented' && shape === 'rect',
+            glider_ready: GliderReady,
         },
     ]" role="radiogroup" :aria-label="ariaLabel" @pointerdown="OnPressStart">
         <span v-if="variant === 'segmented'" class="wa_choice_group_glider"
@@ -108,7 +109,7 @@ const { Press: GliderPress, PressedKey, Start: OnPressStart } = usePressFeedback
     '.wa_choice_row',
     RowEls
 )
-const SegmentedSize = computed(() => props.size === 'sm' ? 'sm' : 'md')
+const SegmentedSize = computed(() => props.size === 'md' ? 'md' : 'sm')
 const ReducedMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
     ? window.matchMedia('(prefers-reduced-motion: reduce)')
     : null

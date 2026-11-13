@@ -2,7 +2,7 @@
     <template v-if="mode === 'dialog'">
         <span class="wa_check_menu_trigger_wrap" @click="ToggleDialog">
             <slot name="trigger" :open="DialogOpen" :toggle="ToggleDialog">
-                <AppButton class="wa_check_menu_trigger" variant="line" size="sm" :disabled="disabled"
+                <AppButton ref="TriggerEl" class="wa_check_menu_trigger" variant="line" size="sm" :disabled="disabled"
                     :aria-expanded="DialogOpen" aria-haspopup="dialog">
                     <span class="wa_check_menu_text">{{ Summary }}</span>
                     <AppIcon name="chevron" :size="14" class="wa_check_menu_arrow" :class="{ on: DialogOpen }" />
@@ -24,7 +24,7 @@
         :aria-label="ariaLabel" :disabled="disabled">
         <template #trigger="{ open, toggle }">
             <slot name="trigger" :open="open" :toggle="toggle">
-                <AppButton class="wa_check_menu_trigger" variant="line" size="sm" :disabled="disabled"
+                <AppButton ref="TriggerEl" class="wa_check_menu_trigger" variant="line" size="sm" :disabled="disabled"
                     :aria-expanded="open" aria-haspopup="dialog">
                     <span class="wa_check_menu_text">{{ Summary }}</span>
                     <AppIcon name="chevron" :size="14" class="wa_check_menu_arrow" :class="{ on: open }" />
@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useChoiceSummary } from '../composables/useChoiceSummary.js'
 import AppButton from './AppButton.vue'
 import AppCheckPanel from './AppCheckPanel.vue'
@@ -106,10 +106,53 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'change'])
 
 const DialogOpen = ref(false)
+const TriggerEl = ref(null)
+let LastWidth = 0
+let WidthAnimation = null
 const PopoverPlacement = computed(() => props.align === 'left'
     ? 'bottom-left'
     : props.align === 'right' ? 'bottom-right' : 'bottom')
 const { Values, Summary } = useChoiceSummary(props)
+
+const ReducedMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)')
+    : null
+
+function TriggerNode() {
+    return TriggerEl.value?.$el || TriggerEl.value || null
+}
+
+/**
+ * 摘要文本变化时让按钮宽度平滑过渡
+ * 使用 WAAPI 只覆盖渲染宽度，不改动组件自身的 transition 与内联样式
+ */
+async function AnimateWidth() {
+    const el = TriggerNode()
+    if (!el || typeof el.animate !== 'function' || ReducedMotion?.matches) return
+
+    await nextTick()
+    const next = el.offsetWidth
+    const prev = LastWidth
+    LastWidth = next
+
+    if (!prev || prev === next) return
+
+    WidthAnimation?.cancel()
+    WidthAnimation = el.animate(
+        [{ width: `${prev}px` }, { width: `${next}px` }],
+        { duration: 200, easing: 'cubic-bezier(.3, 1.2, .5, 1)' }
+    )
+}
+
+watch(Summary, AnimateWidth)
+
+onMounted(() => {
+    LastWidth = TriggerNode()?.offsetWidth || 0
+})
+
+onUnmounted(() => {
+    WidthAnimation?.cancel()
+})
 
 function Update(values) {
     emit('update:modelValue', values)

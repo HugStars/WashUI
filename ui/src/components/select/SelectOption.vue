@@ -10,12 +10,13 @@
         <AppBadge v-if="item.badge" readonly class="wa_select_badge" :value="item.badge.text"
             :dot="item.badge.dot" :tone="item.badge.tone || 'danger'" :max="item.badge.max ?? 99"
             aria-hidden="true" />
-        <template v-if="item.value === modelValue">
-            <span v-if="checkRender?.mode === 'text'" class="wa_select_check"
-                :class="{ wa_select_check_before: checkPosition === 'before' }" aria-hidden="true">
-                {{ checkRender.value }}</span>
-            <component v-else-if="checkRender?.mode === 'icon'" :is="iconComponent" :name="checkRender.name"
-                class="wa_select_check" :class="{ wa_select_check_before: checkPosition === 'before' }"
+        <template v-if="checkRender">
+            <span v-if="checkRender.mode === 'text'" class="wa_select_check"
+                :class="{ wa_select_check_before: checkPosition === 'before', present: item.value === modelValue }"
+                aria-hidden="true">{{ item.value === modelValue ? checkRender.value : '' }}</span>
+            <component v-else-if="checkRender.mode === 'icon'" :is="iconComponent" :name="checkRender.name"
+                class="wa_select_check"
+                :class="{ wa_select_check_before: checkPosition === 'before', present: item.value === modelValue }"
                 aria-hidden="true" />
         </template>
     </button>

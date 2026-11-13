@@ -33,7 +33,7 @@
 
 .wa_choice_group {
     display: flex;
-    gap: 12px 18px;
+    gap: 8px 12px;
     min-width: 0;
     font-size: 13px;
     color: var(--wa_color_text);
@@ -49,7 +49,7 @@
     width: 100%;
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 8px;
 }
 
 .wa_choice_group_vertical.wa_choice_group_right {
@@ -100,6 +100,16 @@
 
 .wa_choice_group_segmented_rect {
     --wa_segmented_radius: var(--wa_radius_control);
+    /* * 矩形分段选项目视更紧凑，内边距和间距比胶囊再小一档 */
+    --wa_segmented_pad: 4px;
+    --wa_segmented_gap: 4px;
+    --wa_segmented_pad_x: 12px;
+}
+
+.wa_choice_group_segmented_rect.wa_choice_group_segmented_sm {
+    --wa_segmented_pad: 3px;
+    --wa_segmented_gap: 3px;
+    --wa_segmented_pad_x: 10px;
 }
 
 .wa_choice_group_segmented.wa_choice_group_vertical {
@@ -153,7 +163,7 @@
     width: 100%;
     height: 100%;
     border-radius: inherit;
-    background: var(--wa_color_dialog);
+    background: var(--wa_color_highlight);
     transform-origin: center;
     transition: transform var(--wa_duration_base) var(--wa_ease_spring);
 }
@@ -163,7 +173,7 @@
 }
 
 .wa_choice_group_glider_inner.bounce {
-    animation: wa_choice_group_bounce .45s cubic-bezier(.22, .61, .36, 1);
+    animation: wa_choice_group_bounce var(--wa_duration_slower) cubic-bezier(.22, .61, .36, 1);
 }
 
 @keyframes wa_choice_group_bounce {
