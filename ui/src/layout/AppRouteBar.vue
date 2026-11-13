@@ -39,7 +39,7 @@ const Loading = computed(() => props.loading ?? routeLoading.value)
 
 .wa_route_bar.on {
     opacity: 1;
-    animation: wa_route_grow .55s cubic-bezier(.1, .8, .3, 1) forwards;
+    animation: wa_route_grow var(--wa_duration_route) cubic-bezier(.1, .8, .3, 1) forwards;
 }
 
 @keyframes wa_route_grow {

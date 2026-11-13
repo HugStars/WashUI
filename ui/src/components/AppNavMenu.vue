@@ -52,12 +52,12 @@ const props = defineProps({
         default: 'a',
     },
     /**
-     * md 用于侧栏，sm 用于紧凑菜单
-     * @type {'md' | 'sm'}
+     * md 用于宽松侧栏，sm 为默认紧凑菜单
+     * @type {'sm' | 'md'}
      */
     size: {
         type: String,
-        default: 'md',
+        default: 'sm',
     },
     /** 布局变化标识；变化时重新测量选中滑块，例如侧栏模式切换 */
     layoutKey: {
@@ -280,8 +280,8 @@ onUnmounted(() => {
     --wa_nav_gap: var(--wa_space_2);
     --wa_nav_pad_y: var(--wa_space_2);
     --wa_nav_pad_x: var(--wa_space_3);
-    --wa_nav_hover_shift: 0px;
-    --wa_nav_active_shift: 0px;
+    --wa_nav_hover_shift: 2px;
+    --wa_nav_active_shift: 2px;
 
     min-width: 0;
 }
@@ -297,8 +297,15 @@ onUnmounted(() => {
 .wa_nav_menu_body {
     position: relative;
     display: grid;
-    gap: var(--wa_nav_group_gap);
+    gap: 0;
     min-width: 0;
+}
+
+/* * 分组之间用细分隔线区分，比单靠间距更清楚 */
+.wa_nav_menu_group+.wa_nav_menu_group {
+    margin-top: var(--wa_nav_group_gap);
+    padding-top: calc(var(--wa_nav_group_gap) - 2px);
+    border-top: 1px solid var(--wa_color_line);
 }
 
 .wa_nav_menu_glider {
@@ -307,13 +314,13 @@ onUnmounted(() => {
     left: 0;
     z-index: 0;
     border-radius: var(--wa_radius_control);
-    background: var(--wa_color_text);
+    background: var(--wa_color_highlight);
     opacity: 0;
     pointer-events: none;
     transition:
-        transform var(--wa_duration_base) var(--wa_ease_in_out),
-        width var(--wa_duration_base) var(--wa_ease_in_out),
-        height var(--wa_duration_base) var(--wa_ease_in_out),
+        transform var(--wa_duration_slow) var(--wa_ease_spring),
+        width var(--wa_duration_slow) var(--wa_ease_spring),
+        height var(--wa_duration_slow) var(--wa_ease_spring),
         opacity var(--wa_duration_fast) var(--wa_ease_out);
     will-change: transform;
 }
@@ -339,10 +346,10 @@ onUnmounted(() => {
     align-items: center;
     justify-self: start;
     width: fit-content;
-    padding: 3px 9px;
-    border-radius: var(--wa_radius_pill);
-    color: var(--wa_color_text);
-    background: var(--wa_color_active);
+    padding: 0 4px;
+    border-radius: 0;
+    color: var(--wa_color_text_faint);
+    background: none;
     font-size: 11px;
     font-weight: 600;
     letter-spacing: .04em;
@@ -351,7 +358,7 @@ onUnmounted(() => {
 }
 
 .wa_nav_menu_sm .wa_nav_menu_title {
-    padding: 2px 7px;
+    padding: 0 2px;
     font-size: 11px;
 }
 
@@ -376,7 +383,7 @@ onUnmounted(() => {
     text-decoration: none;
     cursor: pointer;
     transition:
-        padding-left var(--wa_duration_fast) var(--wa_ease_out),
+        padding-left var(--wa_duration_base) var(--wa_ease_spring),
         color var(--wa_duration_fast) var(--wa_ease_out),
         background var(--wa_duration_fast) var(--wa_ease_out);
 }
@@ -395,7 +402,7 @@ onUnmounted(() => {
 .wa_nav_menu_link.on,
 .wa_nav_menu_link.on:hover {
     padding-left: calc(var(--wa_nav_pad_x) + var(--wa_nav_active_shift));
-    color: var(--wa_color_on_text);
+    color: var(--wa_color_on_highlight);
     background: transparent;
     font-weight: 600;
 }
@@ -408,10 +415,18 @@ onUnmounted(() => {
 .wa_nav_menu_icon {
     flex: none;
     color: var(--wa_color_text_subtle);
+    transition:
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        translate var(--wa_duration_fast) var(--wa_ease_out);
+}
+
+.wa_nav_menu_link:hover .wa_nav_menu_icon {
+    translate: 1px 0;
 }
 
 .wa_nav_menu_link.on .wa_nav_menu_icon {
     color: inherit;
+    translate: 0 0;
 }
 
 .wa_nav_menu_text {
@@ -428,8 +443,8 @@ onUnmounted(() => {
 
 /* 选中项是反色底，neutral 角标需要同步反转，否则会和链接背景融在一起 */
 .wa_nav_menu_link.on .wa_nav_menu_badge.wa_badge_neutral {
-    --wa_badge_bg: var(--wa_color_on_text);
-    --wa_badge_color: var(--wa_color_text);
+    --wa_badge_bg: var(--wa_color_on_highlight);
+    --wa_badge_color: var(--wa_color_highlight);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,5 +1,5 @@
 <template>
-    <div class="wa_shell">
+    <div class="wa_shell" :class="{ wa_shell_nav_hidden: NavHidden, wa_shell_nav_auto_hide: autoHideNav }">
         <header class="wa_header">
             <div ref="HeaderTarget" class="wa_header_slot"></div>
             <div ref="HeaderBarTarget" class="wa_header_bar"></div>
@@ -81,6 +81,13 @@ const props = defineProps({
         type: Boolean,
         default: undefined,
     },
+    /** 移动端根据手指上滑 / 下滑自动隐藏或显示底部导航 */
+    autoHideNav: Boolean,
+    /** 手势判定阈值（px） */
+    autoHideThreshold: {
+        type: Number,
+        default: 10,
+    },
 })
 
 const emit = defineEmits(['navigate'])
@@ -92,6 +99,7 @@ const Media = typeof window !== 'undefined' && window.matchMedia ? window.matchM
 const TouchMedia = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(hover: none)') : null
 const ReducedMotion = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null
 const Mobile = ref(Media?.matches ?? false)
+const NavHidden = ref(false)
 const HasMore = computed(() => Mobile.value && props.nav.length > MAX_NAV)
 const VisibleNav = computed(() => HasMore.value ? props.nav.slice(0, MAX_NAV - 1) : props.nav)
 const MoreNav = computed(() => HasMore.value ? props.nav.slice(MAX_NAV - 1) : [])
@@ -179,11 +187,64 @@ function OnContextMenu(event) {
 
 function OnMedia(event) {
     Mobile.value = event.matches
+    if (!event.matches) NavHidden.value = false
 }
+
+// section 手势隐藏底部导航
+// * 只认手指移动方向：上滑隐藏、下滑显示，页面滚动到顶部时强制显示
+let TouchStartY = 0
+let TouchStartX = 0
+
+function OnTouchStart(event) {
+    if (!props.autoHideNav || !Mobile.value || event.touches.length !== 1) return
+    TouchStartY = event.touches[0].clientY
+    TouchStartX = event.touches[0].clientX
+}
+
+function OnTouchMove(event) {
+    if (!props.autoHideNav || !Mobile.value || event.touches.length !== 1) return
+
+    const dy = event.touches[0].clientY - TouchStartY
+    const dx = event.touches[0].clientX - TouchStartX
+    const threshold = Math.max(4, Number(props.autoHideThreshold) || 10)
+
+    if (Math.abs(dy) < threshold || Math.abs(dy) <= Math.abs(dx)) return
+
+    NavHidden.value = dy < 0
+}
+
+function OnScrollTop() {
+    if (window.scrollY <= 0) NavHidden.value = false
+}
+
+function BindGesture() {
+    window.addEventListener('touchstart', OnTouchStart, { passive: true })
+    window.addEventListener('touchmove', OnTouchMove, { passive: true })
+    window.addEventListener('scroll', OnScrollTop, { passive: true })
+}
+
+function UnbindGesture() {
+    window.removeEventListener('touchstart', OnTouchStart)
+    window.removeEventListener('touchmove', OnTouchMove)
+    window.removeEventListener('scroll', OnScrollTop)
+}
+
+watch(() => props.autoHideNav, value => {
+    if (value) {
+        BindGesture()
+    } else {
+        UnbindGesture()
+        NavHidden.value = false
+    }
+})
 
 onMounted(async () => {
     Media?.addEventListener('change', OnMedia)
     window.addEventListener('resize', ScheduleSlider)
+
+    if (props.autoHideNav) {
+        BindGesture()
+    }
 
     if (typeof ResizeObserver !== 'undefined') {
         NavResizeObserver = new ResizeObserver(UpdateSlider)
@@ -201,6 +262,9 @@ onUnmounted(() => {
     Unmounted = true
     Media?.removeEventListener('change', OnMedia)
     window.removeEventListener('resize', ScheduleSlider)
+    window.removeEventListener('touchstart', OnTouchStart)
+    window.removeEventListener('touchmove', OnTouchMove)
+    window.removeEventListener('scroll', OnScrollTop)
     NavResizeObserver?.disconnect()
     NavResizeObserver = null
     cancelAnimationFrame(BounceFrame)
@@ -275,8 +339,8 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
     margin: 0 -24px 18px;
     padding: 16px var(--wa_header_pad_x) 12px;
     background: linear-gradient(to bottom, var(--wa_color_canvas), transparent);
-    -webkit-backdrop-filter: blur(var(--wa_blur)) saturate(1.35);
-    backdrop-filter: blur(var(--wa_blur)) saturate(1.35);
+    -webkit-backdrop-filter: var(--wa_frosted_filter);
+    backdrop-filter: var(--wa_frosted_filter);
 }
 
 .wa_header_slot {
@@ -297,7 +361,7 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
 }
 
 .wa_nav {
-    --wa_nav_item_radius: 14px;
+    --wa_nav_item_radius: var(--wa_radius_popover);
 
     grid-area: nav;
     position: sticky;
@@ -309,11 +373,11 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
     gap: 8px;
     padding: 10px 8px;
     border: 1px solid var(--wa_color_border);
-    border-radius: 22px;
+    border-radius: var(--wa_radius_card);
     background: var(--wa_color_glass);
     background: var(--wa_glass_gradient);
-    -webkit-backdrop-filter: blur(var(--wa_blur)) saturate(1.35);
-    backdrop-filter: blur(var(--wa_blur)) saturate(1.35);
+    -webkit-backdrop-filter: var(--wa_frosted_filter);
+    backdrop-filter: var(--wa_frosted_filter);
     box-shadow: var(--wa_shadow_nav);
 }
 
@@ -353,7 +417,7 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
 }
 
 .wa_nav_slider_inner.bounce {
-    animation: wa_nav_slider_bounce .45s cubic-bezier(.22, .61, .36, 1);
+    animation: wa_nav_slider_bounce var(--wa_duration_slower) cubic-bezier(.22, .61, .36, 1);
 }
 
 .wa_nav_item {
@@ -377,6 +441,7 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
     transition:
         color var(--wa_duration_fast) var(--wa_ease_out),
         background var(--wa_duration_fast) var(--wa_ease_out),
+        box-shadow var(--wa_duration_fast) var(--wa_ease_out),
         transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
@@ -388,6 +453,7 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
 @media (hover: hover) {
     .wa_nav_item:hover {
         transform: translateY(-1px);
+        box-shadow: var(--wa_shadow_thumb_soft);
     }
 }
 
@@ -415,6 +481,15 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
 .wa_nav_item.open:active,
 .wa_nav_item.open.pressed {
     transform: scale(.94);
+}
+
+/* * 触屏没有 hover，用按下态补上阴影反馈 */
+@media (hover: none) {
+
+    .wa_nav_item:active,
+    .wa_nav_item.pressed {
+        box-shadow: var(--wa_shadow_thumb_soft);
+    }
 }
 
 .wa_nav_label {
@@ -530,6 +605,16 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
         -webkit-overflow-scrolling: touch;
         border-radius: var(--wa_radius_pill);
         box-shadow: var(--wa_shadow_nav_mobile);
+        transition:
+            translate var(--wa_duration_base) var(--wa_ease_out),
+            opacity var(--wa_duration_fast) var(--wa_ease_out);
+    }
+
+    /* * autoHideNav：手指上滑隐藏、下滑或回到顶部显示 */
+    .wa_shell_nav_hidden .wa_nav {
+        translate: 0 calc(100% + 28px);
+        opacity: 0;
+        pointer-events: none;
     }
 
     .wa_nav::-webkit-scrollbar {

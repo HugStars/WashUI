@@ -466,8 +466,8 @@ function MergeConfig(base, patch) {
 .wa_desk_frosted .wa_desk_aside,
 .wa_desk_frosted .wa_desk_toolbar {
     background: var(--wa_desk_glass);
-    -webkit-backdrop-filter: blur(var(--wa_blur)) saturate(1.4);
-    backdrop-filter: blur(var(--wa_blur)) saturate(1.4);
+    -webkit-backdrop-filter: var(--wa_frosted_filter);
+    backdrop-filter: var(--wa_frosted_filter);
 }
 
 /* * 提高一级选择器优先级，覆盖 AppNavMenu 的尺寸预设（如 sm 的 6px） */

@@ -10,7 +10,8 @@
     ]" :style="RootStyle">
         <div ref="ListEl" class="wa_tabs_list" :class="{ ready: SliderReady, wa_tabs_scrollable: Scrollable }" role="tablist" :aria-label="ariaLabel"
             @keydown="OnKeydown" @pointerdown="OnListPointerDown" @pointermove="OnListPointerMove"
-            @pointerup="OnListPointerUp" @pointercancel="OnListPointerUp" @click.capture="OnListClickCapture">
+            @pointerup="OnListPointerUp" @pointercancel="OnListPointerUp" @click.capture="OnListClickCapture"
+            @contextmenu="OnContextMenu">
             <span class="wa_tabs_slider" :class="{ ready: SliderReady }" :style="SliderStyle" aria-hidden="true">
                 <span class="wa_tabs_slider_inner" :class="{ bounce: SliderBounce, press: SliderPress }"
                     @animationend="OnSliderAnimationEnd"></span>
@@ -49,6 +50,7 @@
             <AppBadge v-for="entry in Badges" :key="entry.key" class="wa_tabs_badge"
                 :style="BadgeStyle(entry.key)" :value="entry.badge.text" :dot="entry.badge.dot"
                 :tone="entry.badge.tone" :max="entry.badge.max ?? 99" :draggable="entry.badge.draggable"
+                :max-distance="badgeMaxDistance"
                 :aria-label="entry.badge.ariaLabel || BadgeLabel(entry)" :tabindex="-1" @click="OnBadgeClick(entry)"
                 @clear="OnBadgeClear(entry)" />
         </div>
@@ -81,8 +83,9 @@ const props = defineProps({
         default: () => [],
     },
     /**
-     * nav：带外框与玻璃背景；plain：无边框、无外框、无阴影
-     * @type {'nav' | 'plain'}
+     * nav：带外框与玻璃背景；plain：无边框、无外框、无阴影；
+     * group：按钮组，白磨砂底 + 选中黑块 + hover 内描边
+     * @type {'nav' | 'plain' | 'group'}
      */
     variant: {
         type: String,
@@ -115,6 +118,13 @@ const props = defineProps({
     ariaLabel: {
         type: String,
         default: '标签页',
+    },
+    /** 角标默认是否可拖拽清除；单项 badge.draggable 优先 */
+    badgeDraggable: Boolean,
+    /** 拖拽断开阈值（px） */
+    badgeMaxDistance: {
+        type: Number,
+        default: 72,
     },
 })
 
@@ -189,6 +199,9 @@ let Unmounted = false
 const ReducedMotion = typeof window !== 'undefined' && window.matchMedia
     ? window.matchMedia('(prefers-reduced-motion: reduce)')
     : null
+const TouchMedia = typeof window !== 'undefined' && window.matchMedia
+    ? window.matchMedia('(hover: none)')
+    : null
 
 function SetTabEl(name, el) {
     if (el) TabEls.set(name, el)
@@ -199,11 +212,11 @@ function NormalizeBadge(badge) {
     if (badge === null || badge === undefined || badge === false || badge === '') return null
 
     if (badge === true) {
-        return { text: '', dot: true, tone: 'danger', draggable: false, max: undefined, ariaLabel: '' }
+        return { text: '', dot: true, tone: 'danger', draggable: props.badgeDraggable, max: undefined, ariaLabel: '' }
     }
 
     if (typeof badge === 'number' || typeof badge === 'string') {
-        return { text: badge, dot: false, tone: 'danger', draggable: false, max: undefined, ariaLabel: '' }
+        return { text: badge, dot: false, tone: 'danger', draggable: props.badgeDraggable, max: undefined, ariaLabel: '' }
     }
 
     if (typeof badge !== 'object') return null
@@ -213,7 +226,7 @@ function NormalizeBadge(badge) {
         text,
         dot: !!badge.dot && text === '',
         tone: badge.tone || 'danger',
-        draggable: !!badge.draggable,
+        draggable: badge.draggable ?? props.badgeDraggable,
         max: badge.max,
         ariaLabel: badge.ariaLabel,
     }
@@ -448,8 +461,7 @@ function OnSliderAnimationEnd(event) {
     if (event.target === event.currentTarget) SliderBounce.value = false
 }
 
-function OnListPointerDown(event) {
-    // 上一次拖拽残留的拦截标记在本次按下时失效
+function OnListPointerDown(event) {    // 上一次拖拽残留的拦截标记在本次按下时失效
     SuppressTabClick = false
     OnPressStart(event)
 
@@ -540,6 +552,11 @@ function OnListClickCapture(event) {
     event.stopPropagation()
 }
 
+// 触屏长按时不弹系统菜单，与 AppShell 导航行为一致
+function OnContextMenu(event) {
+    if (TouchMedia?.matches) event.preventDefault()
+}
+
 onMounted(() => {
     nextTick(() => {
         Refresh()
@@ -623,8 +640,8 @@ watch(
     border-radius: var(--wa_radius_pill);
     background: var(--wa_color_glass);
     background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
-    -webkit-backdrop-filter: blur(var(--wa_blur));
-    backdrop-filter: blur(var(--wa_blur));
+    -webkit-backdrop-filter: var(--wa_frosted_filter);
+    backdrop-filter: var(--wa_frosted_filter);
     box-shadow: var(--wa_shadow_nav);
     scrollbar-width: none;
     user-select: none;
@@ -660,6 +677,48 @@ watch(
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;
+}
+
+/* * group：Worker API 面板同款按钮组。白磨砂底、选中黑块、hover 内描边 */
+.wa_tabs_group .wa_tabs_list {
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid var(--wa_color_line);
+    border-radius: var(--wa_radius_control);
+    background: var(--wa_color_glass);
+    background: var(--wa_glass_gradient);
+    -webkit-backdrop-filter: var(--wa_frosted_filter);
+    backdrop-filter: var(--wa_frosted_filter);
+    box-shadow: var(--wa_shadow_nav);
+}
+
+.wa_tabs_group .wa_tabs_tab {
+    height: calc(var(--wa_tabs_height) - 2px);
+    border-radius: calc(var(--wa_radius_control) - 2px);
+    color: var(--wa_color_text_muted);
+    box-shadow: inset 0 0 0 1px transparent;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .wa_tabs_group .wa_tabs_tab:hover {
+        color: var(--wa_color_text);
+        background: var(--wa_color_hover);
+        box-shadow: inset 0 0 0 1px var(--wa_color_line_strong);
+    }
+}
+
+.wa_tabs_group .wa_tabs_tab.on {
+    color: var(--wa_color_on_highlight);
+    box-shadow: none;
+}
+
+.wa_tabs_group .wa_tabs_slider,
+.wa_tabs_group .wa_tabs_slider_inner {
+    border-radius: calc(var(--wa_radius_control) - 2px);
+}
+
+.wa_tabs_group .wa_tabs_slider_inner {
+    background: var(--wa_color_highlight);
 }
 
 .wa_tabs_slider {
@@ -700,7 +759,7 @@ watch(
 }
 
 .wa_tabs_slider_inner.bounce {
-    animation: wa_tabs_bounce .45s var(--wa_ease_out);
+    animation: wa_tabs_bounce var(--wa_duration_slower) var(--wa_ease_out);
 }
 
 .wa_tabs_tab {
@@ -726,6 +785,7 @@ watch(
     transition:
         color var(--wa_duration_fast) var(--wa_ease_out),
         background var(--wa_duration_fast) var(--wa_ease_out),
+        box-shadow var(--wa_duration_fast) var(--wa_ease_out),
         translate var(--wa_duration_base) var(--wa_ease_spring),
         transform var(--wa_duration_base) var(--wa_ease_spring);
 }
@@ -759,6 +819,8 @@ watch(
     .wa_tabs_tab:hover {
         color: var(--wa_color_text);
         background: var(--wa_color_hover);
+        box-shadow: var(--wa_shadow_thumb_soft);
+        transform: translateY(-1px);
     }
 }
 
@@ -789,6 +851,14 @@ watch(
 .wa_tabs_tab.on:active,
 .wa_tabs_tab.on.pressed {
     transform: scale(.94);
+}
+
+/* * 触屏没有 hover，用按下态补上同样的阴影反馈 */
+@media (hover: none) {
+    .wa_tabs_tab:active:not(:disabled),
+    .wa_tabs_tab.pressed:not(:disabled) {
+        box-shadow: var(--wa_shadow_thumb_soft);
+    }
 }
 
 .wa_tabs_badges {
