@@ -513,6 +513,20 @@ export const defaultIcons = {
             stroke: 'none'
         }],
     ],
+    vue: [
+        ['path', {
+            d: 'M12 11.813L17.925 1.612h-3.15L12 6.45 9.225 1.65h-3.15L12 11.813zM19.2 1.65L12 14.063 4.8 1.612H0l12 20.775L24 1.65H19.2z',
+            fill: 'currentColor',
+            stroke: 'none'
+        }],
+    ],
+    devices: [
+        ['path', {
+            d: 'M19 10.625a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3h-3a3 3 0 0 1 -3 -3v-5a3 3 0 0 1 3 -3h3zm-6.983 8.376c0.07 0.745 0.343 1.43 0.765 2L6 21a1 1 0 0 1 0 -2h6.017zM19 12.625h-3a1 1 0 0 0 -1 1v5a1 1 0 0 0 1 1h3a1 1 0 0 0 1 -1v-5a1 1 0 0 0 -1 -1zM17 4a4 4 0 0 1 4 4l0.001 2.16A3.982 3.982 0 0 0 19 9.626V8a2 2 0 0 0 -2 -2H6a2 2 0 0 0 -2 2v6a2 2 0 0 0 2 2h6v2H6a4 4 0 0 1 -4 -4V8a4 4 0 0 1 4 -4h11z',
+            fill: 'currentColor',
+            stroke: 'none'
+        }],
+    ],
     database: [
         ['ellipse', { cx: 12, cy: 5, rx: 9, ry: 3 }],
         ['path', { d: 'M21 12c0 1.66-4.03 3-9 3s-9-1.34-9-3' }],
@@ -1038,7 +1052,7 @@ export const iconGroups = [
     },
     {
         title: '设备与网络',
-        icons: ['monitor', 'phone', 'mouse', 'keyboard', 'headset', 'earbuds', 'watch', 'command', 'bluetooth', 'wifi', 'signal', 'qrcode', 'usb', 'battery', 'plug', 'wireless-charge', 'printer', 'speaker', 'cpu', 'hard-drive'],
+        icons: ['monitor', 'phone', 'mouse', 'keyboard', 'headset', 'earbuds', 'watch', 'command', 'bluetooth', 'wifi', 'signal', 'qrcode', 'usb', 'battery', 'plug', 'wireless-charge', 'printer', 'speaker', 'cpu', 'hard-drive', 'devices'],
     },
     {
         title: '文件与文档',
@@ -1070,7 +1084,7 @@ export const iconGroups = [
     },
     {
         title: '开发',
-        icons: ['code', 'braces', 'code-slash', 'terminal', 'git-branch', 'github', 'database', 'server', 'speed', 'list', 'link'],
+        icons: ['code', 'braces', 'code-slash', 'terminal', 'git-branch', 'github', 'vue', 'database', 'server', 'speed', 'list', 'link'],
     },
 ]
 
