@@ -3,11 +3,11 @@
         <section class="doc_hero">
             <div class="doc_hero_head">
                 <h1 class="doc_hero_title">WashUI</h1>
-                <span class="wa_tag doc_hero_tag">Vue 3 · 私有设计系统</span>
+                <AppTag>v{{ Version }}</AppTag>
+                <AppTag class="doc_hero_tag">Vue3·私有设计系统</AppTag>
             </div>
             <p class="doc_hero_lead">
-                WashUI 是一套自用的 Vue 3 设计系统。目标不是堆组件，而是把颜色、圆角、间距、阴影、层级、动画时长和图标行为收敛成一套可配置的规则，
-                让 PC 页面、移动端页面和桌面壳层共用同一套实现。
+                WashUI 是一套自用的 Vue 3 设计系统，供多个网站共用基础样式、组件和配套能力。
             </p>
             <div class="doc_actions">
                 <AppButton variant="primary" @click="router.push('/guide/quick-start')">快速开始</AppButton>
@@ -15,11 +15,11 @@
                 <AppButton variant="line" @click="router.push('/tokens')">设计变量</AppButton>
             </div>
             <div class="doc_tags">
-                <span class="wa_tag">Vue 3.5+</span>
-                <span class="wa_tag">纯 CSS 变量</span>
-                <span class="wa_tag">三端适配</span>
-                <span class="wa_tag">动效统一</span>
-                <span class="wa_tag">按需导入</span>
+                <AppTag>Vue 3.5+</AppTag>
+                <AppTag>纯 CSS 变量</AppTag>
+                <AppTag>三端适配</AppTag>
+                <AppTag>动效统一</AppTag>
+                <AppTag>按需导入</AppTag>
             </div>
         </section>
 
@@ -60,6 +60,10 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import pkg from '../../ui/package.json'
+
+const Version = pkg.version
+
 
 const router = useRouter()
 
@@ -133,7 +137,6 @@ const updates = [
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
-    justify-content: space-between;
     gap: 12px;
 }
 
@@ -202,6 +205,7 @@ const updates = [
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
+    --wa_color_soft: var(--wa_color_surface);
 }
 
 .doc_feature_grid {
@@ -249,4 +253,5 @@ const updates = [
     .doc_home_principles {
         grid-template-columns: minmax(0, 1fr);
     }
-}</style>
+}
+</style>

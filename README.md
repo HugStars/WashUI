@@ -1,6 +1,6 @@
 # WashUI
 
-<p align="center">
+<p>
     <a href="https://www.npmjs.com/package/wash-ui"><img src="https://img.shields.io/npm/v/wash-ui" alt="npm version"></a>
     <a href="./LICENSE"><img src="https://img.shields.io/npm/l/wash-ui" alt="license"></a>
     <a href="https://www.npmjs.com/package/wash-ui"><img src="https://img.shields.io/badge/types-included-blue" alt="types"></a>
@@ -15,10 +15,18 @@
 
 WashUI 是一套自用的 Vue 3 设计系统，由 `ui/` 库与 `docs/` 文档站组成。
 
-目标不是堆组件，而是把颜色、圆角、间距、阴影、层级、动画时长和图标行为收敛成一套可配置的规则，让 PC 页面、移动端页面和桌面壳层共用同一套实现。
+包含布局、组件、Toast、Loading、图标、工具函数等，样式简洁、功能齐全。
 
-- `ui/`：`wash-ui` 库，包含设计变量、组件、布局、主题、Toast、路由状态与工具
-- `docs/`：基于本库实现的文档站，根目录 Vite 配置直接指向 `docs/`
+同一套实现支持 PC 与移动端响应式适配，也有支持桌面端的 AppDeskShell。
+
+颜色、圆角等支持通过 JS 和 CSS 调整。
+
+提供常用格式化、防抖节流等工具函数。
+
+内置约一两百个图标，使用[`Morphicons`](https://www.morphicons.com/) 支持任意图标之间的切换动画。
+
+-   `ui/`：`wash-ui` 库，包含设计变量、组件、布局、主题、Toast、路由状态与工具
+-   `docs/`：基于本库实现的文档站，根目录 Vite 配置直接指向 `docs/`
 
 ## 技术栈
 
@@ -37,17 +45,17 @@ pnpm dev
 
 ### 命令
 
-| 命令 | 说明 |
-| --- | --- |
-| `pnpm dev` | 启动文档站开发服务（5180） |
-| `pnpm dev --force` | 强制重建依赖预构建后启动 |
-| `pnpm build` | 构建文档站到根目录 `dist` |
-| `pnpm preview` | 预览文档站构建结果 |
-| `pnpm test` | 运行 Vitest 单元测试 |
-| `pnpm test:watch` | 监听模式运行测试 |
-| `pnpm build:ui` | 构建库到 `ui/dist`，并生成 `ui/types` |
+| 命令                    | 说明                                          |
+| ----------------------- | --------------------------------------------- |
+| `pnpm dev`              | 启动文档站开发服务（5180）                    |
+| `pnpm dev --force`      | 强制重建依赖预构建后启动                      |
+| `pnpm build`            | 构建文档站到根目录 `dist`                     |
+| `pnpm preview`          | 预览文档站构建结果                            |
+| `pnpm test`             | 运行 Vitest 单元测试                          |
+| `pnpm test:watch`       | 监听模式运行测试                              |
+| `pnpm build:ui`         | 构建库到 `ui/dist`，并生成 `ui/types`         |
 | `pnpm version:ui patch` | 递增 `wash-ui` 版本，也可用 `minor` / `major` |
-| `pnpm publish:ui` | 构建并发布 `wash-ui` 到公共 npm |
+| `pnpm publish:ui`       | 构建并发布 `wash-ui` 到公共 npm               |
 
 ## 设计理念
 
@@ -62,71 +70,73 @@ pnpm dev
 
 ### 磨砂表面
 
-- `frosted` 统一使用 `--wa_color_glass` + `--wa_frosted_filter`，与 `AppPopover` 面板一致。
-- 已支持 Button、Select、Input、Textarea、Chip、Tag、Card；Dialog 的 `frosted` 作用于面板，遮罩只负责变暗，不参与模糊。
-- 磨砂元素本身及其祖先不要同时做 opacity 入场，避免 Chromium 丢掉 `backdrop-filter`。
+-   `frosted` 统一使用 `--wa_color_glass` + `--wa_frosted_filter`，与 `AppPopover` 面板一致。
+-   已支持 Button、Select、Input、Textarea、Chip、Tag、Card；Dialog 的 `frosted` 作用于面板，遮罩只负责变暗，不参与模糊。
+-   磨砂元素本身及其祖先不要同时做 opacity 入场，避免 Chromium 丢掉 `backdrop-filter`。
 
 ## 动效规范
 
 ### 时间与曲线
 
-| Token | 值 | 用途 |
-| --- | --- | --- |
-| `--wa_duration_instant` | `.12s` | 透明度、勾选标记等瞬时反馈 |
-| `--wa_duration_fast` | `.15s` | 颜色、边框、透明度、悬停 |
-| `--wa_duration_base` | `.2s` | 按压、位移、一般状态切换 |
-| `--wa_duration_medium` | `.24s` | 弹框内容、较大区域的进入 |
-| `--wa_duration_slow` | `.34s` | 滑块、标签指示器、浮层进入 |
-| `--wa_duration_slower` | `.45s` | 回弹、扩散类反馈 |
-| `--wa_duration_route` | `.55s` | 路由进度条 |
-| `--wa_duration_loop` | `.8s` | Spinner 等循环动画 |
-| `--wa_duration_shimmer` | `1.2s` | 骨架屏 shimmer |
-| `--wa_ease_out` | `cubic-bezier(.2, .9, .3, 1)` | 进入、颜色、淡出 |
-| `--wa_ease_in` | `cubic-bezier(.4, 0, 1, 1)` | 退出 |
-| `--wa_ease_in_out` | `cubic-bezier(.4, 0, .2, 1)` | 可逆位移 |
-| `--wa_ease_spring` | `cubic-bezier(.3, 1.2, .5, 1)` | 按压缩放、滑块、指示器 |
+| Token                   | 值                             | 用途                       |
+| ----------------------- | ------------------------------ | -------------------------- |
+| `--wa_duration_instant` | `.12s`                         | 透明度、勾选标记等瞬时反馈 |
+| `--wa_duration_fast`    | `.15s`                         | 颜色、边框、透明度、悬停   |
+| `--wa_duration_base`    | `.2s`                          | 按压、位移、一般状态切换   |
+| `--wa_duration_medium`  | `.24s`                         | 弹框内容、较大区域的进入   |
+| `--wa_duration_slow`    | `.34s`                         | 滑块、标签指示器、浮层进入 |
+| `--wa_duration_slower`  | `.45s`                         | 回弹、扩散类反馈           |
+| `--wa_duration_route`   | `.55s`                         | 路由进度条                 |
+| `--wa_duration_loop`    | `.8s`                          | Spinner 等循环动画         |
+| `--wa_duration_shimmer` | `1.2s`                         | 骨架屏 shimmer             |
+| `--wa_ease_out`         | `cubic-bezier(.2, .9, .3, 1)`  | 进入、颜色、淡出           |
+| `--wa_ease_in`          | `cubic-bezier(.4, 0, 1, 1)`    | 退出                       |
+| `--wa_ease_in_out`      | `cubic-bezier(.4, 0, .2, 1)`   | 可逆位移                   |
+| `--wa_ease_spring`      | `cubic-bezier(.3, 1.2, .5, 1)` | 按压缩放、滑块、指示器     |
 
 ### 交互反馈
 
-- 悬停位移只在鼠标设备生效：
+-   悬停位移只在鼠标设备生效：
 
-  ```css
-  @media (hover: hover) and (pointer: fine) {
-      .component:hover:not(:disabled) { transform: translateY(-1px); }
-  }
-  ```
+    ```css
+    @media (hover: hover) and (pointer: fine) {
+        .component:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+    }
+    ```
 
-- 按压统一为轻微缩小：按钮 `.96`、Chip `.94`、标签 `.94`、图标按钮 `.86`、复选框 `.9`。
-- 焦点统一使用 `2px` accent 外轮廓，或在控件上使用 `3px` focus ring。
-- `disabled` 状态不再触发悬停位移和按压反馈。
+-   按压统一为轻微缩小：按钮 `.96`、Chip `.94`、标签 `.94`、图标按钮 `.86`、复选框 `.9`。
+-   焦点统一使用 `2px` accent 外轮廓，或在控件上使用 `3px` focus ring。
+-   `disabled` 状态不再触发悬停位移和按压反馈。
 
 ### 状态动画
 
-- 可逆状态使用 transition：复选框勾选 / 取消、单选框圆点、开关滑块、标签指示器。
-- 连续动画使用 keyframe：Spinner、Skeleton、RouteBar。
-- 一次性装饰动画使用 keyframe：Toast、Dialog 内容、移动端 sheet。
-- 状态动画必须支持中断：不要用 `forwards` 一次性动画驱动会反复切换的状态。
-- 拖拽类连续交互使用 rAF 弹簧，松手时携带释放速度；粘性连接每帧按两个圆的几何关系计算路径，超过阈值立即断开。
-- 不要在 `backdrop-filter` 元素本身或它的祖先/子元素上同时做 opacity 入场；Chromium 会丢掉模糊。
-- 浮层、弹框、Toast 的进入退出需要同时覆盖 `prefers-reduced-motion`。
+-   可逆状态使用 transition：复选框勾选 / 取消、单选框圆点、开关滑块、标签指示器。
+-   连续动画使用 keyframe：Spinner、Skeleton、RouteBar。
+-   一次性装饰动画使用 keyframe：Toast、Dialog 内容、移动端 sheet。
+-   状态动画必须支持中断：不要用 `forwards` 一次性动画驱动会反复切换的状态。
+-   拖拽类连续交互使用 rAF 弹簧，松手时携带释放速度；粘性连接每帧按两个圆的几何关系计算路径，超过阈值立即断开。
+-   不要在 `backdrop-filter` 元素本身或它的祖先/子元素上同时做 opacity 入场；Chromium 会丢掉模糊。
+-   浮层、弹框、Toast 的进入退出需要同时覆盖 `prefers-reduced-motion`。
 
 ### 无障碍
 
-- 所有动画组件提供 `prefers-reduced-motion: reduce` 分支。
-- Spinner 在减少动态时减速而不是完全停止；Skeleton 停止 shimmer。
-- 动效不能是唯一的信息来源，选中状态同时通过形状、颜色和 `aria-checked` 表达。
+-   所有动画组件提供 `prefers-reduced-motion: reduce` 分支。
+-   Spinner 在减少动态时减速而不是完全停止；Skeleton 停止 shimmer。
+-   动效不能是唯一的信息来源，选中状态同时通过形状、颜色和 `aria-checked` 表达。
 
 ## 圆角层级
 
 组件统一使用四档圆角，不再写死 5 / 7 / 10 / 14 / 22 / 28 等值：
 
-| Token | 值 | 用途 |
-| --- | --- | --- |
-| `--wa_radius_card` | 24px | 卡片、弹框、AppShell 侧栏 |
-| `--wa_radius_popover` | 16px | 面板、列表分组、提示块、Popover、导航项 |
-| `--wa_radius_control` | 8px | 输入框、按钮组、图标按钮、代码块、Tooltip |
-| `--wa_radius_sm` | 6px | 标签、行内代码、Tabs 按钮组内层 |
-| `--wa_radius_pill` | 999px | 胶囊按钮、Chip、Switch、Slider |
+| Token                 | 值    | 用途                                      |
+| --------------------- | ----- | ----------------------------------------- |
+| `--wa_radius_card`    | 24px  | 卡片、弹框、AppShell 侧栏                 |
+| `--wa_radius_popover` | 16px  | 面板、列表分组、提示块、Popover、导航项   |
+| `--wa_radius_control` | 8px   | 输入框、按钮组、图标按钮、代码块、Tooltip |
+| `--wa_radius_sm`      | 6px   | 标签、行内代码、Tabs 按钮组内层           |
+| `--wa_radius_pill`    | 999px | 胶囊按钮、Chip、Switch、Slider            |
 
 `--wa_radius_small` 保留为 `--wa_radius_control` 的兼容别名；`--wa_radius_dialog` 与 `--wa_radius_card` 同为 24px。
 
@@ -134,189 +144,47 @@ pnpm dev
 
 ### 组件
 
-- 公共组件：`AppXxx`，例如 `AppButton`、`AppCheckGroup`、`AppChoiceList`。
-- 布局组件：`AppShell`、`AppDeskShell`、`PageHeader`、`PageBar`、`PageTransition`、`AppRouteBar`。
-- 单个选择项与分组：`AppCheck` / `AppCheckGroup`、`AppRadio` / `AppRadioGroup`。
-- 面板封装：`AppCheckPanel`、`AppRadioPanel`；共享核心为 `AppChoiceList`。
+-   公共组件：`AppXxx`，例如 `AppButton`、`AppCheckGroup`、`AppChoiceList`。
+-   布局组件：`AppShell`、`AppDeskShell`、`PageHeader`、`PageBar`、`PageTransition`、`AppRouteBar`。
+-   单个选择项与分组：`AppCheck` / `AppCheckGroup`、`AppRadio` / `AppRadioGroup`。
+-   面板封装：`AppCheckPanel`、`AppRadioPanel`；共享核心为 `AppChoiceList`。
 
 ### CSS
 
-- 类名、CSS 变量、动画名统一 `wa_` 前缀，使用下划线拼接：`.wa_btn`、`.wa_check_group`、`--wa_duration_fast`。
-- 状态类统一 `.on`；选中、展开、激活都用 `.on`。
-- 修饰类使用 `wa_<组件>_<修饰>`，例如 `.wa_btn_primary`、`.wa_tabs_plain`。
-- 子元素使用 `wa_<组件>_<部分>`，例如 `.wa_dialog_head`、`.wa_check_mark`。
-- 不使用 `!important`；组件样式写在各自 SFC 的 `<style>` 中，构建时抽取到 `dist/style.css`。
+-   类名、CSS 变量、动画名统一 `wa_` 前缀，使用下划线拼接：`.wa_btn`、`.wa_check_group`、`--wa_duration_fast`。
+-   状态类统一 `.on`；选中、展开、激活都用 `.on`。
+-   修饰类使用 `wa_<组件>_<修饰>`，例如 `.wa_btn_primary`、`.wa_tabs_plain`。
+-   子元素使用 `wa_<组件>_<部分>`，例如 `.wa_dialog_head`、`.wa_check_mark`。
+-   不使用 `!important`；组件样式写在各自 SFC 的 `<style>` 中，构建时抽取到 `dist/style.css`。
 
 ### JavaScript
 
-- 组合式函数：`useXxx`，例如 `useTheme`、`useClipboard`、`useRequest`、`useChoiceGroup`。
-- 内部工厂：`createXxx`，例如 `createChoiceGroup`、`createAppRouter`。
-- 常量、Symbol key 使用大驼峰；事件名使用 kebab-case 或 Vue 事件名。
-
-## Props 约定
-
-| 约定 | 说明 |
-| --- | --- |
-| `modelValue` | 所有受控组件的第一模型；`v-model` 默认绑定它 |
-| `options` | `Array<{ label, value, disabled?, icon? }>` |
-| `groups` | `Array<{ label, options }>`，用于分组面板 |
-| `size` | 控件类用 `sm \| md`；选择项用数字（px）或 CSS 长度 |
-| `direction` | `horizontal \| vertical`，用于选择组排列 |
-| `align` | `left \| right \| between \| space-between`，纵向选择组对齐 |
-| `labelPosition` | 选择项用 `before \| after`；`AppListRow` 用 `left \| top \| responsive` |
-| `disabled` | 禁用整个组件或整组 |
-| `ariaLabel` | 无可见标签时的无障碍名称 |
-| `emptyText` | 空列表文案 |
-| `placeholder` | 未选择时的占位文本 |
-| `hint` / `error` | 表单提示与错误；错误优先 |
-| `rule` | 组件级校验规则：`required`、`min`、`max`、`pattern`、`validator`、`message`、`trigger`；Input / Textarea / Select 支持 |
-| `frosted` | 白色磨砂半透明表面，与 AppPopover 的玻璃面板一致；Button、Input、Select、Chip、Card 支持 |
-
-### 枚举 Prop 的可选值
-
-可选值统一写在 JSDoc 里，IDE 和 Volar 会直接提示：
-
-```js
-/** @type {'md' | 'sm'} 默认 sm，md 时更宽松 */
-size: {
-    type: String,
-    default: 'sm',
-},
-```
-
-项目不使用 `validator` 做运行时枚举校验：每次渲染都跑数组判断收益很低，传错值时还会刷控制台。组件内部对未知值回退到默认行为，可选值只作为开发期的文档和提示。
-
-## 事件约定
-
-| 事件 | 载荷 | 说明 |
-| --- | --- | --- |
-| `update:modelValue` | 当前模型 | 所有 v-model 组件 |
-| `change` | 当前模型 | 与 `update:modelValue` 同步，便于业务监听 |
-| `update:open` / `open` / `close` | `boolean` / 无 | Popover、Dialog |
-| `select` | `item` | SelectPanel 选中项 / NavMenu 点击项 |
-| `update:selectedKeys` | 当前选择键 | 表格行选择 |
-| `update:sort` / `sort-change` | `{ key, order }` / `{ key, order, column }` | 表格排序 |
-| `badge-clear` | `{ name, item, index, more }` | 标签页角标被拖拽或按键清除 |
-| `complete` | `string` | PinInput 所有位填满时触发 |
-| `page-size-change` | `{ pageSize, page }` | 分页每页条数变化 |
-| `reject` | `{ file, reason }` | Upload 拒绝文件 |
-| `remove` | `file, index` | Upload 移除文件 |
-| `change` | `theme` | ThemeToggle 切换主题 |
-
-## 校验规则
-
-Input、Textarea、Select 支持 `rule`，不再只能用 `error` 手动传入文案。
-
-```js
-const rule = {
-    required: true,
-    min: 2,
-    max: 20,
-    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-    validator: value => true, // false / 字符串 / Error 表示失败
-    message: '请输入 2-20 个字符',
-    trigger: ['blur', 'change'],
-}
-```
-
-```html
-<AppInput v-model="name" label="名称" :rule="rule" />
-<AppTextarea v-model="note" :rule="{ required: true, min: 5 }" />
-<AppSelect v-model="env" :options="options" :rule="{ required: true, message: '请选择环境' }" />
-```
-
-- `rule` 可以是对象或数组。
-- 默认触发：Input / Textarea 为 `blur`，Select 为 `change`。
-- `trigger` 支持 `blur`、`input`、`change` 或数组。
-- `error` 仍然保留，且优先于 rule 自动生成的文案，适合服务端错误。
-- `validator` 需要同步返回；返回 Promise 时会提示“暂不支持异步校验”，不会静默通过。
-- 组件内部使用 `useValidation`，也可以直接导入它构建自定义表单控件。
-
-## 目录
-
-```text
-WashUI/
-├─ ui/                          wash-ui 库
-│  ├─ src/
-│  │  ├─ components/            基础、加载、表单、反馈组件
-│  │  │  ├─ AppCheck.vue        单个复选框
-│  │  │  ├─ AppCheckGroup.vue   复选框分组 / 排版
-│  │  │  ├─ AppRadio.vue        单个单选框
-│  │  │  ├─ AppRadioGroup.vue   单选框分组 / 排版
-│  │  │  ├─ AppChoiceList.vue   选择列表共享核心
-│  │  │  ├─ AppCheckPanel.vue   多选面板薄封装
-│  │  │  ├─ AppRadioPanel.vue   单选面板薄封装
-│  │  │  ├─ AppNavMenu.vue      导航菜单
-│  │  │  ├─ AppTable.vue        数据表格
-│  │  │  ├─ AppList.vue         列表容器
-│  │  │  ├─ AppHint.vue         文字提示
-│  │  │  ├─ AppPinInput.vue     验证码输入
-│  │  │  └─ AppPagination.vue   分页
-│  │  ├─ layout/                AppShell、AppDeskShell、PageHeader、PageBar、AppRouteBar、PageTransition
-│  │  ├─ composables/           useClipboard、useRequest、useChoiceGroup、useChoiceSummary
-│  │  ├─ core/                  图标、主题、Toast、Loading、路由状态、插件
-│  │  ├─ router/                createAppRouter
-│  │  ├─ styles/                base、form、choice、frosted、loading、index
-│  │  ├─ utils/                 格式化、文本、日期与并发控制工具函数
-│  │  └─ index.js               主入口
-│  ├─ tokens.css                CSS 变量与暗色主题
-│  ├─ tokens.js                 图表配色、断点与层级
-│  └─ package.json
-├─ docs/                        文档站
-│  ├─ pages/                    指南、组件、布局与能力页面
-│  ├─ components/               DocPage、DemoBlock、ApiTable、DocEntryCard
-│  ├─ site.js                   导航与页面注册
-│  ├─ router.js                 文档路由
-│  ├─ App.vue                   文档壳层
-│  └─ main.js                   文档入口
-├─ vite.config.js               文档站 Vite 配置
-├─ pnpm-workspace.yaml
-└─ package.json
-```
-
-## 选择类组件模型
-
-| 组件 | v-model | 用途 |
-| --- | --- | --- |
-| `AppCheck` | `boolean` | 单个复选框；不生成外层容器 |
-| `AppCheckGroup` | `Array` | 一组复选框；负责方向、对齐、标签位置 |
-| `AppRadio` | `boolean` | 单个单选框；不生成外层容器 |
-| `AppRadioGroup` | 标量 | 一组单选框；负责方向和排版 |
-| `AppChoiceList` | `Array` / 标量 | 复选框 / 单选框共享的列表核心 |
-| `AppCheckPanel` | `Array` | `AppChoiceList` 的多选薄封装 |
-| `AppRadioPanel` | 标量 | `AppChoiceList` 的单选薄封装 |
-
-单个 `AppCheck` / `AppRadio` 放进任意父容器即可；需要等宽、纵向、左右对齐时使用对应的 Group。Group 只负责布局，不改变选项本身的视觉。
-
-## 从旧版迁移
-
-- 旧 `AppCheck`（数组 + `options` + 布局）改为 `AppCheckGroup`。
-- 旧 `AppCheckItem`（单个复选框）改为 `AppCheck`；在 Group 中使用时必须提供 `value`。
-- 旧 `AppCheck` 的 `v-model` 布尔值现在对应单个 `AppCheck`，数组对应 `AppCheckGroup`。
-- 多选面板继续使用 `AppCheckPanel`；新增 `AppRadioPanel` 和共享核心 `AppChoiceList`。
-- `useCheckSummary` 更名为 `useChoiceSummary`；选择分组状态使用 `useChoiceGroup`。
-- 旧的 `AppCheckItem` 导出已移除，请直接使用 `AppCheck`。
+-   组合式函数：`useXxx`，例如 `useTheme`、`useClipboard`、`useRequest`、`useChoiceGroup`。
+-   内部工厂：`createXxx`，例如 `createChoiceGroup`、`createAppRouter`。
+-   常量、Symbol key 使用大驼峰；事件名使用 kebab-case 或 Vue 事件名。
 
 ## 主题与 tokens
 
 ```js
-app.use(createUi({
-    theme: 'auto',
-    tokens: {
-        color_accent: '#6366f1',
-        radius_card: '24px',
-    },
-    themes: {
-        light: { color_canvas: '#f7f7f8' },
-        dark: { color_canvas: '#101012' },
-    },
-}))
+app.use(
+    createUi({
+        theme: 'auto',
+        tokens: {
+            color_accent: '#6366f1',
+            radius_card: '24px',
+        },
+        themes: {
+            light: { color_canvas: '#f7f7f8' },
+            dark: { color_canvas: '#101012' },
+        },
+    })
+)
 ```
 
-- `tokens` 在所有主题生效
-- `themes.light` / `themes.dark` 只对应各自主题，并覆盖同名 `tokens`
-- 键名会自动补 `--wa_` 前缀，也可以直接传完整变量名
-- 运行时可以调用 `configureTokens` 重新应用
+-   `tokens` 在所有主题生效
+-   `themes.light` / `themes.dark` 只对应各自主题，并覆盖同名 `tokens`
+-   键名会自动补 `--wa_` 前缀，也可以直接传完整变量名
+-   运行时可以调用 `configureTokens` 重新应用
 
 ## 按需引入
 
@@ -346,91 +214,58 @@ formatBytesFixed(2)(1536) // 1.50 KB
 formatDate(Date.now(), 'YYYY-MM-DD') // 2026-11-13
 formatRelativeTime(Date.now() - 3 * 60 * 1000) // 3 分钟前
 
-const onSearch = debounce(keyword => search(keyword), 300)
+const onSearch = debounce((keyword) => search(keyword), 300)
 onSearch.cancel()
 ```
 
 工具函数按用途分四组：字节与速率、数字与文本、日期与时间、防抖与节流，完整示例见文档站 **能力 → 工具函数**。
 
-## 组件状态
-
-### 已完成
-
-| 分类 | 组件 |
-| --- | --- |
-| 基础 | AppButton（按钮）、AppIconButton（图标按钮）、AppCard（卡片）、AppCode（代码）、AppChip（标记）、AppTag（标签）、AppBadge（消息角标）、AppTabs（标签页）、AppStat（统计）、AppNumber（数字跳动）、AppEmpty（空状态）、AppList / AppListRow（列表）、AppThemeToggle（主题切换） |
-| 导航 | AppNavMenu（导航菜单） |
-| 加载 | AppSpinner（加载指示，支持旋转圈与状态点）、AppSkeleton（骨架屏） |
-| 数据 | AppTable（表格）、AppPagination（分页） |
-| 表单 | AppInput（输入框）、AppTextarea（文本域）、AppPinInput（验证码输入）、AppSlider（滑块）、AppSwitch（开关）、AppCheck（复选框）、AppCheckGroup（复选框组）、AppRadio（单选框）、AppRadioGroup（单选框组）、AppSelect（下拉框）、AppSelectPanel（下拉面板）、AppChoiceList（选择列表）、AppCheckPanel（多选面板）、AppRadioPanel（单选面板）、AppCheckMenu（多选菜单）、AppUpload（上传） |
-| 反馈 | AppPanel（展示框）、AppHint（文字提示）、AppPopover（弹出框）、AppDialog（弹框）、AppTooltip（文字提示）、Toast（轻提示）、Loading（加载） |
-| 布局 | AppShell（壳层）、AppDeskShell（桌面壳层）、AppWindowControls（窗口按钮）、AppRouteBar（路由进度条）、PageTransition（页面过渡）、PageHeader（页面标题）、PageBar（页面操作栏） |
-| 能力 | useTheme（主题）、useClipboard（剪贴板）、useRequest（请求）、useChoiceGroup（选择组状态）、useChoiceSummary（选择摘要）、useValidation（校验规则） |
-| 基础能力 | 图标与 Morphicons 形变、tokens、代码高亮、工具函数（字节 / 数字 / 日期 / 防抖节流） |
-
-### 进行中
-
-- 文档站移动端标题栏、侧边栏与内容间距持续校准
-- 动效中断、反向过渡、reduced-motion 持续校准
-- 表单校验的异步规则与跨字段能力设计
-
-### 计划中
-
-| 分类 | 计划 |
-| --- | --- |
-| 表单 | AppForm / AppFormItem（表单 / 表单项）、异步与跨字段校验、Rate（评分）、ColorPicker（颜色选择）、DatePicker（日期选择）、TimePicker（时间选择）、Cascader（级联选择）、Transfer（穿梭框） |
-| 数据展示 | AppTree（树）、AppTreeSelect（树选择）、AppVirtualList（虚拟列表）、AppVirtualTable（虚拟表格） |
-| 反馈与导航 | AppDrawer（抽屉）、AppNotification（通知）、AppTour（漫游引导）、AppMenu（菜单）、AppDropdown（下拉菜单）、Command（命令面板） |
-| 工程与质量 | 单元测试、视觉回归、SSR / Nuxt 适配、i18n、完整无障碍审计、发布流水线 |
-
-完整路线图见文档站 **指南 → 路线图**。
-
 ## TODO
 
-- [x] 复选框拆分为 `AppCheck` + `AppCheckGroup`
-- [x] 新增 `AppRadio` + `AppRadioGroup`
-- [x] 抽取 `AppChoiceList`、`useChoiceGroup`
-- [x] `AppCheck` 支持 indeterminate
-- [x] `AppRadio` 复用复选框的尺寸、标签、排版和动效节奏
-- [x] 统一组件按压、悬停、reduced-motion 规范
-- [x] 重写 README 设计、动效、命名、事件、Props 规范
-- [x] 新增 Roadmap、Radio、ChoiceList 文档页
-- [x] 迁移旧 `AppCheck` 分组 API 的存量示例
-- [x] 新增 `PageBar` 响应式页面操作栏与 `bleed` 铺满
-- [x] Input / Textarea / Select 支持 `rule` 校验
-- [x] 文档校验示例统一改为 `rule`
-- [x] 新增 `AppTable`、`AppPagination` 与对应文档页
-- [x] 枚举 Prop 的可选值统一改为 JSDoc
-- [x] Popover 关闭时恢复焦点，Select / 更多菜单支持方向键导航
-- [x] 修复深色主题辅助文字对比度与全局键盘焦点环
-- [x] 增加 Vitest 测试与 GitHub Actions 校验
-- [x] 生成 `ui/types` 组件 Props 声明
-- [x] 文档站增加搜索（Ctrl/Cmd+K）与页内目录
-- [x] 新增 `AppNavMenu` 导航菜单，文档侧栏改用真实链接
-- [x] 动画时长、缓动、磨砂、代码高亮、选中高亮统一为设计 token
-- [x] 圆角统一为 24 / 16 / 8 / 6 四档
-- [x] 新增 `AppList` / `AppListRow`、`AppHint`、`AppPinInput`
-- [x] `AppPanel` 支持 `tip` / `soft` / `plain` 三种形态
-- [x] 表格行入场、分页滑块、校验高度过渡、角标松手清除
-- [x] 移动端 AppShell 手势隐藏导航与长按震动统一
-- [x] 实验场重构为标签式编辑器、可拖拽分栏、视口切换与全屏预览
-- [x] 组件 / 布局 / 能力总览入口卡片统一为 `DocEntryCard`
-- [ ] 补齐 ChoiceList 更多自定义触发器示例
-- [ ] 为 PageBar 补充更多插槽内容示例与移动端回归
-- [ ] 为表单 `rule` 增加异步校验与跨字段校验
-- [ ] 为 Radio / RadioGroup 增加浏览器回归用例
-- [ ] 形成正式的版本迁移指南
-- [ ] 按路线图实现 Form、Tree 等计划组件
+-   [x] 复选框拆分为 `AppCheck` + `AppCheckGroup`
+-   [x] 新增 `AppRadio` + `AppRadioGroup`
+-   [x] 抽取 `AppChoiceList`、`useChoiceGroup`
+-   [x] `AppCheck` 支持 indeterminate
+-   [x] `AppRadio` 复用复选框的尺寸、标签、排版和动效节奏
+-   [x] 统一组件按压、悬停、reduced-motion 规范
+-   [x] 重写 README 设计、动效、命名、事件、Props 规范
+-   [x] 新增 Roadmap、Radio、ChoiceList 文档页
+-   [x] 迁移旧 `AppCheck` 分组 API 的存量示例
+-   [x] 新增 `PageBar` 响应式页面操作栏与 `bleed` 铺满
+-   [x] Input / Textarea / Select 支持 `rule` 校验
+-   [x] 文档校验示例统一改为 `rule`
+-   [x] 新增 `AppTable`、`AppPagination` 与对应文档页
+-   [x] 枚举 Prop 的可选值统一改为 JSDoc
+-   [x] Popover 关闭时恢复焦点，Select / 更多菜单支持方向键导航
+-   [x] 修复深色主题辅助文字对比度与全局键盘焦点环
+-   [x] 增加 Vitest 测试与 GitHub Actions 校验
+-   [x] 生成 `ui/types` 组件 Props 声明
+-   [x] 文档站增加搜索（Ctrl/Cmd+K）与页内目录
+-   [x] 新增 `AppNavMenu` 导航菜单，文档侧栏改用真实链接
+-   [x] 动画时长、缓动、磨砂、代码高亮、选中高亮统一为设计 token
+-   [x] 圆角统一为 24 / 16 / 8 / 6 四档
+-   [x] 新增 `AppList` / `AppListRow`、`AppHint`、`AppPinInput`
+-   [x] `AppPanel` 支持 `tip` / `soft` / `plain` 三种形态
+-   [x] 表格行入场、分页滑块、校验高度过渡、角标松手清除
+-   [x] 移动端 AppShell 手势隐藏导航与长按震动统一
+-   [x] 实验场重构为标签式编辑器、可拖拽分栏、视口切换与全屏预览
+-   [x] 组件 / 布局 / 能力总览入口卡片统一为 `DocEntryCard`
+-   [ ] 补齐 ChoiceList 更多自定义触发器示例
+-   [ ] 为 PageBar 补充更多插槽内容示例与移动端回归
+-   [ ] 为表单 `rule` 增加异步校验与跨字段校验
+-   [ ] 为 Radio / RadioGroup 增加浏览器回归用例
+-   [ ] 形成正式的版本迁移指南
+-   [ ] 按路线图实现 Form、Tree 等计划组件
 
 ## 发版流程
 
 ### 版本规则
 
-| 级别 | 命令 | 适用场景 |
-| --- | --- | --- |
-| patch | `pnpm version:ui patch` | 修复、样式调整、文档 |
+| 级别  | 命令                    | 适用场景                           |
+| ----- | ----------------------- | ---------------------------------- |
+| patch | `pnpm version:ui patch` | 修复、样式调整、文档               |
 | minor | `pnpm version:ui minor` | 新增组件、新增参数或事件，保持兼容 |
-| major | `pnpm version:ui major` | 破坏性 API 变更 |
+| major | `pnpm version:ui major` | 破坏性 API 变更                    |
 
 ### 发布步骤
 
@@ -451,15 +286,15 @@ git push --follow-tags
 
 ### 注意项
 
-- `pnpm version:ui` 会修改 `ui/package.json`、自动提交并打 tag；脚本要求工作区干净，否则会拒绝执行
-- 必须先 `git push` 分支，再 `git push --follow-tags`；tag 先到、workflow 后到时 GitHub 不会触发发布
-- 仓库需要在 **Settings → Secrets and variables → Actions** 配置 `NPM_TOKEN`
-- workflow 会校验 tag 与 `ui/package.json` 版本一致，不一致会直接失败
-- 该版本已经存在于 npm 时，发布步骤会自动跳过
-- 启用 CI 发布后，不要同时在本地执行 `pnpm publish:ui`，避免重复发布
-- 如果 Actions 不可用，可以本地 `pnpm publish:ui` 作为备选，此时不要再推 tag
-- npm 发布后 registry 传播可能需要几分钟，用 `npm view wash-ui version` 确认
-- `ui/package.json` 的 `files` 只包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`，文档站不会发布
+-   `pnpm version:ui` 会修改 `ui/package.json`、自动提交并打 tag；脚本要求工作区干净，否则会拒绝执行
+-   必须先 `git push` 分支，再 `git push --follow-tags`；tag 先到、workflow 后到时 GitHub 不会触发发布
+-   仓库需要在 **Settings → Secrets and variables → Actions** 配置 `NPM_TOKEN`
+-   workflow 会校验 tag 与 `ui/package.json` 版本一致，不一致会直接失败
+-   该版本已经存在于 npm 时，发布步骤会自动跳过
+-   启用 CI 发布后，不要同时在本地执行 `pnpm publish:ui`，避免重复发布
+-   如果 Actions 不可用，可以本地 `pnpm publish:ui` 作为备选，此时不要再推 tag
+-   npm 发布后 registry 传播可能需要几分钟，用 `npm view wash-ui version` 确认
+-   `ui/package.json` 的 `files` 只包含 `dist`、`types`、`tokens.css`、`tokens.js`、`LICENSE` 与 `README.md`，文档站不会发布
 
 ### 发布后验证
 
@@ -475,48 +310,3 @@ npm i wash-ui
 ## 许可证
 
 [MIT](./LICENSE)
-
-## 提交约定
-
-格式：
-
-```text
-<emoji> <type>(<scope>): <subject>
-```
-
-| 类型 | Emoji | 说明 |
-| --- | --- | --- |
-| `feat` | ✨ | 新功能 |
-| `fix` | 🐛 | 修复 bug |
-| `docs` | 📝 | 文档 |
-| `style` | 🎨 | 代码格式 |
-| `refactor` | ♻️ | 重构 |
-| `test` | ✅ | 测试 |
-| `chore` | 🔧 | 配置 / 工具 |
-| `perf` | ⚡️ | 性能优化 |
-| `build` | 📦 | 构建 |
-| `ci` | 👷 | CI 配置 |
-| `revert` | ⏪️ | 回滚 |
-| `wip` | 🚧 | 进行中 |
-| `init` | 🎉 | 初次提交 |
-| `merge` | 🔀 | 合并分支 |
-
-`scope` 写这次改动涉及的具体组件或页面，不写 `ui`、`docs` 这类目录名：
-
-- 组件用 PascalCase：`AppInput`、`AppTextarea`、`AppChoiceList`
-- 文档站页面用页面名：`InputPage`、`TextareaPage`、`RoadmapPage`
-- 多个组件共用同一改动时写共享核心或主线组件，例如 `fix(AppChoiceList)`
-- 工程配置写具体模块：`vite`、`package`、`tokens`
-
-- 一个提交只做一类事情；涉及公共 API 时同步更新 README、文档页和路线图。
-- `subject` 用中文、动词开头、不加句号。
-
-示例：
-
-```text
-✨ feat(AppInput): 增加 rule 校验
-🐛 fix(AppTextarea): 修复横向缩放失效
-📝 docs(InputPage): 补充密码输入示例
-♻️ refactor(AppChoiceList): 抽取共享选中逻辑
-🔧 chore(vite): 增加组件路由回退
-```
