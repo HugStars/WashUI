@@ -33,4 +33,29 @@ describe('AppTabs', () => {
 
         expect(wrapper.emitted('update:modelValue')).toBeUndefined()
     })
+
+    it('applies the group variant class', () => {
+        const wrapper = mount(AppTabs, {
+            props: { items, modelValue: 'overview', variant: 'group' },
+        })
+
+        expect(wrapper.classes()).toContain('wa_tabs_group')
+    })
+
+    it('enables badge dragging for all badges', () => {
+        const wrapper = mount(AppTabs, {
+            props: {
+                modelValue: 'overview',
+                items: [
+                    { name: 'overview', label: '概览', badge: 3 },
+                    { name: 'members', label: '成员', badge: { text: 2 } }
+                ],
+                badgeDraggable: true,
+                badgeMaxDistance: 80
+            },
+        })
+
+        expect(wrapper.findAll('.wa_badge')).toHaveLength(2)
+        expect(wrapper.findAll('.wa_badge_draggable')).toHaveLength(2)
+    })
 })

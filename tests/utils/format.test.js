@@ -1,5 +1,22 @@
 import { describe, expect, it } from 'vitest'
-import { formatBytes, formatCount, formatDuration, formatMbps, formatSpeed } from '@ui/src/utils/format.js'
+import {
+    clamp,
+    debounce,
+    formatBytes,
+    formatBytesFixed,
+    formatCount,
+    formatCurrency,
+    formatDate,
+    formatDuration,
+    formatMbps,
+    formatNumber,
+    formatPercent,
+    formatRelativeTime,
+    formatSpeed,
+    padZero,
+    throttle,
+    truncate
+} from '@ui/src/utils/format.js'
 
 describe('formatBytes', () => {
     it('formats byte units', () => {
@@ -48,5 +65,43 @@ describe('formatCount', () => {
 
     it('keeps invalid input visible', () => {
         expect(formatCount('bad')).toBe('-')
+    })
+})
+
+describe('format options', () => {
+    it('supports fixed decimals and unit overrides', () => {
+        expect(formatBytes(1536, 2)).toBe('1.50 KB')
+        expect(formatBytes(1536, { decimals: 2, trimZeros: false })).toBe('1.50 KB')
+        expect(formatBytes(1536, { unit: 'MB' })).toBe('0 MB')
+        expect(formatBytesFixed(2)(1536)).toBe('1.50 KB')
+    })
+
+    it('formats numbers, percents and currency', () => {
+        expect(formatNumber(1234567.89)).toBe('1,234,567.89')
+        expect(formatPercent(0.256)).toBe('25.6%')
+        expect(formatCurrency(1234.5)).toContain('1,234.50')
+        expect(formatCurrency(1234.5, { currency: 'USD', locale: 'en-US' })).toBe('$1,234.50')
+    })
+
+    it('formats dates and relative time', () => {
+        expect(formatDate('2026-11-13T13:00:00', 'YYYY/MM/DD')).toBe('2026/11/13')
+        expect(formatDate('2026-11-13T13:00:00')).toBe('2026-11-13 13:00:00')
+        expect(formatRelativeTime(Date.now() - 3 * 60 * 1000)).toBe('3 分钟前')
+    })
+
+    it('formats text and ranges', () => {
+        expect(padZero(7)).toBe('07')
+        expect(truncate('WashUI 设计系统', 6)).toBe('WashUI…')
+        expect(clamp(120, 0, 100)).toBe(100)
+    })
+
+    it('returns debounce and throttle wrappers with cancel', () => {
+        const debounced = debounce(() => { }, 100)
+        const throttled = throttle(() => { }, 100)
+
+        expect(typeof debounced).toBe('function')
+        expect(typeof throttled).toBe('function')
+        expect(typeof debounced.cancel).toBe('function')
+        expect(typeof throttled.cancel).toBe('function')
     })
 })
