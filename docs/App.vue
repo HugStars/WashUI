@@ -1,5 +1,5 @@
 <template>
-    <AppShell :nav="nav" :active="active" @navigate="go">
+    <AppShell :nav="nav" :active="active" @navigate="go" auto-hide-nav>
         <PageHeader>
             <span>{{ title }}</span>
             <code v-if="currentName" class="doc_header_name">{{ currentName }}</code>
@@ -8,7 +8,10 @@
             </template>
             <template #actions>
                 <DocSearch />
-                <span class="doc_version">v{{ Version }}</span>
+                <a class="doc_header_github" href="https://github.com/HugStars/WashUI" target="_blank"
+                    rel="noopener noreferrer" aria-label="GitHub 仓库" title="GitHub 仓库">
+                    <AppIcon name="github" :size="18" />
+                </a>
                 <AppThemeToggle />
             </template>
         </PageHeader>
@@ -30,12 +33,9 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { AppThemeToggle } from 'wash-ui'
-import pkg from '../ui/package.json'
 import DocNavSelect from './components/DocNavSelect.vue'
 import DocSearch from './components/DocSearch.vue'
 import { nav, pageNav } from './site.js'
-
-const Version = pkg.version
 
 const route = useRoute()
 const router = useRouter()
@@ -84,10 +84,6 @@ function go(item) {
     --doc_side_padding: 10px;
     --doc_side_radius: 18px;
 }
-.doc_version {
-    font-size: 12px;
-    color: var(--wa_color_text_subtle);
-}
 
 .doc_header_name {
     display: inline-block;
@@ -100,10 +96,34 @@ function go(item) {
     vertical-align: 3px;
 }
 
-@media (max-width: 640px) {
-    .doc_version {
-        display: none;
-    }
+/* 顶部栏 GitHub 入口：与主题切换、搜索保持同一组图标按钮尺寸 */
+.doc_header_github {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--wa_radius_control);
+    color: var(--wa_color_text_muted);
+    text-decoration: none;
+    transition:
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        background var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_base) var(--wa_ease_spring);
+}
+
+.doc_header_github:hover {
+    color: var(--wa_color_text);
+    background: var(--wa_color_hover);
+}
+
+.doc_header_github:active {
+    transform: scale(.92);
+}
+
+.doc_header_github:focus-visible {
+    outline: 2px solid var(--wa_color_accent);
+    outline-offset: 2px;
 }
 
 /* 彩色光斑背景：模糊层独立于内容，避免 filter 把子元素一起糊掉 */
@@ -174,28 +194,34 @@ function go(item) {
     padding: var(--doc_demo_padding, 20px);
     border-radius: 0;
 }
+
 .doc_stack {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 18px;
 }
+
 .doc_stack>* {
     min-width: 0;
 }
+
 .doc_row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 10px;
 }
+
 .doc_grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
     gap: 12px;
 }
+
 .doc_grid>* {
     min-width: 0;
 }
+
 .doc_gap {
     margin-top: 14px;
     margin-bottom: 14px;
@@ -205,26 +231,31 @@ function go(item) {
 p.wa_hint.doc_gap {
     margin-top: 14px;
 }
+
 .doc_text {
     max-width: 760px;
     font-size: 14px;
     line-height: 1.75;
     color: var(--wa_color_text_muted);
 }
+
 .doc_text+.doc_text {
     margin-top: 8px;
 }
+
 .doc_h2 {
     margin: 30px 0 12px;
     font-size: 19px;
     font-weight: 600;
     line-height: 1.4;
 }
+
 .doc_h3 {
     margin: 20px 0 10px;
     font-size: 15px;
     font-weight: 600;
 }
+
 .doc_list {
     display: grid;
     gap: 8px;
@@ -234,6 +265,7 @@ p.wa_hint.doc_gap {
     line-height: 1.7;
     color: var(--wa_color_text_muted);
 }
+
 .doc_note {
     max-width: 760px;
     padding: 2px 0 2px 14px;
@@ -242,6 +274,7 @@ p.wa_hint.doc_gap {
     line-height: 1.7;
     color: var(--wa_color_text_muted);
 }
+
 /* * HomePage 入口卡片 hover 动画 */
 .doc_card_link .wa_card {
     transition:
@@ -264,6 +297,7 @@ p.wa_hint.doc_gap {
         transform: none;
     }
 }
+
 .doc_code_inline {
     padding: 1px 5px;
     border-radius: var(--wa_radius_sm);
@@ -272,19 +306,23 @@ p.wa_hint.doc_gap {
     color: var(--wa_color_text);
     white-space: nowrap;
 }
+
 /* 正文中直接放置的代码块，补一点上下间距 */
 .doc_article>.wa_code_plain,
 .doc_article>.wa_code:not(.doc_gap) {
     margin: 12px 0;
 }
+
 .doc_tokens {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
     gap: 10px;
 }
+
 .doc_tokens>* {
     min-width: 0;
 }
+
 .doc_token {
     display: flex;
     align-items: center;
@@ -294,6 +332,7 @@ p.wa_hint.doc_gap {
     border-radius: var(--wa_radius_control);
     background: var(--wa_color_soft);
 }
+
 .doc_swatch {
     flex: none;
     width: 28px;
@@ -301,6 +340,7 @@ p.wa_hint.doc_gap {
     border: 1px solid var(--wa_color_line_strong);
     border-radius: var(--wa_radius_control);
 }
+
 .doc_token code {
     overflow: hidden;
     font: 11px var(--wa_font_mono);
@@ -308,12 +348,14 @@ p.wa_hint.doc_gap {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 .doc_kv {
     display: grid;
     gap: 6px;
     max-width: 760px;
     font-size: 13px;
 }
+
 .doc_kv_row {
     display: flex;
     flex-wrap: wrap;
@@ -323,18 +365,17 @@ p.wa_hint.doc_gap {
     padding: 9px 0;
     border-bottom: 1px solid var(--wa_color_line);
 }
+
 .doc_kv_row:last-child {
     border-bottom: 0;
 }
+
 .doc_kv_row code {
     font-family: var(--wa_font_mono);
     color: var(--wa_color_text);
 }
-@media (max-width: 860px) {
 
-    .doc_version {
-        display: none;
-    }
+@media (max-width: 860px) {
 
     .wa_header .wa_page_header:has(.doc_header_nav) h1 {
         display: none;
