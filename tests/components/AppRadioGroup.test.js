@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
+import { nextTick } from 'vue'
 import AppRadioGroup from '@ui/src/components/AppRadioGroup.vue'
 
 const options = [
@@ -7,9 +8,22 @@ const options = [
     { label: '专业版', value: 'pro' },
 ]
 
+const segmentedOptions = [
+    { label: '月付', value: 'month' },
+    { label: '年付', value: 'year' },
+    { label: '团队', value: 'team' },
+]
+
+let wrapper
+
+afterEach(() => {
+    wrapper?.unmount()
+    wrapper = null
+})
+
 describe('AppRadioGroup', () => {
     it('selects a value through an option', async () => {
-        const wrapper = mount(AppRadioGroup, {
+        wrapper = mount(AppRadioGroup, {
             props: { modelValue: 'basic', options },
         })
 
@@ -20,11 +34,64 @@ describe('AppRadioGroup', () => {
     })
 
     it('renders segmented variant', () => {
-        const wrapper = mount(AppRadioGroup, {
+        wrapper = mount(AppRadioGroup, {
             props: { modelValue: 'basic', options, variant: 'segmented' },
         })
 
         expect(wrapper.classes()).toContain('wa_choice_group_segmented')
         expect(wrapper.findAll('.wa_radio_segmented')).toHaveLength(2)
+    })
+
+    it('renders a glider and segmented buttons', async () => {
+        wrapper = mount(AppRadioGroup, {
+            props: { options: segmentedOptions, modelValue: 'month', variant: 'segmented' },
+            attachTo: document.body,
+        })
+        await nextTick()
+
+        expect(wrapper.find('.wa_choice_group_glider').exists()).toBe(true)
+        expect(wrapper.findAll('.wa_radio_segmented')).toHaveLength(3)
+        expect(wrapper.find('.wa_radio_segmented.on').exists()).toBe(true)
+    })
+
+    it('defaults to sm and applies rect modifiers', () => {
+        wrapper = mount(AppRadioGroup, {
+            props: { options: segmentedOptions, modelValue: 'month', variant: 'segmented' },
+        })
+        expect(wrapper.classes()).toContain('wa_choice_group_segmented_sm')
+        expect(wrapper.classes()).not.toContain('wa_choice_group_segmented_rect')
+
+        wrapper.unmount()
+        wrapper = mount(AppRadioGroup, {
+            props: { options: segmentedOptions, modelValue: 'month', variant: 'segmented', size: 'md', shape: 'rect' },
+        })
+
+        expect(wrapper.classes()).toContain('wa_choice_group_segmented_md')
+        expect(wrapper.classes()).toContain('wa_choice_group_segmented_rect')
+    })
+
+    it('emits the selected value when a segmented option is clicked', async () => {
+        wrapper = mount(AppRadioGroup, {
+            props: { options: segmentedOptions, modelValue: 'month', variant: 'segmented' },
+        })
+
+        await wrapper.findAll('.wa_radio_segmented')[1].trigger('click')
+        expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['year'])
+        expect(wrapper.emitted('change')?.[0]).toEqual(['year'])
+    })
+
+    it('keeps disabled options disabled', () => {
+        wrapper = mount(AppRadioGroup, {
+            props: {
+                options: [
+                    { label: '月付', value: 'month' },
+                    { label: '年付', value: 'year', disabled: true },
+                ],
+                modelValue: 'month',
+                variant: 'segmented',
+            },
+        })
+
+        expect(wrapper.findAll('.wa_radio_segmented')[1].attributes('disabled')).toBeDefined()
     })
 })
