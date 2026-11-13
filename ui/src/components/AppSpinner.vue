@@ -44,48 +44,23 @@ const Style = computed(() => {
 }
 
 .wa_spinner_dot {
-    position: relative;
     display: block;
-    width: 60%;
-    height: 60%;
+    width: min(10px, 100%);
+    height: min(10px, 100%);
     border-radius: 50%;
     background: var(--wa_color_dot_success);
-    animation: wa_spinner_dot 2s var(--wa_ease_in_out) infinite;
-}
-
-/* * 外层呼吸圈：随圆点一起放大缩小，比单纯的 box-shadow 更柔和 */
-.wa_spinner_dot::after {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    border: 1px solid color-mix(in srgb, var(--wa_color_dot_success) 48%, transparent);
-    border-radius: 50%;
-    animation: wa_spinner_dot_ring 2s var(--wa_ease_in_out) infinite;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--wa_color_dot_success) 18%, transparent);
+    animation: wa_spinner_dot 2s infinite;
 }
 
 @keyframes wa_spinner_dot {
     0%,
     100% {
-        opacity: .65;
-        transform: scale(.82);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--wa_color_dot_success) 18%, transparent);
     }
 
-    50% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes wa_spinner_dot_ring {
-    0%,
-    100% {
-        opacity: .2;
-        transform: scale(.72);
-    }
-
-    50% {
-        opacity: .65;
-        transform: scale(1.32);
+    70% {
+        box-shadow: 0 0 0 12px color-mix(in srgb, var(--wa_color_dot_success) 0%, transparent);
     }
 }
 
@@ -102,12 +77,6 @@ const Style = computed(() => {
 
     .wa_spinner_dot {
         animation: none;
-        opacity: .9;
-    }
-
-    .wa_spinner_dot::after {
-        animation: none;
-        opacity: .4;
     }
 }
 </style>
