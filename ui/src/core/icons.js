@@ -103,18 +103,20 @@ export const defaultIcons = {
         ['path', { d: 'M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z' }],
     ],
     bookshelf: [
-        ['rect', { x: 3, y: 4, width: 18, height: 16, rx: 2 }],
-        ['line', { x1: 3, y1: 10, x2: 21, y2: 10 }],
-        ['line', { x1: 3, y1: 16, x2: 21, y2: 16 }],
+        ['path', {
+            d: 'M8.325 21.75H4.425c-1.2 0-2.175-0.975-2.175-2.175V4.425c0-1.2 0.975-2.175 2.175-2.175h3.9c1.2 0 2.175 0.975 2.175 2.175v15.15c0 1.2-0.975 2.175-2.175 2.175zM4.425 3.75c-0.375 0-0.675 0.3-0.675 0.675v15.15c0 0.375 0.3 0.675 0.675 0.675h3.9c0.375 0 0.675-0.3 0.675-0.675V4.425c0-0.375-0.3-0.675-0.675-0.675H4.425z m11.775 18.263c-0.975 0-1.838-0.637-2.1-1.612l-3.938-14.625c-0.3-1.163 0.375-2.362 1.537-2.662l3.787-1.013c0.563-0.15 1.163-0.075 1.65 0.225 0.488 0.3 0.862 0.75 1.013 1.313l3.938 14.625c0.3 1.163-0.375 2.362-1.537 2.662L16.763 21.938c-0.188 0.038-0.375 0.075-0.563 0.075z m-0.15-18.525c-0.075 0-0.112 0-0.188 0.038l-3.787 1.013c-0.375 0.112-0.563 0.45-0.488 0.825l3.938 14.625c0.112 0.375 0.45 0.563 0.825 0.488l3.787-1.013c0.375-0.112 0.563-0.45 0.488-0.825l-3.938-14.625c-0.038-0.188-0.15-0.338-0.3-0.413-0.112-0.075-0.225-0.112-0.338-0.112z',
+            fill: 'currentColor',
+            stroke: 'none'
+        }],
     ],
     bookmark: [
         ['path', { d: 'M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z' }],
     ],
     chart: [
-        ['line', { x1: 4, y1: 20, x2: 20, y2: 20 }],
-        ['rect', { x: 6, y: 11, width: 3, height: 6, rx: 1 }],
-        ['rect', { x: 11, y: 7, width: 3, height: 10, rx: 1 }],
-        ['rect', { x: 16, y: 4, width: 3, height: 13, rx: 1 }],
+        ['rect', { x: 3, y: 3, width: 18, height: 18, rx: 3 }],
+        ['path', { d: 'M7.5 15.5v2' }],
+        ['path', { d: 'M12 10.5v7' }],
+        ['path', { d: 'M16.5 7v10.5' }],
     ],
     ranking: [
         ['path', { d: 'M8 21V10' }],
@@ -413,6 +415,28 @@ export const defaultIcons = {
     ],
     play: [
         ['polygon', { points: '5 3 19 12 5 21 5 3' }],
+    ],
+    'play-fill': [
+        ['path', { d: 'M7 4.5a1 1 0 0 1 1.53-.85l11 7.5a1 1 0 0 1 0 1.7l-11 7.5A1 1 0 0 1 7 19.5z', fill: 'currentColor', stroke: 'none' }],
+    ],
+    'pause-fill': [
+        ['rect', { x: 6, y: 4, width: 4.5, height: 16, rx: 1.2, fill: 'currentColor', stroke: 'none' }],
+        ['rect', { x: 13.5, y: 4, width: 4.5, height: 16, rx: 1.2, fill: 'currentColor', stroke: 'none' }],
+    ],
+    'stop-fill': [
+        ['rect', { x: 5, y: 5, width: 14, height: 14, rx: 2.5, fill: 'currentColor', stroke: 'none' }],
+    ],
+    'star-fill': [
+        ['polygon', { points: '12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2', fill: 'currentColor', stroke: 'none' }],
+    ],
+    'heart-fill': [
+        ['path', { d: 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z', fill: 'currentColor', stroke: 'none' }],
+    ],
+    'bookmark-fill': [
+        ['path', { d: 'M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z', fill: 'currentColor', stroke: 'none' }],
+    ],
+    'circle-fill': [
+        ['circle', { cx: 12, cy: 12, r: 8, fill: 'currentColor', stroke: 'none' }],
     ],
     pause: [
         ['rect', { x: 6, y: 4, width: 4, height: 16, rx: 1 }],
@@ -1016,6 +1040,10 @@ export const iconGroups = [
     {
         title: '媒体',
         icons: ['image', 'music', 'volume', 'volume-off', 'play', 'pause', 'camera', 'film', 'headphones', 'radio', 'podcast', 'sun', 'moon'],
+    },
+    {
+        title: '填充图标',
+        icons: ['play-fill', 'pause-fill', 'stop-fill', 'star-fill', 'heart-fill', 'bookmark-fill', 'circle-fill'],
     },
     {
         title: '图表与数据',
