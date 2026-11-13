@@ -102,8 +102,8 @@ function go(item) {
     display: inline-grid;
     place-items: center;
     flex: none;
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     text-decoration: none;
     border: 1px solid var(--wa_color_line);
     border-radius: var(--wa_radius_control);

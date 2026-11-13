@@ -4,7 +4,7 @@
         <section class="doc_morph_hero">
             <div class="doc_morph_stage doc_aurora">
                 <span class="doc_morph_eyebrow">
-                    <i class="doc_morph_dot" aria-hidden="true"></i>
+                    <AppSpinner dot :size="10" />
                     Morphicons · spring physics
                 </span>
 
@@ -629,28 +629,6 @@ app.use(createUi({
     color: var(--wa_color_text_subtle);
 }
 
-.doc_morph_dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--wa_color_accent);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--wa_color_accent) 18%, transparent);
-    animation: doc_morph_pulse 2.4s var(--wa_ease_in_out) infinite;
-}
-
-@keyframes doc_morph_pulse {
-    0%,
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: .45;
-        transform: scale(.72);
-    }
-}
-
 .doc_morph_icon {
     display: grid;
     width: 232px;
@@ -1075,7 +1053,6 @@ app.use(createUi({
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .doc_morph_dot,
     .doc_morph_live i {
         animation: none;
     }

@@ -16,11 +16,11 @@
         </DemoBlock>
 
         <DemoBlock title="状态点"
-            description="dot 直接渲染一个呼吸绿点，不显示旋转加载圈，适合 worker / 在线状态场景；size 同时控制点的占位大小。">
+            description="dot 直接渲染一个呼吸绿点，不显示旋转加载圈，适合在线状态场景；size 同时控制点的占位大小。">
             <div class="doc_row">
                 <AppSpinner dot :size="16" />
                 <AppSpinner dot :size="22" />
-                <span class="wa_hint"><AppSpinner dot :size="14" /> worker 在线</span>
+                <span class="wa_hint"><AppSpinner dot :size="14" /> 在线 </span>
             </div>
         </DemoBlock>
 

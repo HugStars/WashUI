@@ -2,6 +2,8 @@
 
 <p>
     <a href="https://www.npmjs.com/package/wash-ui"><img src="https://img.shields.io/npm/v/wash-ui" alt="npm version"></a>
+    <a href="https://www.npmjs.com/package/wash-ui"><img src="https://img.shields.io/npm/dt/wash-ui" alt="npm total downloads"></a>
+    <br>
     <a href="./LICENSE"><img src="https://img.shields.io/npm/l/wash-ui" alt="license"></a>
     <a href="https://www.npmjs.com/package/wash-ui"><img src="https://img.shields.io/badge/types-included-blue" alt="types"></a>
     <br>
@@ -30,7 +32,7 @@ WashUI 是一套自用的 Vue 3 设计系统，由 `ui/` 库与 `docs/` 文档�
 
 ## 技术栈
 
-pnpm workspace · Vue 3 · Vite 7 · JavaScript · 纯 CSS 变量 · PC / 移动端 / 桌面壳层三端适配
+`pnpm` · `Vue 3` · `Vite 7` · `JavaScript` · 纯 CSS 变量 · PC / 移动端 / 桌面壳层三端适配
 
 ## 快速开始
 
