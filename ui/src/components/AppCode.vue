@@ -1,10 +1,12 @@
 <template>
     <code v-if="inline" class="wa_code wa_code_inline" :class="`shj-lang-${Language}`" v-html="Html"></code>
-    <div v-else class="wa_code" :class="{ wa_code_plain: plain, wa_code_float: showLang || copyable }">
+    <div v-else class="wa_code"
+        :class="{ wa_code_plain: plain, wa_code_float: showLang || copyable, wa_code_has_numbers: showLineNumbers }">
         <span v-if="showLang" class="wa_code_lang">{{ languageLabel }}</span>
         <button v-if="copyable" type="button" class="wa_code_copy" :class="{ on: copied }"
             :aria-label="copied ? '已复制' : '复制代码'" :title="copied ? '已复制' : '复制代码'" @click="Copy">
-            <AppIcon :name="copied ? 'check' : 'copy'" :size="15" />
+            <AppIcon :name="copied ? 'check' : 'copy'" :size="13" />
+            <span class="wa_code_copy_text">{{ copied ? '已复制' : '复制' }}</span>
         </button>
         <div class="wa_code_body" :style="BodyStyle">
             <div class="wa_code_pre" :class="`shj-lang-${Language} shj-block`" v-html="Html"></div>
@@ -115,26 +117,25 @@ watch(
 
 <style>
 .wa_code {
-    --wa_code_kwd: var(--wa_color_danger);
-    --wa_code_str: var(--wa_color_success);
-    --wa_code_num: var(--wa_color_warning);
-    --wa_code_cmnt: var(--wa_color_text_subtle);
-    --wa_code_func: var(--wa_color_help);
-    --wa_code_type: var(--wa_color_accent);
-    --wa_code_var: var(--wa_color_text_muted);
-    --wa_code_oper: var(--wa_color_text_muted);
-    --wa_code_bool: var(--wa_color_warning);
-    --wa_code_class: var(--wa_color_warning);
-    --wa_code_section: var(--wa_color_help);
-    --wa_code_esc: var(--wa_color_warning);
-    --wa_code_insert: var(--wa_color_success);
-    --wa_code_deleted: var(--wa_color_danger);
-    --wa_code_err: var(--wa_color_danger);
+    --wa_code_color_kwd: var(--wa_code_kwd, var(--wa_color_danger));    --wa_code_color_str: var(--wa_code_str, var(--wa_color_success));
+    --wa_code_color_num: var(--wa_code_num, var(--wa_color_warning));
+    --wa_code_color_cmnt: var(--wa_code_cmnt, var(--wa_color_text_subtle));
+    --wa_code_color_func: var(--wa_code_func, var(--wa_color_help));
+    --wa_code_color_type: var(--wa_code_type, var(--wa_color_accent));
+    --wa_code_color_var: var(--wa_code_var, var(--wa_color_text_muted));
+    --wa_code_color_oper: var(--wa_code_oper, var(--wa_color_text_muted));
+    --wa_code_color_bool: var(--wa_code_bool, var(--wa_color_warning));
+    --wa_code_color_class: var(--wa_code_class, var(--wa_color_warning));
+    --wa_code_color_section: var(--wa_code_section, var(--wa_color_help));
+    --wa_code_color_esc: var(--wa_code_esc, var(--wa_color_warning));
+    --wa_code_color_insert: var(--wa_code_insert, var(--wa_color_success));
+    --wa_code_color_deleted: var(--wa_code_deleted, var(--wa_color_danger));
+    --wa_code_color_err: var(--wa_code_err, var(--wa_color_danger));
     position: relative;
     overflow: hidden;
     border: 1px solid var(--wa_color_line);
     border-radius: var(--wa_radius_control);
-    background: var(--wa_color_field);
+    background: var(--wa_color_code_bg);
     font-family: var(--wa_font_mono);
 }
 
@@ -144,7 +145,7 @@ watch(
     top: 10px;
     left: 14px;
     overflow: hidden;
-    max-width: calc(100% - 60px);
+    max-width: calc(100% - 100px);
     color: var(--wa_color_text_subtle);
     font: 600 11px/1.4 var(--wa_font_mono);
     letter-spacing: .03em;
@@ -161,13 +162,19 @@ watch(
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 26px;
-    height: 26px;
-    padding: 0;
+    gap: 4px;
+    width: auto;
+    height: 24px;
+    padding: 0 8px;
     border: 0;
-    border-radius: 7px;
+    border-radius: var(--wa_radius_control);
     color: var(--wa_color_text_subtle);
     background: transparent;
+    font: inherit;
+    font-family: var(--wa_font_family);
+    font-size: 11px;
+    line-height: 1;
+    white-space: nowrap;
     cursor: pointer;
     opacity: 0;
     transform-origin: center;
@@ -176,6 +183,14 @@ watch(
         color var(--wa_duration_fast) var(--wa_ease_out),
         background var(--wa_duration_fast) var(--wa_ease_out),
         transform var(--wa_duration_base) var(--wa_ease_spring);
+}
+
+.wa_code_copy svg {
+    flex: none;
+}
+
+.wa_code_copy_text {
+    line-height: 1;
 }
 
 .wa_code:hover .wa_code_copy,
@@ -198,7 +213,7 @@ watch(
 }
 
 .wa_code_copy.on svg {
-    animation: wa_code_check_in .24s var(--wa_ease_spring) both;
+    animation: wa_code_check_in var(--wa_duration_medium) var(--wa_ease_spring) both;
 }
 
 @keyframes wa_code_check_in {
@@ -246,14 +261,28 @@ watch(
 }
 
 .wa_code .shj-numbers {
+    position: sticky;
+    left: 0;
+    z-index: 1;
     flex: none;
+    align-self: stretch;
     margin-right: 14px;
     padding-right: 12px;
     border-right: 1px solid var(--wa_color_line);
     color: var(--wa_color_text_faint);
+    background: var(--wa_color_code_bg);
     text-align: right;
     user-select: none;
     counter-reset: wa_code_line;
+}
+
+/* * 有行号时去掉 pre 的左内边距，数字列从最左侧开始，sticky 不会再“先跟随再归零” */
+.wa_code_has_numbers .wa_code_pre {
+    padding-left: 0;
+}
+
+.wa_code_has_numbers .shj-numbers {
+    padding-left: 16px;
 }
 
 .wa_code .shj-numbers:empty {
@@ -266,64 +295,64 @@ watch(
 }
 
 .wa_code .shj-syn-kwd {
-    color: var(--wa_code_kwd);
+    color: var(--wa_code_color_kwd);
 }
 
 .wa_code .shj-syn-str {
-    color: var(--wa_code_str);
+    color: var(--wa_code_color_str);
 }
 
 .wa_code .shj-syn-num {
-    color: var(--wa_code_num);
+    color: var(--wa_code_color_num);
 }
 
 .wa_code .shj-syn-cmnt {
-    color: var(--wa_code_cmnt);
+    color: var(--wa_code_color_cmnt);
     font-style: italic;
 }
 
 .wa_code .shj-syn-func {
-    color: var(--wa_code_func);
+    color: var(--wa_code_color_func);
 }
 
 .wa_code .shj-syn-type {
-    color: var(--wa_code_type);
+    color: var(--wa_code_color_type);
 }
 
 .wa_code .shj-syn-var {
-    color: var(--wa_code_var);
+    color: var(--wa_code_color_var);
 }
 
 .wa_code .shj-syn-oper {
-    color: var(--wa_code_oper);
+    color: var(--wa_code_color_oper);
 }
 
 .wa_code .shj-syn-bool {
-    color: var(--wa_code_bool);
+    color: var(--wa_code_color_bool);
 }
 
 .wa_code .shj-syn-class {
-    color: var(--wa_code_class);
+    color: var(--wa_code_color_class);
 }
 
 .wa_code .shj-syn-section {
-    color: var(--wa_code_section);
+    color: var(--wa_code_color_section);
 }
 
 .wa_code .shj-syn-esc {
-    color: var(--wa_code_esc);
+    color: var(--wa_code_color_esc);
 }
 
 .wa_code .shj-syn-insert {
-    color: var(--wa_code_insert);
+    color: var(--wa_code_color_insert);
 }
 
 .wa_code .shj-syn-deleted {
-    color: var(--wa_code_deleted);
+    color: var(--wa_code_color_deleted);
 }
 
 .wa_code .shj-syn-err {
-    color: var(--wa_code_err);
+    color: var(--wa_code_color_err);
     font-weight: 600;
 }
 
@@ -360,7 +389,7 @@ watch(
     overflow: visible;
     padding: 1px 5px;
     border: 0;
-    border-radius: 5px;
+    border-radius: var(--wa_radius_sm);
     background: var(--wa_color_soft);
     font-size: 12px;
     color: var(--wa_color_text);
