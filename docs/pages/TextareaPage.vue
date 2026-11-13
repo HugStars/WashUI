@@ -2,7 +2,7 @@
     <DocPage category="表单" name="AppTextarea" title="文本域"
         description="多行文本输入，属性与样式和 AppInput 对齐，支持 rows、cols、resize、字数统计、校验规则、尺寸、只读、禁用与磨砂表面。">
         <DemoBlock title="基础与字数统计"
-            description="show-count 在底部右侧显示字数；有 maxlength 时显示当前/上限，没有时只显示当前字数。">
+            description="show-count 在底部右侧显示字数；有 maxlength 时显示当前/上限，没有时只显示当前字数。校验提示出现和收起时都有高度过渡。">
             <div class="doc_textarea_stack">
                 <AppTextarea v-model="basic" label="备注" placeholder="输入备注内容..." hint="最多 200 字" :maxlength="200"
                     show-count />

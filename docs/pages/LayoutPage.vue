@@ -1,15 +1,8 @@
 <template>
     <DocPage category="布局" title="布局概览" description="布局负责页面骨架，与业务组件分开：AppShell、PageHeader、PageBar、AppRouteBar 与 PageTransition。">
-        <div class="doc_component_grid">
-            <RouterLink v-for="item in entries" :key="item.name" :to="item.path" class="doc_component_link">
-                <AppCard :title="item.label" compact>
-                    <template #extra>
-                        <code class="doc_component_name">{{ item.component }}</code>
-                    </template>
-                    <p class="wa_hint">{{ item.summary }}</p>
-                    <span class="doc_component_go">查看文档 →</span>
-                </AppCard>
-            </RouterLink>
+        <div class="doc_entry_grid">
+            <DocEntryCard v-for="item in entries" :key="item.name" :title="item.label"
+                :name="item.component" :summary="item.summary" :path="item.path" />
         </div>
 
         <h2 class="doc_h2">基本结构</h2>
@@ -45,7 +38,7 @@
 </template>
 
 <script setup>
-import { ApiTable, DocPage } from '../components/index.js'
+import { ApiTable, DocEntryCard, DocPage } from '../components/index.js'
 import { layoutPages } from '../site.js'
 
 const entries = layoutPages.filter(item => item.name !== 'layout')

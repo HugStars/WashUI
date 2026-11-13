@@ -17,7 +17,7 @@
         </DemoBlock>
 
         <DemoBlock title="分段选择"
-            description="variant=segmented 把互斥选项渲染成等宽分段，适合 2–4 个短选项；size 支持 sm / md，shape=rect 切换为小圆角矩形。">
+            description="variant=segmented 把互斥选项渲染成等宽分段，适合 2–4 个短选项；size 支持 sm / md，shape=rect 切换为小圆角矩形，内边距和间距比胶囊更紧凑。">
             <div class="doc_radio_stack">
                 <AppRadioGroup v-model="segmentedPeriod" :options="compactOptions" variant="segmented" size="sm"
                     aria-label="计费周期" />
@@ -156,7 +156,7 @@ const radioRows = [
     { name: 'value', type: 'string | number | symbol | boolean', default: 'undefined', desc: '在 AppRadioGroup / AppChoiceList 中对应的值' },
     { name: 'label', type: 'string', default: "''", desc: '标签文本' },
     { name: 'labelPosition', type: 'before | after', default: 'after', desc: '标签在单选框前或后；分组中会继承分组设置' },
-    { name: 'size', type: 'number | string', default: '20', desc: '单选框尺寸；分组中会继承分组 size' },
+    { name: 'size', type: 'number | sm | md', default: '20（segmented 默认 sm）', desc: '普通单选为像素尺寸；segmented 支持 sm / md，默认走 sm' },
     { name: 'between', type: 'boolean', default: 'false', desc: '标签与单选框两端对齐' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用单个单选框' },
     { name: 'ariaLabel', type: 'string', default: '单选框', desc: '没有标签时的无障碍名称' },

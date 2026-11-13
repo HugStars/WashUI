@@ -6,16 +6,19 @@
                 <span class="wa_tag doc_hero_tag">Vue 3 · 私有设计系统</span>
             </div>
             <p class="doc_hero_lead">
-                WashUI 的界面基础层：设计变量、布局壳、组件、表单、反馈、主题、路由与组合式函数。
+                WashUI 是一套自用的 Vue 3 设计系统。目标不是堆组件，而是把颜色、圆角、间距、阴影、层级、动画时长和图标行为收敛成一套可配置的规则，
+                让 PC 页面、移动端页面和桌面壳层共用同一套实现。
             </p>
             <div class="doc_actions">
                 <AppButton variant="primary" @click="router.push('/guide/quick-start')">快速开始</AppButton>
                 <AppButton variant="line" @click="router.push('/components')">浏览组件</AppButton>
+                <AppButton variant="line" @click="router.push('/tokens')">设计变量</AppButton>
             </div>
             <div class="doc_tags">
                 <span class="wa_tag">Vue 3.5+</span>
-                <span class="wa_tag">Vite 7</span>
                 <span class="wa_tag">纯 CSS 变量</span>
+                <span class="wa_tag">三端适配</span>
+                <span class="wa_tag">动效统一</span>
                 <span class="wa_tag">按需导入</span>
             </div>
         </section>
@@ -32,6 +35,26 @@
                 </AppCard>
             </RouterLink>
         </div>
+
+        <section class="doc_home_section">
+            <h2 class="doc_h2">统一化设计</h2>
+            <div class="doc_home_principles">
+                <AppPanel v-for="item in principles" :key="item.title" variant="soft" :title="item.title">
+                    <p>{{ item.text }}</p>
+                </AppPanel>
+            </div>
+        </section>
+
+        <section class="doc_home_section">
+            <div class="doc_home_section_head">
+                <h2 class="doc_h2">最近更新</h2>
+                <RouterLink to="/guide/roadmap" class="doc_home_more">查看路线图</RouterLink>
+            </div>
+            <AppList variant="group" divided inset>
+                <AppListRow v-for="item in updates" :key="item.label" :label="item.label" :value="item.value"
+                    label-position="responsive" />
+            </AppList>
+        </section>
     </div>
 </template>
 
@@ -41,14 +64,56 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const features = [
-    { title: '安装与初始化', text: '安装依赖、引入样式、注册组件与配置主题。', path: '/guide/install' },
-    { title: '主题与变量', text: '亮暗主题、CSS tokens 与加载时配置。', path: '/guide/theme' },
-    { title: '组件', text: '按钮、卡片、表单与反馈组件。', path: '/components' },
-    { title: '布局', text: '壳层、页面标题、进度条与路由过渡。', path: '/layout' },
-    { title: '能力', text: '全局服务、组合式函数、工具函数与设计变量。', path: '/abilities' },
-    { title: '图标', text: '内置图标、全局配置与 Morphicons 形变过渡。', path: '/icons' },
+    {
+        title: '安装与初始化',
+        text: '安装依赖、引入样式、注册组件，接入主题与图标默认值。',
+        path: '/guide/install'
+    },
+    {
+        title: '主题与变量',
+        text: '亮暗主题、颜色 / 圆角 / 间距 / 阴影 / 动效 token，以及运行时覆盖。',
+        path: '/guide/theme'
+    },
+    {
+        title: '组件',
+        text: '基础、表单、数据、反馈、加载与内容展示组件，附示例和 API。',
+        path: '/components'
+    },
+    {
+        title: '布局与三端',
+        text: 'PC 页面、移动端底部导航、桌面壳层、页面标题与路由过渡。',
+        path: '/layout'
+    },
+    {
+        title: '能力与函数',
+        text: '全局服务、组合式函数、格式化工具、日期与并发控制。',
+        path: '/abilities'
+    },
+    {
+        title: '图标',
+        text: '内置线性与 fill 图标、Morphicons 形变、描边与速度配置。',
+        path: '/icons'
+    }
 ]
 
+const principles = [
+    { title: '变量先行', text: '组件样式只引用变量，不写死颜色、圆角和秒数；换主题或调整节奏只改一处。' },
+    { title: '动效统一', text: '滑块、分页、按压、校验、角标清除共用同一套时长与缓动，并统一处理 reduced-motion。' },
+    { title: '图标行为', text: '线性与 fill 图标共用一套配置，name 变化时由 Morphicons 做形变，不额外写动画。' },
+    { title: '三端一致', text: 'PC、移动端和桌面壳层共享组件与交互语义，差异只体现在布局和输入方式。' },
+    { title: '反馈一致', text: '校验、Tooltip、Toast、Loading 使用同一套出现 / 收起节奏和层级规则。' },
+    { title: '可覆盖', text: '默认值只是起点；token、图标、磨砂、动效都可以在项目侧覆盖，不侵入组件源码。' }
+]
+
+const updates = [
+    { label: '设计变量', value: '动画时长、选中高亮、磨砂、代码高亮独立为可覆盖 token' },
+    { label: '动效', value: '表格行入场、分页滑块、校验高度过渡、角标松手清除' },
+    { label: '移动端', value: 'AppShell 上滑隐藏导航、长按震动与按压阴影统一' },
+    { label: '组件', value: '新增 AppList、AppHint、AppPinInput；AppPanel 增加 tip / soft / plain' },
+    { label: '布局', value: 'PageHeader 支持居中与左右图标插槽；文档翻页顺序自动派生' },
+    { label: '实验场', value: '标签式单编辑器、可拖拽分栏、视口切换与全屏预览' },
+    { label: '文档', value: 'API 表格加宽、工具函数拆分、首页与路线图重写' }
+]
 </script>
 
 <style>
@@ -85,9 +150,9 @@ const features = [
 }
 
 .doc_hero_lead {
-    max-width: 680px;
+    max-width: 780px;
     font-size: 15px;
-    line-height: 1.75;
+    line-height: 1.8;
     color: var(--wa_color_text_muted);
 }
 
@@ -106,6 +171,39 @@ const features = [
     min-width: 0;
 }
 
+.doc_home_section {
+    display: grid;
+    gap: 10px;
+}
+
+.doc_home_section_head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.doc_home_section_head .doc_h2 {
+    margin-bottom: 0;
+}
+
+.doc_home_more {
+    font-size: 12px;
+    color: var(--wa_color_text_subtle);
+    text-decoration: none;
+    transition: color var(--wa_duration_fast);
+}
+
+.doc_home_more:hover {
+    color: var(--wa_color_text);
+}
+
+.doc_home_principles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
 .doc_feature_grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -122,11 +220,6 @@ const features = [
     height: 100%;
 }
 
-.doc_feature_grid .wa_card_foot {
-    margin-top: auto;
-    padding-top: 16px;
-}
-
 .doc_feature_link {
     display: block;
     height: 100%;
@@ -138,34 +231,22 @@ const features = [
     border: 1px solid transparent;
 }
 
-.doc_feature_link:hover .wa_card {
-    border-color: var(--wa_color_line);
-}
-
 .doc_feature_arrow {
     color: var(--wa_color_text_faint);
-    transition: color var(--wa_duration_fast), transform var(--wa_duration_fast);
+    transition: transform var(--wa_duration_base) var(--wa_ease_spring);
 }
 
 .doc_feature_link:hover .doc_feature_arrow {
-    color: var(--wa_color_text);
     transform: translateX(2px);
 }
 
-.doc_feature_link:focus-visible {
-    outline: 2px solid var(--wa_color_accent);
-    outline-offset: 3px;
-    border-radius: var(--wa_radius_card);
-}
-
 @media (max-width: 860px) {
-
-    .doc_feature_grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
     .doc_hero {
-        padding: 24px 20px;
+        padding: 22px;
     }
-}
-</style>
+
+    .doc_feature_grid,
+    .doc_home_principles {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}</style>

@@ -1,6 +1,6 @@
 <template>
     <DocPage category="基础" name="AppBadge" title="消息角标"
-        description="未读数量与状态角标。开启 draggable 后可以拖动：气泡和原位锚点之间会拉出粘性连接，松手回弹，拖过阈值则断开、爆开并触发 clear。">
+        description="未读数量与状态角标。开启 draggable 后可以拖动：气泡和原位锚点之间会拉出粘性连接，越界只做缩小提示，松手才断开并从松手位置爆开，同时触发 clear。">
         <DemoBlock title="基础" description="value 支持数字和短文本，超过 max 显示 max+；dot 只显示圆点。">
             <div class="doc_row">
                 <AppBadge :value="12" />
@@ -13,7 +13,7 @@
         </DemoBlock>
 
         <DemoBlock title="拖拽清除"
-            description="按住角标拖动：超过阈值前松手会弹回原位，超过阈值后断开并爆开。拖动过程中原位置保留一个收缩的锚点，中间是粘性连接。">
+            description="按住角标拖动：超过阈值只会缩小提示，松手才真正清除；拖回阈值内还能反悔。清除时四个小圈会从松手位置向四周扩散。">
             <div class="doc_badge_stage">
                 <AppBadge v-if="dragCount > 0" :key="dragCount" :value="dragCount" draggable
                     :aria-label="`${dragCount} 条未读，可拖动清除`" @clear="dragCount = 0" />
@@ -82,8 +82,8 @@ const propsRows = [
     { name: 'tone', type: 'danger | accent | neutral', default: 'danger', desc: '语义色；danger 使用 --wa_color_danger，accent 使用 --wa_color_accent' },
     { name: 'size', type: 'sm | md', default: 'sm', desc: '角标尺寸' },
     { name: 'max', type: 'number', default: '99', desc: '数字上限，超过显示 max+' },
-    { name: 'draggable', type: 'boolean', default: 'false', desc: '允许拖动；拖过阈值断开并触发 clear' },
-    { name: 'maxDistance', type: 'number', default: '72', desc: '断开阈值（px）' },
+    { name: 'draggable', type: 'boolean', default: 'false', desc: '允许拖动；超过阈值后角标缩小提示，松手才断开并触发 clear，拖回范围内可取消' },
+    { name: 'maxDistance', type: 'number', default: '72', desc: '断开阈值（px）；松手时判定，拖动过程中只做视觉提示' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用角标交互' },
     { name: 'tabindex', type: 'number | string', default: '0', desc: '按钮的 tabindex；放进 tablist 时可设为 -1' },
     { name: 'ariaLabel', type: 'string', default: "''", desc: '无可见文字时的无障碍名称' },

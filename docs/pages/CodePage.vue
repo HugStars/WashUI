@@ -11,7 +11,9 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="独立代码块" description="不传 plain 时渲染为带边框与背景的独立代码块，适合卡片、面板等需要明确边界的场景。" :code="cardCode">
+        <DemoBlock title="独立代码块"
+            description="不传 plain 时渲染为带边框与背景的独立代码块，适合卡片、面板等需要明确边界的场景；开启行号后横向滚动时行号固定在左侧，复制按钮使用正文字体并带文字。"
+            :code="cardCode">
             <AppCode :code="cssCode" lang="css" show-line-numbers :max-height="180" />
         </DemoBlock>
 

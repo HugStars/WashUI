@@ -81,7 +81,7 @@ const propsRows = [
     { name: 'groups', type: 'Array<{ title, items }>', default: '[]', desc: '分组导航；items 与 options 都兼容' },
     { name: 'items', type: 'Array<NavItem>', default: '[]', desc: '无分组导航项' },
     { name: 'linkComponent', type: 'string | Component', default: "'a'", desc: '链接组件；传 RouterLink 时使用 to' },
-    { name: 'size', type: 'md | sm', default: 'md', desc: 'md 用于侧栏，sm 用于紧凑菜单' },
+    { name: 'size', type: 'sm | md', default: 'sm', desc: 'md 用于宽松侧栏，sm 用于紧凑菜单' },
     { name: 'ariaLabel', type: 'string', default: "'导航菜单'", desc: '导航区域的 aria-label' },
 ]
 

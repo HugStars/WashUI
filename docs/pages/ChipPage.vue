@@ -55,7 +55,7 @@ const propsRows = [
     { name: 'active', type: 'boolean', default: 'false', desc: '选中状态' },
     { name: 'text', type: 'string', default: "''", desc: '文本内容；默认插槽优先' },
     { name: 'frosted', type: 'boolean', default: 'false', desc: '白色磨砂半透明表面，与 AppPopover 一致' },
-    { name: 'size', type: 'sm | md', default: 'md', desc: '标记尺寸；sm 为 26px 高' },
+    { name: 'size', type: 'sm | md', default: 'sm', desc: '标记尺寸；sm 为 26px 高' },
 ]
 
 const eventRows = [

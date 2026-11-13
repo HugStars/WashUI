@@ -1,7 +1,7 @@
 <template>
     <DocPage category="表单" name="AppInput" title="输入框"
         description="带标签、提示与校验的输入框，支持前后缀、清空、尺寸、禁用与只读；rule 支持 required、长度、正则和自定义 validator。">
-        <DemoBlock title="基础" description="hint 显示在输入框下方；rule 校验失败会替换 hint，error 仍可手动覆盖。">
+        <DemoBlock title="基础" description="hint 显示在输入框下方；rule 校验失败会替换 hint，error 仍可手动覆盖。提示与错误出现、收起时都有高度过渡和淡入淡出。">
             <div class="doc_grid">
                 <AppInput v-model="name" label="名称" placeholder="例如：生产环境" hint="用于标识当前环境" clearable />
                 <AppInput v-model="invalid" label="校验" placeholder="输入任意内容" :rule="requiredRule" />

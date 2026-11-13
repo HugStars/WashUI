@@ -52,12 +52,13 @@ const colors = [
 ]
 
 const shapeRows = [
-    { name: '--wa_radius_card', desc: '卡片圆角，默认 28px' },
+    { name: '--wa_radius_card', desc: '卡片圆角，默认 24px' },
+    { name: '--wa_radius_popover', desc: '内容块 / 弹出层圆角，默认 16px' },
     { name: '--wa_radius_control', desc: '控件圆角，默认 8px' },
-    { name: '--wa_radius_small', desc: '小圆角，默认 10px' },
+    { name: '--wa_radius_small', desc: '控件圆角别名，等同 8px' },
+    { name: '--wa_radius_sm', desc: '小标记 / 行内代码圆角，默认 6px' },
     { name: '--wa_radius_dialog', desc: '弹框圆角，默认 24px' },
     { name: '--wa_radius_pill', desc: '胶囊圆角' },
-    { name: '--wa_radius_popover', desc: '弹出层圆角，默认 18px' },
     { name: '--wa_popover_padding', desc: '弹出层内边距，默认 8px' },
     { name: '--wa_space_1', desc: '间距 4px' },
     { name: '--wa_space_2', desc: '间距 8px' },

@@ -76,7 +76,7 @@ const propsRows = [
     { name: 'text', type: 'string', default: "''", desc: '标签文本；默认插槽优先' },
     { name: 'tone', type: 'default | success | warning | help | danger', default: 'default', desc: '语义色' },
     { name: 'size', type: 'sm | md', default: 'sm', desc: '字号与上下内边距' },
-    { name: 'mono', type: 'boolean', default: 'true', desc: '使用等宽字体；false 时使用界面字体' },
+    { name: 'mono', type: 'boolean', default: 'false', desc: '使用等宽字体；默认关闭，避免中文回退到其他字体' },
     { name: 'frosted', type: 'boolean', default: 'false', desc: '白色磨砂半透明表面' },
     { name: 'pill', type: 'boolean', default: 'false', desc: '胶囊圆角，适合状态角标' },
     { name: 'expand', type: 'boolean', default: 'true', desc: '挂载时从左向右展开；设为 false 关闭' },

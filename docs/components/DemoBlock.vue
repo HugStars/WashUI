@@ -18,7 +18,7 @@
                     </button>
                     <button type="button" class="doc_demo_toggle" :aria-expanded="expanded"
                         @click="expanded = !expanded">
-                        <AppIcon name="chevron" :size="13" class="doc_demo_chevron" :class="{ on: expanded }" />
+                        <AppIcon :name="expanded ? 'close' : 'code'" :size="13" class="doc_demo_code_icon" />
                         <span>{{ expanded ? '收起代码' : '查看代码' }}</span>
                     </button>
                 </div>
@@ -184,12 +184,8 @@ function OpenPlayground() {
     background: var(--wa_color_active);
 }
 
-.doc_demo_chevron {
-    transition: transform var(--wa_duration_fast) var(--wa_ease_out);
-}
-
-.doc_demo_chevron.on {
-    transform: rotate(90deg);
+.doc_demo_code_icon {
+    flex: none;
 }
 
 .doc_demo_code_body {
@@ -214,7 +210,7 @@ function OpenPlayground() {
 .doc_demo_code_inner .wa_code {
     border: 0;
     border-radius: 0;
-    background: var(--wa_color_field);
+    background: var(--wa_color_code_bg);
 }
 
 @media (max-width: 860px) {

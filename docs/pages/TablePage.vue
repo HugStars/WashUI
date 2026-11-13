@@ -63,13 +63,13 @@
         <DemoBlock title="加载与空状态" description="loading 显示骨架行并保留表头；没有数据时显示紧凑的空状态。">
             <div class="doc_table_demo">
                 <AppButton size="sm" @click="loading = !loading">{{ loading ? '结束加载' : '模拟加载' }}</AppButton>
-                <AppTable :columns="columns" :data="rows" :loading="loading" :loading-rows="3" />
+                <AppTable :columns="columns" :data="rows" :loading="loading" :loading-rows="rows.length" />
                 <AppTable :columns="columns" :data="[]" empty-text="没有匹配的记录" />
             </div>
         </DemoBlock>
 
         <DemoBlock title="与分页组合" description="表格不内置分页，用 footer 插槽组合 AppPagination；服务端分页时把 data 换成当前页数据即可。">
-            <AppTable :columns="columns" :data="pagedRows">
+            <AppTable :columns="columns" :data="pagedRows" :min-height="250">
                 <template #footer>
                     <AppPagination v-model="page" v-model:page-size="pageSize" :total="rows.length" show-size-changer />
                 </template>

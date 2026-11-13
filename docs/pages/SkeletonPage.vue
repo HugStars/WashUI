@@ -18,7 +18,7 @@
                 <AppSkeleton :height="54" />
             </div>
             <div v-else class="doc_stack doc_gap">
-                <div v-for="item in items" :key="item" class="doc_kv_row">
+                <div v-for="item in items" :key="item" class="doc_kv_row doc_skeleton_row">
                     <span>{{ item }}</span>
                     <code>正常</code>
                 </div>
@@ -41,6 +41,15 @@ const items = ['边缘节点', '缓存命中', '源站响应']
 const propsRows = [
     { name: 'width', type: 'number | string', default: "'100%'", desc: '宽度' },
     { name: 'height', type: 'number | string', default: '14', desc: '高度' },
-    { name: 'radius', type: 'number | string', default: 'var(--wa_radius_small)', desc: '圆角' },
+    { name: 'radius', type: 'number | string', default: 'var(--wa_radius_sm)', desc: '圆角' },
 ]
 </script>
+
+<style>
+/* * 让真实行与上方 54px 骨架保持同高，切换时列表不跳动 */
+.doc_skeleton_row {
+    box-sizing: border-box;
+    height: 54px;
+    align-items: center;
+}
+</style>

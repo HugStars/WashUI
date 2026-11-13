@@ -1,4 +1,4 @@
-import { componentGroups, composablePages, guidePages, iconPages, layoutPages, servicePages } from './site.js'
+import { componentGroups, composablePages, guidePages, iconPages, layoutPages, servicePages, utilsPages } from './site.js'
 
 const componentItems = componentGroups.flatMap(group => group.items.map(item => ({
     ...item,
@@ -15,7 +15,7 @@ export const searchItems = [
     ...servicePages,
     ...iconPages,
     { name: 'abilities', label: '能力总览', en: 'Abilities', path: '/abilities', summary: '全局服务、组合式函数、工具函数与设计变量。' },
-    { name: 'utils', label: '工具函数', en: 'Utils', path: '/utils', summary: '格式化字节、速度、时长与数量。' },
+    ...utilsPages,
     { name: 'tokens', label: '设计变量', en: 'Tokens', path: '/tokens', summary: '颜色、圆角、间距、阴影与动效 token。' },
     { name: 'playground', label: '实验场', en: 'Playground', path: '/playground', summary: '在线编辑并运行示例。' },
 ]

@@ -1,26 +1,19 @@
 <template>
     <DocPage title="能力"
         description="全局服务、组合式函数、工具函数与设计变量。全局服务直接调用，组合式函数在组件中使用，工具函数为纯函数。">
-        <section v-for="group in groups" :key="group.title">
+        <section v-for="group in groups" :key="group.title" class="doc_entry_group">
             <h2 class="doc_h2">{{ group.title }}</h2>
             <p class="doc_text doc_ability_desc">{{ group.desc }}</p>
-            <div class="doc_component_grid">
-                <RouterLink v-for="item in group.items" :key="item.path" :to="item.path" class="doc_component_link">
-                    <AppCard :title="item.label" compact>
-                        <template #extra>
-                            <code class="doc_component_name">{{ item.en }}</code>
-                        </template>
-                        <p class="wa_hint">{{ item.summary }}</p>
-                        <span class="doc_component_go">查看文档 →</span>
-                    </AppCard>
-                </RouterLink>
+            <div class="doc_entry_grid">
+                <DocEntryCard v-for="item in group.items" :key="item.path" :title="item.label" :name="item.en"
+                    :summary="item.summary" :path="item.path" />
             </div>
         </section>
     </DocPage>
 </template>
 
 <script setup>
-import { DocPage } from '../components/index.js'
+import { DocEntryCard, DocPage } from '../components/index.js'
 
 const groups = [
     {
@@ -44,7 +37,10 @@ const groups = [
         title: '工具函数',
         desc: '纯函数，输入输出明确，没有状态、没有副作用。',
         items: [
-            { label: '格式化函数', en: 'utils', summary: '字节、时间和常用格式化。', path: '/utils' },
+            { label: '字节与速率', en: 'Bytes', summary: '字节数、传输速率、耗时与大数字，支持小数位、固定单位与链式格式化器。', path: '/utils/bytes' },
+            { label: '数字与文本', en: 'Number', summary: '千分位、百分比、货币、补零、截断与区间限制。', path: '/utils/number' },
+            { label: '日期与时间', en: 'Date', summary: '按模板格式化日期，输出“刚刚 / N 分钟前”等相对时间。', path: '/utils/date' },
+            { label: '防抖与节流', en: 'Async', summary: '限制输入、滚动等高频函数的执行次数，返回函数带 cancel()。', path: '/utils/async' },
         ],
     },
     {

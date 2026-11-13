@@ -1,78 +1,81 @@
 <template>
     <DocPage category="指南" name="Roadmap" title="路线图"
-        description="组件、文档与工程能力的当前状态。状态只反映仓库里已经提交的内容，计划项会随实现进度移动。">
+        description="以仓库里已经实现的内容为准，记录设计系统、组件、布局、能力与文档的当前状态；计划项会随实现进度移动。">
         <div class="doc_roadmap">
             <AppPanel title="已完成" tone="success">
                 <div class="doc_roadmap_group">
-                    <p class="doc_roadmap_label">基础</p>
-                    <p>AppButton（按钮）、AppCard（卡片）、AppCode（代码）、AppChip（标记）、AppTag（标签）、AppBadge（消息角标）、AppTabs（标签页）、AppStat（统计）、AppNumber（数字跳动）、AppEmpty（空状态）、AppThemeToggle（主题切换）</p>
+                    <p class="doc_roadmap_label">设计基础</p>
+                    <p>亮暗主题与跟随系统、CSS 设计变量（颜色 / 圆角 / 间距 / 阴影 / 层级 / 断点）、运行时 configureTokens、统一动画时长与缓动 token、磨砂统一 token、代码高亮独立配色、选中高亮独立变量、reduced-motion 兜底。</p>
                 </div>
+
                 <div class="doc_roadmap_group">
-                    <p class="doc_roadmap_label">导航</p>
-                    <p>AppNavMenu（导航菜单）</p>
+                    <p class="doc_roadmap_label">基础组件</p>
+                    <p>AppButton、AppCard、AppCode、AppChip、AppTag、AppBadge、AppTabs、AppStat、AppNumber、AppEmpty、AppList / AppListRow、AppHint、AppThemeToggle。</p>
                 </div>
-                <div class="doc_roadmap_group">
-                    <p class="doc_roadmap_label">加载</p>
-                    <p>AppSpinner（加载圈）、AppSkeleton（骨架屏）</p>
-                </div>
+
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">表单</p>
-                    <p>AppInput（输入框）、AppTextarea（文本域）、AppSwitch（开关）、AppCheck（复选框）、AppCheckGroup（复选框组）、AppRadio（单选框）、AppRadioGroup（单选框组）、AppSelect（下拉框）、AppSelectPanel（下拉面板）、AppChoiceList（选择列表）、AppCheckPanel（多选面板）、AppRadioPanel（单选面板）、AppUpload（上传）</p>
+                    <p>AppInput、AppTextarea、AppPinInput、AppSwitch、AppCheck、AppCheckGroup、AppRadio、AppRadioGroup、AppSelect、AppSelectPanel、AppChoiceList、AppCheckPanel、AppRadioPanel、AppCheckMenu、AppUpload。</p>
                 </div>
+
                 <div class="doc_roadmap_group">
-                    <p class="doc_roadmap_label">反馈</p>
-                    <p>AppPanel（展示框）、AppPopover（弹出框）、AppDialog（弹框）、AppTooltip（文字提示）、AppCheckMenu（多选菜单）、Toast（轻提示）、Loading（加载）</p>
+                    <p class="doc_roadmap_label">数据与反馈</p>
+                    <p>AppTable（排序 / 行选择 / 固定列 / 骨架 / 空状态 / 行入场动画）、AppPagination（页码滑块）、AppPanel（default / tip / soft / plain）、AppPopover、AppDialog、AppTooltip、Toast、Loading、AppSpinner（状态点）、AppSkeleton。</p>
                 </div>
+
                 <div class="doc_roadmap_group">
-                    <p class="doc_roadmap_label">数据</p>
-                    <p>AppTable（表格）、AppPagination（分页）</p>
+                    <p class="doc_roadmap_label">图标</p>
+                    <p>内置线性图标与 fill 图标、AppIcon 基于 Morphicons 的图标形变、描边 / 弹簧 / 播放速度全局配置、configureIcons 运行时增删改。</p>
                 </div>
+
                 <div class="doc_roadmap_group">
-                    <p class="doc_roadmap_label">布局与能力</p>
-                    <p>AppShell（壳层）、AppRouteBar（路由进度条）、PageTransition（页面过渡）、PageHeader（页面标题）、PageBar（页面操作栏）、useTheme（主题）、useClipboard（剪贴板）、useRequest（请求）、useChoiceGroup（选择组状态）、useChoiceSummary（选择摘要）、useValidation（校验规则）、createAppRouter（路由工厂，导航栈策略）</p>
+                    <p class="doc_roadmap_label">布局与三端</p>
+                    <p>AppShell（PC 侧栏 / 移动底部导航 / safe-area / 手势隐藏导航）、AppDeskShell（桌面窗口壳层）、PageHeader（居中与左右图标插槽）、PageBar、PageTransition、AppRouteBar、AppNavMenu（分组 / 滑块 / hover 动效）。</p>
                 </div>
+
                 <div class="doc_roadmap_group">
-                    <p class="doc_roadmap_label">文档与适配</p>
-                    <p>表单 rule 校验示例、移动端标题栏与页面操作栏、组件状态表</p>
+                    <p class="doc_roadmap_label">能力</p>
+                    <p>useTheme、useClipboard、useRequest、useChoiceGroup、useChoiceSummary、useValidation、createAppRouter、loading / toast / routeLoading、格式化与文本 / 日期 / 并发控制工具函数。</p>
+                </div>
+
+                <div class="doc_roadmap_group">
+                    <p class="doc_roadmap_label">文档</p>
+                    <p>组件示例与 API 表格、代码高亮与复制、实验场（标签式编辑器 / 可拖拽分栏 / 视口切换 / 全屏预览）、搜索、移动端文档布局、能力总览、设计变量页、工具函数按用途拆分。</p>
                 </div>
             </AppPanel>
 
             <AppPanel title="进行中" tone="warning">
                 <ul class="doc_roadmap_list">
                     <li>文档站移动端标题栏、侧边栏与内容间距持续校准</li>
-                    <li>动效中断、反向过渡、reduced-motion 持续校准</li>
+                    <li>动效中断、反向过渡与 reduced-motion 的逐组件回归</li>
                     <li>表单校验的异步规则与跨字段能力设计</li>
+                    <li>表格筛选、展开行与更多服务端分页示例</li>
                 </ul>
             </AppPanel>
 
-            <AppPanel title="计划中" tone="help">
+            <AppPanel title="计划" tone="help">
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">表单</p>
-                    <p>AppForm / AppFormItem（表单 / 表单项）、异步与跨字段校验、Slider（滑块）、Rate（评分）、ColorPicker（颜色选择）、DatePicker（日期选择）、TimePicker（时间选择）、Cascader（级联选择）、Transfer（穿梭框）</p>
+                    <p>AppForm / AppFormItem、异步与跨字段校验、DatePicker、TimePicker、Cascader、Transfer、ColorPicker、Rate。</p>
                 </div>
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">数据展示</p>
-                    <p>AppTree（树）、AppTreeSelect（树选择）、AppVirtualList（虚拟列表）、AppVirtualTable（虚拟表格）、表格筛选 / 展开行 / 多级表头 / 列宽拖拽</p>
+                    <p>AppTree、AppTreeSelect、AppVirtualList、AppVirtualTable、表格筛选 / 展开行 / 多级表头 / 列宽拖拽。</p>
                 </div>
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">反馈与导航</p>
-                    <p>AppDrawer（抽屉）、AppNotification（通知）、AppTour（漫游引导）、AppMenu（菜单）、AppDropdown（下拉菜单）、Command（命令面板）</p>
+                    <p>AppDrawer、AppNotification、AppTour、AppMenu、AppDropdown、Command 命令面板。</p>
                 </div>
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">工程与质量</p>
-                    <p>单元测试、视觉回归、SSR / Nuxt 适配、i18n、完整无障碍审计、发布流水线</p>
+                    <p>单元测试覆盖、视觉回归、SSR / Nuxt 适配、i18n、无障碍审计、发布流水线。</p>
                 </div>
             </AppPanel>
 
-            <AppPanel title="本期 TODO" tone="default">
+            <AppPanel title="暂不做" tone="default">
                 <ul class="doc_roadmap_list">
-                    <li>检查所有组件的 reduced-motion 与按压反馈</li>
-                    <li>为 PageBar 补充按钮组、筛选器等更多插槽示例与移动端回归</li>
-                    <li>为 AppChoiceList 补充更多面板示例与自定义触发器示例</li>
-                    <li>为 AppRadio / AppRadioGroup 增加尺寸、禁用和自定义插槽的浏览器回归</li>
-                    <li>为表单 rule 增加异步校验与跨字段校验示例</li>
-                    <li>整理 README 的组件状态表，保持与 Roadmap 同步</li>
-                    <li>形成正式的版本迁移指南</li>
+                    <li>抖音式整屏上下滑动组件：评估过，交互与视频生命周期成本较高，暂不实现</li>
+                    <li>重型日期 / 级联 / 穿梭框：优先使用轻量实现或业务侧组合，避免组件库膨胀</li>
                 </ul>
             </AppPanel>
         </div>

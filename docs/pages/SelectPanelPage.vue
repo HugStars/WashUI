@@ -1,6 +1,6 @@
 <template>
     <DocPage category="表单" name="AppSelectPanel" title="下拉面板"
-        description="下拉框使用的选项面板。可独立使用，也可配合 AppPopover 自定义触发器；支持分组、自定义宽度、选中标记、尺寸与空状态。">
+        description="下拉框使用的选项面板。可独立使用，也可配合 AppPopover 自定义触发器；支持分组、禁用项、自定义宽度、选中标记、尺寸与空状态。">
         <DemoBlock title="独立使用" description="不依赖浮层，直接作为普通选项列表；宽度由父容器决定。" :code="standaloneCode">
             <div class="doc_panel_box">
                 <AppSelectPanel :options="basicOptions" :model-value="singleValue"
@@ -75,6 +75,13 @@
             </div>
         </DemoBlock>
 
+        <DemoBlock title="禁用选项"
+            description="item.disabled 为 true 时选项不可点击，文字、图标和角标统一变灰，选中标记也不会出现。">
+            <div class="doc_panel_box">
+                <AppSelectPanel :options="disabledOptions" :model-value="'auto'" />
+            </div>
+        </DemoBlock>
+
         <DemoBlock title="尺寸" description="默认小尺寸；size=md 时选项间距、内边距与滚动条更宽松。" :code="sizeCode">
             <div class="doc_grid">
                 <div>
@@ -120,6 +127,13 @@ const markIcon = ref('dev')
 const markBefore = ref('dev')
 const defaultPanel = ref('dev')
 const mdPanel = ref('dev')
+
+const disabledOptions = [
+    { label: '自动', value: 'auto' },
+    { label: '始终开启', value: 'on' },
+    { label: '跟随系统（维护中）', value: 'system', disabled: true },
+    { label: '自定义', value: 'custom', disabled: true },
+]
 
 const basicOptions = [
     { label: '开发环境', value: 'dev' },

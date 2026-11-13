@@ -1,5 +1,5 @@
 <template>
-    <DocPage category="反馈" name="AppPanel" title="展示框" description="用于展示只读信息、状态或分组内容，左侧色条由 tone 控制。">
+    <DocPage category="反馈" name="AppPanel" title="展示框" description="用于展示只读信息、状态或分组内容。variant 支持带左侧色条的默认形态、文本提示条、灰色半透明内容块和透明背景 + 细边框。">
         <DemoBlock title="色调" description="tone 支持 default / success / warning / help / danger。">
             <div class="doc_stack">
                 <AppPanel title="运行状态" description="最近一次检查：2 分钟前" tone="success">
@@ -26,6 +26,30 @@
             </AppPanel>
         </DemoBlock>
 
+        <DemoBlock title="文本提示"
+            description="variant=tip：去掉左侧粗色条，改为淡色底 + 细边框的提示条，适合表单说明、注意事项。">
+            <div class="doc_stack">
+                <AppPanel variant="tip" title="提示" tone="help">
+                    <p>拖拽角标超过阈值后松手才会清除，拖回范围内可以取消。</p>
+                </AppPanel>
+                <AppPanel variant="tip" tone="warning">
+                    <p>保存后需要重新构建才能生效。</p>
+                </AppPanel>
+            </div>
+        </DemoBlock>
+
+        <DemoBlock title="内容块"
+            description="variant=soft 为灰色半透明内容块；variant=plain 为透明背景 + 细边框，适合设置页分组。">
+            <div class="doc_stack">
+                <AppPanel variant="soft" title="通知">
+                    <p>只接收与当前项目相关的提醒。</p>
+                </AppPanel>
+                <AppPanel variant="plain" title="缓存">
+                    <p>清理后需要重新下载资源。</p>
+                </AppPanel>
+            </div>
+        </DemoBlock>
+
         <template #api>
             <ApiTable :rows="propsRows" />
             <ApiTable title="插槽" kind="slots" :rows="slotRows" />
@@ -40,6 +64,7 @@ const propsRows = [
     { name: 'title', type: 'string', default: "''", desc: '标题' },
     { name: 'description', type: 'string', default: "''", desc: '副标题或状态说明' },
     { name: 'tone', type: 'default | success | warning | help | danger', default: 'default', desc: '色条色调' },
+    { name: 'variant', type: 'default | tip | soft | plain', default: 'default', desc: 'default 带左侧色条；tip 文本提示条；soft 灰色半透明内容块；plain 透明背景 + 细边框' },
     { name: 'compact', type: 'boolean', default: 'false', desc: '紧凑间距' },
 ]
 

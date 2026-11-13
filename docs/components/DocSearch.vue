@@ -181,7 +181,7 @@ onUnmounted(() => {
 .doc_search_kbd {
     padding: 1px 5px;
     border: 1px solid var(--wa_color_line);
-    border-radius: 5px;
+    border-radius: var(--wa_radius_sm);
     color: var(--wa_color_text_subtle);
     background: var(--wa_color_soft);
     font: 10px/1.5 var(--wa_font_mono);

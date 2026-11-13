@@ -6,13 +6,10 @@
             <header class="doc_head">
                 <div class="doc_head_title">
                     <h1 class="doc_title">
-                        <span>{{ title }}</span>
-                        <code v-if="name" class="doc_title_name">{{ name }}</code>
+                        <slot name="title">{{ title }}</slot>
                     </h1>
-                    <p v-if="category" class="doc_meta">
-                        <!-- * 统一用 AppTag，高度与 doc_title_name 的 22px 对齐 -->
-                        <AppTag :text="category" :expand="false" />
-                    </p>
+                    <AppTag v-if="name" class="doc_name_tag" :text="name" mono :expand="false" />
+                    <AppTag v-if="category" :text="category" :expand="false" />
                 </div>
                 <p v-if="description" class="doc_desc">{{ description }}</p>
             </header>
@@ -42,13 +39,13 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { AppTag } from 'wash-ui'
-import { pageLabel, pageNav, sections } from '../site.js'
+import { orderedPageNav, pageLabel, sections } from '../site.js'
 import DocSideNav from './DocSideNav.vue'
 
 defineProps({
     title: {
         type: String,
-        required: true,
+        default: '',
     },
     name: {
         type: String,
@@ -67,9 +64,9 @@ defineProps({
 const route = useRoute()
 // 桌面端左侧面板与移动端 Header 下拉共用同一份 section 配置。
 const section = computed(() => sections[route.meta.section] || null)
-const index = computed(() => pageNav.findIndex(item => item.name === route.name))
-const prev = computed(() => index.value > 0 ? pageNav[index.value - 1] : null)
-const next = computed(() => index.value >= 0 && index.value < pageNav.length - 1 ? pageNav[index.value + 1] : null)
+const index = computed(() => orderedPageNav.findIndex(item => item.name === route.name))
+const prev = computed(() => index.value > 0 ? orderedPageNav[index.value - 1] : null)
+const next = computed(() => index.value >= 0 && index.value < orderedPageNav.length - 1 ? orderedPageNav[index.value + 1] : null)
 </script>
 
 <style>
@@ -109,41 +106,15 @@ const next = computed(() => index.value >= 0 && index.value < pageNav.length - 1
 .doc_head_title {
     display: flex;
     flex-wrap: wrap;
-    /* * 标题和分类标签按底边对齐；code 与标签统一 22px 高后不会错开 */
-    align-items: flex-end;
-    gap: 12px;
-}
-
-.doc_meta {
-    display: flex;
     align-items: center;
-    gap: 8px;
-    height: 22px;
+    gap: 10px;
 }
 
 .doc_title {
-    display: flex;
-    flex-wrap: wrap;
-    /* * 标题与组件名 code 按底边对齐 */
-    align-items: flex-end;
-    gap: 10px;
     font-size: clamp(26px, 4vw, 34px);
     font-weight: 600;
     letter-spacing: -.02em;
     line-height: 1.2;
-}
-
-.doc_title_name {
-    display: inline-flex;
-    align-items: center;
-    height: 22px;
-    padding: 0 7px;
-    border-radius: 7px;
-    background: var(--wa_color_field);
-    font: 500 13px var(--wa_font_mono);
-    letter-spacing: 0;
-    line-height: 1;
-    color: var(--wa_color_text_subtle);
 }
 
 .doc_desc {

@@ -1,7 +1,8 @@
 <template>
-    <section class="pg_editor_block" :class="{ 'is_half': max === 'half', 'is_fill': max === 'fill' }"
+    <section class="pg_editor_block"
+        :class="{ 'is_half': max === 'half', 'is_fill': max === 'fill', is_bare: bare }"
         :style="{ '--pg_editor_content_height': `${ContentHeight}px` }">
-        <header class="pg_editor_head">
+        <header v-if="!bare" class="pg_editor_head">
             <span class="pg_editor_label">{{ label }}</span>
             <span class="pg_editor_count">{{ modelValue.length }}</span>
         </header>
@@ -43,6 +44,8 @@ const props = defineProps({
         default: 'third',
         allows: ['third', 'half', 'fill'],
     },
+    /** 去掉外框和标题，撑满父容器，供实验场的标签式编辑器使用 */
+    bare: Boolean,
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -141,6 +144,27 @@ onUnmounted(() => {
     flex: 1 1 auto;
     max-height: none;
     min-height: 120px;
+}
+
+/* * bare：实验场标签页里的单编辑器，占满父容器，不再自带外框和标题 */
+.pg_editor_block.is_bare {
+    flex: 1 1 auto;
+    height: 100%;
+    max-height: none;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.pg_editor_block.is_bare:focus-within {
+    border-color: transparent;
+}
+
+.pg_editor_block.is_bare .pg_editor_body {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
 }
 
 .pg_editor_block:focus-within {

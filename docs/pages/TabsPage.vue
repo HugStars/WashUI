@@ -1,6 +1,6 @@
 <template>
     <DocPage category="导航" name="AppTabs" title="标签页"
-        description="参考 AppShell 导航实现的标签切换组件，选中背景会滑动并带弹性反馈。支持两种外观、透明背景、尺寸与可选面板；fill 或 overflow=more 时标签等宽铺满，overflow=scroll 时标签栏滚到两端后还能拉出一段并回弹。">
+        description="参考 AppShell 导航实现的标签切换组件，选中背景会滑动并带弹性反馈。支持 nav / plain / group 三种外观、透明背景、尺寸与可选面板；fill 或 overflow=more 时标签等宽铺满，overflow=scroll 时标签栏滚到两端后还能拉出一段并回弹。">
         <DemoBlock title="基础" description="v-model 绑定选中项的 name；写入默认插槽时渲染面板，插槽可拿到当前项。">
             <AppTabs v-model="tab" :items="tabs">
                 <template #default="{ active, item }">
@@ -19,6 +19,11 @@
 
         <DemoBlock title="透明背景" description="transparent：去掉磨砂、背景、边框和阴影，只保留标签与滑动选中背景。">
             <AppTabs v-model="transparentTab" transparent :items="tabs" />
+        </DemoBlock>
+
+        <DemoBlock title="按钮组"
+            description="variant=group：对应 Worker API 面板的按钮组。白磨砂底、选中黑色块、hover 时加 inset 内描边，圆角改为小矩形。">
+            <AppTabs v-model="groupTab" variant="group" :items="tabs" />
         </DemoBlock>
 
         <DemoBlock title="无面板" description="不写默认插槽时只渲染标签栏，不生成面板容器。">
@@ -46,7 +51,8 @@
 
         <DemoBlock title="消息角标"
             description="items[].badge 支持数字、true（圆点）或对象；对象加 draggable 后可以拖拽断开清除，并通过 badge-clear 交给业务处理。">
-            <AppTabs v-model="badgeTab" :items="badgeTabs" @badge-clear="ClearTabBadge" />
+            <AppTabs v-model="badgeTab" :items="badgeTabs" badge-draggable :badge-max-distance="80"
+                @badge-clear="ClearTabBadge" />
         </DemoBlock>
 
         <template #api>
@@ -64,6 +70,7 @@ import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 const tab = ref('overview')
 const plainTab = ref('usage')
 const transparentTab = ref('overview')
+const groupTab = ref('overview')
 const noPanelTab = ref('api')
 const smTab = ref('home')
 const mdTab = ref('home')
@@ -112,12 +119,14 @@ function ClearTabBadge({ name }) {
 const propsRows = [
     { name: 'modelValue', type: 'string | number | symbol', default: "''", desc: '当前选中项的 name' },
     { name: 'items', type: 'Array<{ name, label, icon?, disabled?, badge? }>', default: '[]', desc: '标签项；badge 支持数字、true 或 { text, dot, tone, draggable, max }' },
-    { name: 'variant', type: 'nav | plain', default: 'nav', desc: 'nav 带外框，plain 无边框、无外框、无阴影' },
+    { name: 'variant', type: 'nav | plain | group', default: 'nav', desc: 'nav 带外框；plain 无边框、无外框、无阴影；group 为按钮组样式（白磨砂底 + 黑色高亮 + hover 内描边）' },
     { name: 'transparent', type: 'boolean', default: 'false', desc: '去掉磨砂、背景、边框和阴影' },
     { name: 'size', type: 'sm | md', default: 'sm', desc: '标签尺寸' },
     { name: 'fill', type: 'boolean', default: 'false', desc: '标签等宽铺满；overflow=more 时默认开启' },
     { name: 'overflow', type: 'scroll | more', default: 'scroll', desc: '元素过多时横向滚动，或收进“更多”按钮；more 模式下可见标签等宽铺满' },
     { name: 'max', type: 'number', default: '4', desc: 'overflow=more 时最多显示的标签数（含“更多”）' },
+    { name: 'badgeDraggable', type: 'boolean', default: 'false', desc: '所有角标默认可拖拽清除；单项 badge.draggable 优先' },
+    { name: 'badgeMaxDistance', type: 'number', default: '72', desc: '角标拖拽断开阈值（px）' },
     { name: 'ariaLabel', type: 'string', default: '标签页', desc: '标签栏无障碍名称' },
 ]
 

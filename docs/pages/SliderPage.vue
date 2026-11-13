@@ -104,7 +104,7 @@ const propsRows = [
     { name: 'format', type: 'function', default: 'null', desc: '自定义数值格式，参数为当前值' },
     { name: 'suffix', type: 'string', default: "''", desc: '数值后缀，例如 % 或 元' },
     { name: 'ariaLabel', type: 'string', default: "''", desc: '无可见标签时的无障碍名称' },
-    { name: 'size', type: 'md | sm', default: 'md', desc: '控件尺寸' },
+    { name: 'size', type: 'sm | md', default: 'sm', desc: '控件尺寸' },
 ]
 
 const eventRows = [

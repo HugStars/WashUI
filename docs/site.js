@@ -30,6 +30,7 @@ export const componentGroups = [
             { name: 'number', label: '数字跳动', component: 'AppNumber', page: 'NumberPage', path: '/components/number', summary: '数字变化时的平滑跳动。' },
             { name: 'stepper', label: '步进器', component: 'AppStepper', page: 'StepperPage', path: '/components/stepper', summary: '加减按钮与输入结合的精确数值步进。' },
             { name: 'empty', label: '空状态', component: 'AppEmpty', page: 'EmptyPage', path: '/components/empty', summary: '无数据时的占位与操作。' },
+            { name: 'list', label: '列表', component: 'AppList', page: 'ListPage', path: '/components/list', summary: 'label / value 列表，支持横线分割、圆角分组、label 在上与选中态。' },
             { name: 'theme-toggle', label: '主题切换', component: 'AppThemeToggle', page: 'ThemeTogglePage', path: '/components/theme-toggle', summary: '亮暗主题切换，内置太阳与月亮图标。' },
         ],
     },
@@ -57,6 +58,7 @@ export const componentGroups = [
             { name: 'check-menu', label: '多选菜单', component: 'AppCheckMenu', page: 'CheckMenuPage', path: '/components/check-menu', summary: '按钮触发的多选，支持浮层与弹框两种形态。' },
             { name: 'select', label: '下拉框', component: 'AppSelect', page: 'SelectPage', path: '/components/select', summary: '带标签、分组与校验的下拉选择，支持单选与多选。' },
             { name: 'select-panel', label: '下拉面板', component: 'AppSelectPanel', page: 'SelectPanelPage', path: '/components/select-panel', summary: '下拉框使用的可复用选项面板。' },
+            { name: 'pin-input', label: '验证码输入', component: 'AppPinInput', page: 'PinInputPage', path: '/components/pin-input', summary: '逐格输入验证码，支持自动跳格、粘贴、密码模式与完成回调。' },
             { name: 'choice-list', label: '选择列表', component: 'AppChoiceList', page: 'ChoiceListPage', path: '/components/choice-list', summary: '复选框 / 单选框共享的列表面板核心。' },
             { name: 'upload', label: '上传', component: 'AppUpload', page: 'UploadPage', path: '/components/upload', summary: '选择、拖拽、校验与文件列表。' },
             { name: 'textarea', label: '文本域', component: 'AppTextarea', page: 'TextareaPage', path: '/components/textarea', summary: '多行输入，支持行数、列数、缩放、尺寸与磨砂。' },
@@ -68,13 +70,14 @@ export const componentGroups = [
             { name: 'panel', label: '展示框', component: 'AppPanel', page: 'PanelPage', path: '/components/panel', summary: '带色调的状态与信息展示。' },
             { name: 'popover', label: '弹出框', component: 'AppPopover', page: 'PopoverPage', path: '/components/popover', summary: '点击触发、浮层展示内容。' },
             { name: 'dialog', label: '弹框', component: 'AppDialog', page: 'DialogPage', path: '/components/dialog', summary: '受控弹框，含焦点陷阱与移动端手势。' },
-            { name: 'tooltip', label: '文字提示', component: 'AppTooltip', page: 'TooltipPage', path: '/components/tooltip', summary: '模拟浏览器 title 的悬停提示，磨砂面板、紧凑行高。' },
+            { name: 'tooltip', label: '文字提示', component: 'AppTooltip', page: 'TooltipPage', path: '/components/tooltip', summary: '跟随触发器的悬停提示，默认出现在右下方。' },
+            { name: 'hint', label: '提示文本', component: 'AppHint', page: 'HintPage', path: '/components/hint', summary: '小号提示文本与提示块，支持语义色和图标。' },
         ],
     },
     {
         title: '加载',
         items: [
-            { name: 'spinner', label: '加载圈', component: 'AppSpinner', page: 'SpinnerPage', path: '/components/spinner', summary: '行内加载指示。' },
+            { name: 'spinner', label: '加载指示', component: 'AppSpinner', page: 'SpinnerPage', path: '/components/spinner', summary: '行内加载指示，支持旋转圈与呼吸状态点。' },
             { name: 'skeleton', label: '骨架屏', component: 'AppSkeleton', page: 'SkeletonPage', path: '/components/skeleton', summary: '内容占位与渐进加载。' },
         ],
     },
@@ -104,9 +107,16 @@ export const composablePages = [
 
 export const abilityOverview = { name: 'abilities', label: '能力总览', en: 'Abilities', path: '/abilities' }
 
+export const utilsPages = [
+    { name: 'utils-bytes', label: '字节与速率', en: 'Bytes', path: '/utils/bytes', summary: '字节、速率、耗时与大数字的格式化。' },
+    { name: 'utils-number', label: '数字与文本', en: 'Number', path: '/utils/number', summary: '千分位、百分比、货币、补零与截断。' },
+    { name: 'utils-date', label: '日期与时间', en: 'Date', path: '/utils/date', summary: '日期模板格式化与相对时间。' },
+    { name: 'utils-async', label: '防抖与节流', en: 'Async', path: '/utils/async', summary: '限制高频函数执行次数，支持取消。' },
+]
+
 export const abilityPages = [
     ...composablePages,
-    { name: 'utils', label: '工具函数', en: 'Utils', path: '/utils' },
+    ...utilsPages,
     { name: 'tokens', label: '设计变量', en: 'Tokens', path: '/tokens' },
 ]
 
@@ -137,18 +147,76 @@ export const sections = {
             { title: '总览', items: [abilityOverview] },
             { title: '全局服务', items: servicePages },
             { title: '组合式函数', items: composablePages },
-            { title: '工具函数', items: [{ name: 'utils', label: '格式化函数', path: '/utils' }] },
+            {
+                title: '工具函数',
+                items: utilsPages
+            },
             { title: '设计变量', items: [{ name: 'tokens', label: '颜色 / 圆角 / 层级', path: '/tokens' }] },
         ],
     },
 }
 
-export const pageNav = [
-    ...guidePages,
-    ...componentPages,
-    ...iconPages,
-    ...layoutPages,
-    abilityOverview,
-    ...servicePages,
-    ...abilityPages,
-]
+export const pageNav = buildPageNav()
+
+/**
+ * 拼接文档底部“上一页 / 下一页”的顺序
+ * 默认从侧边栏 sections 自动派生，保证和左侧导航完全一致；
+ * 图标这类不在侧边栏里的独立页面放在最后。
+ * @returns {Array<object>} 页面列表
+ */
+function buildPageNav() {
+    const sidebarPages = [
+        ...flattenGroups(sections.guide),
+        ...flattenGroups(sections.components),
+        ...flattenGroups(sections.layout),
+        ...flattenGroups(sections.abilities)
+    ]
+
+    const seen = new Set()
+    const pages = []
+
+    for (const item of sidebarPages) {
+        if (!item?.name || seen.has(item.name)) continue
+        seen.add(item.name)
+        pages.push(item)
+    }
+
+    for (const item of iconPages) {
+        if (!item?.name || seen.has(item.name)) continue
+        seen.add(item.name)
+        pages.push(item)
+    }
+
+    return pages
+}
+
+/**
+ * 展开一个 section 的所有分组页面
+ * @param {object} section 侧边栏配置
+ * @returns {Array<object>} 页面列表
+ */
+function flattenGroups(section) {
+    return (section?.groups || []).flatMap(group => group.items || [])
+}
+
+/**
+ * 自定义底部翻页顺序：只写页面 name，未列出的页面自动追加。
+ * 例如 pageOrder = ['icons', 'theme', 'tokens']，改这一处即可，不用再动 pageNav。
+ * @type {string[]}
+ */
+export const pageOrder = []
+
+export const orderedPageNav = buildOrderedPageNav()
+
+/**
+ * 按 pageOrder 重排页面；未列出的保持默认顺序
+ * @returns {Array<object>} 重排后的页面列表
+ */
+function buildOrderedPageNav() {
+    if (!pageOrder.length) return pageNav
+
+    const map = new Map(pageNav.map(item => [item.name, item]))
+    const ordered = pageOrder.map(name => map.get(name)).filter(Boolean)
+    const rest = pageNav.filter(item => !pageOrder.includes(item.name))
+    return [...ordered, ...rest]
+}
