@@ -8,14 +8,16 @@
         </svg>
 
         <component :is="readonly ? 'span' : 'button'" ref="BlobEl" :type="readonly ? undefined : 'button'"
-            class="wa_badge_blob" :class="{ dragging: Dragging, flying: Flying }" :style="BlobStyle"
+            class="wa_badge_blob" :class="{ dragging: Dragging, flying: Flying, broken: Broken }" :style="BlobStyle"
             :aria-label="AriaLabel" :disabled="readonly ? undefined : disabled"
             :tabindex="readonly ? undefined : tabindex" @pointerdown="OnPointerDown" @pointermove="OnPointerMove"
             @pointerup="OnPointerUp" @pointercancel="OnPointerUp" @click="OnClick" @keydown="OnKeydown">
             <span class="wa_badge_text"><slot>{{ Label }}</slot></span>
         </component>
 
-        <span v-if="Bursting" class="wa_badge_burst" aria-hidden="true"></span>
+        <span v-if="Bursting" class="wa_badge_bursts" :style="BurstStyle" aria-hidden="true">
+            <span v-for="index in 4" :key="index" class="wa_badge_burst" :class="`wa_badge_burst_${index}`"></span>
+        </span>
     </span>
 </template>
 
@@ -84,6 +86,8 @@ const Broken = ref(false)
 const Flying = ref(false)
 const Dismissed = ref(false)
 const Bursting = ref(false)
+const BurstX = ref(0)
+const BurstY = ref(0)
 const DragX = ref(0)
 const DragY = ref(0)
 const AnchorScale = ref(1)
@@ -152,6 +156,11 @@ const BlobStyle = computed(() => ({
     transform: `translate3d(${DragX.value}px, ${DragY.value}px, 0)`,
 }))
 
+// * 爆裂小圈冻结在松手时的位置，而不是回到角标原点
+const BurstStyle = computed(() => ({
+    transform: `translate3d(${BurstX.value}px, ${BurstY.value}px, 0)`,
+}))
+
 function AnchorFor(distance) {
     return Math.max(0.3, 1 - distance / Math.max(1, props.maxDistance) * 0.7)
 }
@@ -207,7 +216,12 @@ function OnPointerMove(event) {
     DragY.value = dy
     AnchorScale.value = AnchorFor(distance)
 
-    if (!Broken.value && distance >= props.maxDistance) Break()
+    // * 越界只标记“待清除”，真正清除等松手；拖回范围内可以反悔
+    if (distance >= props.maxDistance) {
+        if (!Broken.value) MarkBroken()
+    } else if (Broken.value) {
+        Broken.value = false
+    }
 }
 
 function OnPointerUp(event) {
@@ -237,13 +251,9 @@ function OnPointerUp(event) {
     Explode()
 }
 
-function Break() {
+function MarkBroken() {
+    // * 越界只标记“待清除”，爆裂动画和真实清除都等松手
     Broken.value = true
-    Bursting.value = true
-    clearTimeout(BurstTimer)
-    BurstTimer = setTimeout(() => {
-        Bursting.value = false
-    }, 340)
 }
 
 function SpringBack() {
@@ -306,16 +316,28 @@ function Explode() {
     }
 
     clearTimeout(FinishTimer)
+    clearTimeout(BurstTimer)
 
     if (ReducedMotion) {
         Finish()
         return
     }
 
+    // * 小圈出现在角标飞出的落点，而不是松手位置
+    const finalX = DragX.value + ux * 56
+    const finalY = DragY.value + uy * 56
+
+    BurstX.value = finalX
+    BurstY.value = finalY
+    Bursting.value = true
+    BurstTimer = setTimeout(() => {
+        Bursting.value = false
+    }, 460)
+
     Flying.value = true
     requestAnimationFrame(() => {
-        DragX.value += ux * 56
-        DragY.value += uy * 56
+        DragX.value = finalX
+        DragY.value = finalY
     })
     FinishTimer = setTimeout(Finish, 240)
 }
@@ -342,7 +364,7 @@ function OnKeydown(event) {
     if (!props.draggable || (event.key !== 'Delete' && event.key !== 'Backspace')) return
     event.preventDefault()
     if (Dismissed.value) return
-    Break()
+    MarkBroken()
     Explode()
 }
 
@@ -357,6 +379,8 @@ function Reset() {
     Flying.value = false
     Dismissed.value = false
     Bursting.value = false
+    BurstX.value = 0
+    BurstY.value = 0
     DragX.value = 0
     DragY.value = 0
     AnchorScale.value = 1
@@ -435,8 +459,8 @@ onUnmounted(() => {
 }
 
 .wa_badge_neutral {
-    --wa_badge_bg: var(--wa_color_text);
-    --wa_badge_color: var(--wa_color_on_text);
+    --wa_badge_bg: var(--wa_color_highlight);
+    --wa_badge_color: var(--wa_color_on_highlight);
 }
 
 .wa_badge_blob {
@@ -539,42 +563,84 @@ onUnmounted(() => {
     fill: var(--wa_badge_bg);
 }
 
-.wa_badge_burst {
+.wa_badge_bursts {
     position: absolute;
     left: 50%;
     top: 50%;
     z-index: 3;
-    width: var(--wa_badge_size);
-    height: var(--wa_badge_size);
-    border: 1px solid var(--wa_badge_bg);
-    border-radius: 50%;
+    width: 0;
+    height: 0;
     pointer-events: none;
+}
+
+.wa_badge_burst {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--wa_badge_bg);
     transform: translate(-50%, -50%);
-    animation: wa_badge_burst .34s var(--wa_ease_out) forwards;
+    animation: wa_badge_burst 0.46s var(--wa_ease_out) forwards;
+}
+
+.wa_badge_burst_1 {
+    --wa_burst_x: -20px;
+    --wa_burst_y: -16px;
+}
+
+.wa_badge_burst_2 {
+    --wa_burst_x: 20px;
+    --wa_burst_y: -16px;
+}
+
+.wa_badge_burst_3 {
+    --wa_burst_x: -20px;
+    --wa_burst_y: 16px;
+}
+
+.wa_badge_burst_4 {
+    --wa_burst_x: 20px;
+    --wa_burst_y: 16px;
+}
+
+.wa_badge_blob.broken {
+    scale: .72;
+    opacity: .62;
+    transition:
+        scale var(--wa_duration_fast) var(--wa_ease_out),
+        opacity var(--wa_duration_fast) linear;
 }
 
 .wa_badge_blob.flying {
     scale: .35;
     opacity: 0;
     transition:
-        transform .24s var(--wa_ease_out),
-        scale .24s var(--wa_ease_out),
-        opacity .2s linear;
+        transform var(--wa_duration_medium) var(--wa_ease_out),
+        scale var(--wa_duration_medium) var(--wa_ease_out),
+        opacity var(--wa_duration_base) linear;
 }
 
-.wa_badge_out {
+/* * 只隐藏角标本体，保留扩散的小圈动画 */
+.wa_badge_out .wa_badge_ghost,
+.wa_badge_out .wa_badge_anchor,
+.wa_badge_out .wa_badge_blob,
+.wa_badge_out .wa_badge_goo {
     visibility: hidden;
 }
 
 @keyframes wa_badge_burst {
     from {
-        opacity: .65;
+        opacity: .85;
         scale: 1;
+        translate: 0 0;
     }
 
     to {
         opacity: 0;
-        scale: 2.4;
+        scale: .2;
+        translate: var(--wa_burst_x) var(--wa_burst_y);
     }
 }
 
