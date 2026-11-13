@@ -15,11 +15,11 @@
                 <AppButton variant="line" @click="router.push('/tokens')">设计变量</AppButton>
             </div>
             <div class="doc_tags">
-                <AppTag>Vue 3.5+</AppTag>
-                <AppTag>纯 CSS 变量</AppTag>
-                <AppTag>三端适配</AppTag>
-                <AppTag>动效统一</AppTag>
-                <AppTag>按需导入</AppTag>
+                <AppChip v-for="tag in HeroTags" :key="tag.icon" frosted :tabindex="tag.href ? 0 : -1"
+                    :title="tag.title" @click="tag.href && OpenLink(tag.href)">
+                    <AppIcon :name="tag.icon" :size="14" />
+                    <span>{{ tag.label }}</span>
+                </AppChip>
             </div>
         </section>
 
@@ -59,11 +59,81 @@
 </template>
 
 <script setup>
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { formatCount, formatDate } from 'wash-ui/utils'
 import pkg from '../../ui/package.json'
 
 const Version = pkg.version
+const NpmDownloads = ref('')
+const NPM_CACHE_KEY = 'wa_npm_downloads'
+const NPM_CACHE_TTL = 60 * 60 * 1000
 
+/**
+ * 读取本地缓存，避免每次进入首页都请求 npm API
+ * @param {string} key 缓存键
+ * @returns {number|null} 缓存中的下载量
+ */
+function readDownloadsCache(key) {
+    try {
+        const cached = JSON.parse(localStorage.getItem(key) || 'null')
+        if (!cached || Date.now() - cached.time > NPM_CACHE_TTL) return null
+        return Number.isFinite(cached.value) ? cached.value : null
+    } catch {
+        return null
+    }
+}
+
+/**
+ * 请求 npm 下载量；失败时隐藏徽标，不影响页面
+ */
+async function loadNpmDownloads() {
+    const range = `2026-11-01:${formatDate(new Date(), 'YYYY-MM-DD')}`
+    const cacheKey = `${NPM_CACHE_KEY}:${range}`
+    const cached = readDownloadsCache(cacheKey)
+
+    if (cached !== null) {
+        NpmDownloads.value = formatCount(cached)
+        return
+    }
+
+    try {
+        const response = await fetch(`https://api.npmjs.org/downloads/point/${range}/wash-ui`)
+        if (!response.ok) return
+
+        const value = Number((await response.json()).downloads)
+        if (!Number.isFinite(value)) return
+
+        NpmDownloads.value = formatCount(value)
+        localStorage.setItem(cacheKey, JSON.stringify({ value, time: Date.now() }))
+    } catch {
+        // 网络或存储不可用时保持隐藏
+    }
+}
+
+onMounted(loadNpmDownloads)
+
+const HeroTags = computed(() => [
+    {
+        label: NpmDownloads.value ? `Downloads ${NpmDownloads.value}` : '',
+        icon: 'download',
+        href: 'https://www.npmjs.com/package/wash-ui',
+        title: 'npm 下载量'
+    },
+    { label: 'Vue 3.5+', icon: 'vue', title: 'Vue 3.5+' },
+    { label: '纯 CSS 变量', icon: 'braces', title: '纯 CSS 变量' },
+    { label: '三端适配', icon: 'devices', title: 'PC / 移动端 / 桌面壳层' },
+    { label: '动效统一', icon: 'activity', title: '统一动效与 reduced-motion' },
+    { label: '按需导入', icon: 'package', title: '按需导入' }
+].filter(tag => tag.label))
+
+/**
+ * 新窗口打开外链
+ * @param {string} href 目标地址
+ */
+function OpenLink(href) {
+    window.open(href, '_blank', 'noopener,noreferrer')
+}
 
 const router = useRouter()
 
@@ -163,6 +233,7 @@ const updates = [
 .doc_tags {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 8px;
 }
 
