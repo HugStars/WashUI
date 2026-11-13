@@ -16,7 +16,7 @@ const props = defineProps({
     },
     radius: {
         type: [Number, String],
-        default: 'var(--wa_radius_small)',
+        default: 'var(--wa_radius_sm)',
     },
 })
 
@@ -36,7 +36,7 @@ const Style = computed(() => ({
     display: block;
     background: linear-gradient(90deg, var(--wa_color_soft), var(--wa_color_hover), var(--wa_color_soft));
     background-size: 200% 100%;
-    animation: wa_skeleton_shimmer 1.2s ease-in-out infinite;
+    animation: wa_skeleton_shimmer var(--wa_duration_shimmer) ease-in-out infinite;
 }
 
 @keyframes wa_skeleton_shimmer {

@@ -16,14 +16,14 @@
                     </span>
                     <span class="wa_table_sort_icons" aria-hidden="true">
                         <svg class="wa_table_sort_arrow" :class="{ on: isSortActive(column, 'asc') }"
-                            viewBox="0 0 10 6" fill="currentColor" stroke="currentColor" stroke-width="1.2"
-                            stroke-linejoin="round">
-                            <path d="M5 1.2 L8.8 4.8 L1.2 4.8 Z" />
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m6 15 6-6 6 6" />
                         </svg>
                         <svg class="wa_table_sort_arrow" :class="{ on: isSortActive(column, 'desc') }"
-                            viewBox="0 0 10 6" fill="currentColor" stroke="currentColor" stroke-width="1.2"
-                            stroke-linejoin="round">
-                            <path d="M1.2 1.2 L8.8 1.2 L5 4.8 Z" />
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m6 9 6 6 6-6" />
                         </svg>
                     </span>
                 </button>

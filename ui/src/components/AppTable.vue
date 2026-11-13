@@ -215,6 +215,13 @@ const ShadowRight = ref(false)
 
 const InternalSort = ref(props.defaultSort ? { ...props.defaultSort } : null)
 const InternalSelected = ref([])
+const FlashRows = ref(false)
+
+let FlashTimer = null
+let FlashFrame = 0
+const ReducedMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)')
+    : null
 
 const SortState = computed(() => props.sort === undefined ? InternalSort.value : props.sort)
 const SelectedKeys = computed(() => props.selectedKeys === undefined ? InternalSelected.value : props.selectedKeys)
@@ -234,6 +241,7 @@ const RootClass = computed(() => [
         wa_table_transparent: props.transparent,
         wa_table_fit: props.fitContent && !HasViewport.value,
         wa_table_loading: props.loading,
+        wa_table_rows_flash: FlashRows.value,
     },
 ])
 
@@ -285,6 +293,21 @@ const SortedData = computed(() => {
 
     const factor = state.order === 'desc' ? -1 : 1
     return props.data.slice().sort((a, b) => CompareValue(GetValue(a, column), GetValue(b, column)) * factor)
+})
+
+// * 排序、筛选、翻页替换数据后，让行做一次错峰淡入
+watch(() => SortedData.value, () => {
+    if (ReducedMotion?.matches) return
+
+    cancelAnimationFrame(FlashFrame)
+    FlashRows.value = false
+    FlashFrame = requestAnimationFrame(() => {
+        FlashRows.value = true
+        clearTimeout(FlashTimer)
+        FlashTimer = setTimeout(() => {
+            FlashRows.value = false
+        }, 320)
+    })
 })
 
 const SelectableKeys = computed(() => {
@@ -620,6 +643,8 @@ onBeforeUnmount(() => {
     window.removeEventListener('resize', OnResize)
     ResizeObserverInstance?.disconnect()
     ResizeObserverInstance = null
+    cancelAnimationFrame(FlashFrame)
+    clearTimeout(FlashTimer)
 })
 
 watch(() => props.columns, () => nextTick(OnResize), { deep: true })
@@ -803,6 +828,43 @@ watch(ScrollEl, (el, old) => {
     transition: background var(--wa_duration_fast) var(--wa_ease_out);
 }
 
+/* * 排序 / 筛选 / 翻页后的行入场：前几行错峰淡入 */
+.wa_table_rows_flash tbody .wa_table_tr {
+    animation: wa_table_row_in var(--wa_duration_base) var(--wa_ease_out) both;
+}
+
+.wa_table_rows_flash tbody .wa_table_tr:nth-child(2) {
+    animation-delay: 16ms;
+}
+
+.wa_table_rows_flash tbody .wa_table_tr:nth-child(3) {
+    animation-delay: 32ms;
+}
+
+.wa_table_rows_flash tbody .wa_table_tr:nth-child(4) {
+    animation-delay: 48ms;
+}
+
+.wa_table_rows_flash tbody .wa_table_tr:nth-child(5) {
+    animation-delay: 64ms;
+}
+
+.wa_table_rows_flash tbody .wa_table_tr:nth-child(6) {
+    animation-delay: 80ms;
+}
+
+@keyframes wa_table_row_in {
+    from {
+        opacity: 0;
+        translate: 0 4px;
+    }
+
+    to {
+        opacity: 1;
+        translate: 0 0;
+    }
+}
+
 @media (hover: hover) and (pointer: fine) {
     .wa_table_tr:hover {
         background: var(--wa_color_hover);
@@ -880,20 +942,31 @@ watch(ScrollEl, (el, old) => {
     display: inline-flex;
     flex: none;
     flex-direction: column;
-    gap: 1px;
+    gap: 0;
     line-height: 0;
 }
 
 .wa_table_sort_arrow {
     display: block;
-    width: 9px;
-    height: 5px;
+    width: 13px;
+    height: 13px;
+    margin-block: -3px;
     color: var(--wa_color_text_faint);
-    transition: color var(--wa_duration_fast) var(--wa_ease_out);
+    transition:
+        color var(--wa_duration_fast) var(--wa_ease_out),
+        translate var(--wa_duration_fast) var(--wa_ease_out);
 }
 
 .wa_table_sort_arrow.on {
     color: var(--wa_color_text);
+}
+
+.wa_table_sort_arrow.on:first-child {
+    translate: 0 -1px;
+}
+
+.wa_table_sort_arrow.on:last-child {
+    translate: 0 1px;
 }
 
 .wa_table_empty_cell {

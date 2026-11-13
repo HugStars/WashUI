@@ -3,7 +3,9 @@
         :aria-label="ariaLabel">
         <span v-if="showTotal && !simple" class="wa_pagination_total">共 {{ total }} 条</span>
 
-        <div class="wa_pagination_main">
+        <div ref="MainEl" class="wa_pagination_main">
+            <span v-if="!simple" class="wa_pagination_glider" :class="{ ready: GliderReady }" :style="GliderStyle"
+                aria-hidden="true"></span>
             <button type="button" class="wa_pagination_btn wa_pagination_arrow" :disabled="AtStart" aria-label="上一页"
                 @click="Go(CurrentPage - 1)">
                 <AppIcon name="chevron-left" :size="IconSize" />
@@ -14,7 +16,8 @@
             <template v-else>
                 <template v-for="(item, index) in PageItems" :key="`${item}-${index}`">
                     <span v-if="typeof item !== 'number'" class="wa_pagination_ellipsis" aria-hidden="true">…</span>
-                    <button v-else type="button" class="wa_pagination_btn" :class="{ on: item === CurrentPage }"
+                    <button v-else :ref="el => SetPageEl(item, el)" type="button" class="wa_pagination_btn"
+                        :class="{ on: item === CurrentPage }"
                         :aria-current="item === CurrentPage ? 'page' : undefined" :aria-label="`第 ${item} 页`"
                         :disabled="disabled" @click="Go(item)">
                         {{ item }}
@@ -36,7 +39,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import AppIcon from './AppIcon.vue'
 import AppSelect from './AppSelect.vue'
 
@@ -91,6 +94,12 @@ const emit = defineEmits(['update:modelValue', 'update:pageSize', 'change', 'pag
 
 const InternalPage = ref(1)
 const InternalPageSize = ref(10)
+const MainEl = ref(null)
+const PageEls = new Map()
+const GliderStyle = ref({})
+const GliderReady = ref(false)
+let ResizeObserverInstance = null
+let GliderFrame = 0
 
 const PageSize = computed(() => Math.max(1, Number(props.pageSize ?? InternalPageSize.value) || 10))
 const PageCount = computed(() => Math.max(1, Math.ceil((Number(props.total) || 0) / PageSize.value)))
@@ -164,6 +173,58 @@ function ChangeSize(value) {
     emit('page-size-change', { pageSize: size, page })
     emit('change', { page, pageSize: size })
 }
+
+// section 页码滑块
+// * 与 AppTabs 同一套思路：选中背景单独一层，切换时在页码之间滑动
+function SetPageEl(page, el) {
+    if (el) PageEls.set(page, el)
+    else PageEls.delete(page)
+}
+
+function UpdateGlider() {
+    cancelAnimationFrame(GliderFrame)
+    GliderFrame = 0
+
+    const main = MainEl.value
+    const el = PageEls.get(CurrentPage.value)
+
+    if (!main || !el) {
+        GliderReady.value = false
+        return
+    }
+
+    GliderStyle.value = {
+        left: `${el.offsetLeft}px`,
+        top: `${el.offsetTop}px`,
+        width: `${el.offsetWidth}px`,
+        height: `${el.offsetHeight}px`,
+    }
+    GliderReady.value = true
+}
+
+function ScheduleGlider() {
+    if (GliderFrame) return
+    GliderFrame = requestAnimationFrame(UpdateGlider)
+}
+
+watch([CurrentPage, PageItems, PageSize, () => props.simple], () => nextTick(UpdateGlider))
+
+onMounted(() => {
+    nextTick(UpdateGlider)
+    window.addEventListener('resize', ScheduleGlider)
+
+    if (typeof ResizeObserver !== 'undefined' && MainEl.value) {
+        ResizeObserverInstance = new ResizeObserver(ScheduleGlider)
+        ResizeObserverInstance.observe(MainEl.value)
+    }
+})
+
+onUnmounted(() => {
+    window.removeEventListener('resize', ScheduleGlider)
+    ResizeObserverInstance?.disconnect()
+    cancelAnimationFrame(GliderFrame)
+    PageEls.clear()
+})
 </script>
 
 <style>
@@ -190,12 +251,39 @@ function ChangeSize(value) {
 }
 
 .wa_pagination_main {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 4px;
 }
 
+/* * 页码滑块：与 AppTabs 一样由 left/top/width/height 过渡驱动 */
+.wa_pagination_glider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 0;
+    height: 0;
+    border-radius: var(--wa_radius_control);
+    background: var(--wa_color_highlight);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        left var(--wa_duration_slow) var(--wa_ease_spring),
+        top var(--wa_duration_slow) var(--wa_ease_spring),
+        width var(--wa_duration_slow) var(--wa_ease_spring),
+        height var(--wa_duration_slow) var(--wa_ease_spring),
+        opacity var(--wa_duration_fast) linear;
+}
+
+.wa_pagination_glider.ready {
+    opacity: 1;
+}
+
 .wa_pagination_btn {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -230,8 +318,8 @@ function ChangeSize(value) {
 
 .wa_pagination_btn.on,
 .wa_pagination_btn.on:hover:not(:disabled) {
-    color: var(--wa_color_on_nav_active);
-    background: var(--wa_color_nav_active);
+    color: var(--wa_color_on_highlight);
+    background: transparent;
     font-weight: 600;
 }
 
@@ -276,6 +364,10 @@ function ChangeSize(value) {
 @media (prefers-reduced-motion: reduce) {
     .wa_pagination_btn {
         transition: none;
+    }
+
+    .wa_pagination_glider {
+        transition: opacity var(--wa_duration_fast) linear;
     }
 
     .wa_pagination_btn:active:not(:disabled) {

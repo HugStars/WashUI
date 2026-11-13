@@ -6,11 +6,11 @@
                 <td v-if="selectable"
                     class="wa_table_td wa_table_select wa_table_sticky wa_table_sticky_left"
                     :class="{ wa_table_sticky_edge_left: selectIsLeftEdge }" :style="{ left: '0px' }">
-                    <AppSkeleton :width="16" :height="16" radius="5px" />
+                    <AppSkeleton :width="16" :height="20" radius="5px" />
                 </td>
                 <td v-for="(column, index) in columns" :key="column.key" class="wa_table_td"
                     :class="columnClass(column)" :style="columnStyle(column)">
-                    <AppSkeleton :width="skeletonWidth(index)" :height="12" />
+                    <AppSkeleton :width="skeletonWidth(index)" height="1.6em" />
                 </td>
             </tr>
         </template>
