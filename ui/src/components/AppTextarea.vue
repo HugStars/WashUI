@@ -207,6 +207,7 @@ function HandleBlur() {
     align-items: baseline;
     gap: 8px;
     min-width: 0;
+    margin-top: 6px;
 }
 
 .wa_textarea_meta>.wa_field_message {

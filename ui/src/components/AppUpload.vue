@@ -233,7 +233,7 @@ function Remove(index) {
 }
 
 .wa_upload_list_show {
-    margin-top: 2px;
+    margin-top: 8px;
 }
 
 .wa_upload-enter-active,

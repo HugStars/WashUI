@@ -3,11 +3,12 @@
 .wa_field {
     display: grid;
     align-content: start;
-    gap: 6px;
+    gap: 0;
     min-width: 0;
 }
 
 .wa_field_label {
+    margin-bottom: 6px;
     font-size: 12px;
     font-weight: 500;
     line-height: 1.5;
@@ -28,11 +29,17 @@
     color: var(--wa_color_danger);
 }
 
+/* * 直接挂在 wa_field 下的提示（如 AppUpload）自己补上间距 */
+.wa_field>.wa_field_hint,
+.wa_field>.wa_field_error {
+    margin-top: 6px;
+}
+
 /* * 校验信息容器：0fr → 1fr 过渡高度，文字再补一段上浮动画 */
 .wa_field_message {
     display: grid;
     grid-template-rows: 0fr;
-    margin-top: -6px;
+    margin-top: 0;
     opacity: 0;
     transition:
         grid-template-rows var(--wa_duration_base) var(--wa_ease_out),
@@ -42,7 +49,7 @@
 
 .wa_field_message.show {
     grid-template-rows: 1fr;
-    margin-top: 0;
+    margin-top: 6px;
     opacity: 1;
 }
 
