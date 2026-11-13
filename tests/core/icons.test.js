@@ -44,4 +44,13 @@ describe('default icons', () => {
 
         expect(raw).toEqual([])
     })
+
+    it('includes a fill github icon', () => {
+        const icon = defaultIcons.github
+
+        expect(Array.isArray(icon)).toBe(true)
+        expect(icon[0][0]).toBe('path')
+        expect(icon[0][1].fill).toBe('currentColor')
+        expect(icon[0][1].stroke).toBe('none')
+    })
 })
