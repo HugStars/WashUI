@@ -94,11 +94,11 @@ const props = defineProps({
         default: '',
     },
     /**
-     * @type {'md' | 'sm'}
+     * @type {'sm' | 'md'}
      */
     size: {
         type: String,
-        default: 'md',
+        default: 'sm',
     },
 })
 
@@ -369,7 +369,7 @@ function OnKeydown(event) {
     --wa_slider_thumb: 20px;
     --wa_slider_ring: 3px;
     --wa_slider_hit: 34px;
-    --wa_slider_color: var(--wa_color_text);
+    --wa_slider_color: var(--wa_color_highlight);
 
     display: grid;
     gap: 2px;

@@ -127,7 +127,7 @@ function OnInput(event) {
 }
 
 .wa_stepper:focus-within {
-    border-color: var(--wa_color_text);
+    border-color: var(--wa_color_highlight);
     box-shadow: 0 0 0 3px var(--wa_color_focus_ring);
 }
 

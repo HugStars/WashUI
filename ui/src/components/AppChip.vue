@@ -19,7 +19,7 @@ defineProps({
      */
     size: {
         type: String,
-        default: 'md',
+        default: 'sm',
     },
 })
 </script>
@@ -63,8 +63,8 @@ defineProps({
 .wa_chip.on,
 .wa_chip.on:hover {
     border-color: var(--wa_color_text);
-    color: var(--wa_color_on_text);
-    background: var(--wa_color_text);
+    color: var(--wa_color_on_highlight);
+    background: var(--wa_color_highlight);
     font-weight: 600;
     transform: none;
 }

@@ -484,8 +484,8 @@ onUnmounted(() => {
     border-color: var(--wa_color_border);
     background: var(--wa_color_glass);
     background: var(--wa_glass_gradient);
-    -webkit-backdrop-filter: blur(var(--wa_blur));
-    backdrop-filter: blur(var(--wa_blur));
+    -webkit-backdrop-filter: var(--wa_frosted_filter);
+    backdrop-filter: var(--wa_frosted_filter);
 }
 
 .wa_dialog {
@@ -543,7 +543,7 @@ onUnmounted(() => {
     height: 32px;
     padding: 0;
     border: 0;
-    border-radius: var(--wa_radius_small);
+    border-radius: var(--wa_radius_control);
     color: var(--wa_color_text_subtle);
     background: transparent;
     cursor: pointer;
@@ -617,18 +617,18 @@ onUnmounted(() => {
 }
 
 .wa_dialog_enter_active::before {
-    transition: opacity .32s var(--wa_ease_out);
+    transition: opacity var(--wa_duration_slow) var(--wa_ease_out);
 }
 
 .wa_dialog_leave_active::before {
-    transition: opacity .24s var(--wa_ease_out);
+    transition: opacity var(--wa_duration_medium) var(--wa_ease_out);
 }
 
 .wa_dialog_enter_active .wa_dialog {
     /* 不要给带 backdrop-filter 的面板做 opacity 过渡，Chromium 会丢掉模糊 */
     /* 内容 scaleY 入场会撑出 20% 高度，先裁掉滚动溢出，避免动画期间闪出滚动条 */
     overflow: hidden;
-    transition: transform .32s var(--wa_ease_spring);
+    transition: transform var(--wa_duration_slow) var(--wa_ease_spring);
 }
 
 /* warning 入场期间内容会 scaleY 放大，先禁止滚动，避免内部滚动条闪一下 */
@@ -637,7 +637,7 @@ onUnmounted(() => {
 }
 
 .wa_dialog_leave_active .wa_dialog {
-    transition: opacity .16s var(--wa_ease_out), transform .22s var(--wa_ease_out);
+    transition: opacity var(--wa_duration_fast) var(--wa_ease_out), transform var(--wa_duration_medium) var(--wa_ease_out);
 }
 
 .wa_dialog_enter_from::before,
@@ -655,11 +655,11 @@ onUnmounted(() => {
 }
 
 .wa_dialog_enter_active .wa_dialog_content {
-    animation: wa_dialog_content_in .3s var(--wa_ease_out) both;
+    animation: wa_dialog_content_in var(--wa_duration_slow) var(--wa_ease_out) both;
 }
 
 .wa_dialog_leave_active .wa_dialog_content {
-    animation: wa_dialog_content_out .24s var(--wa_ease_out) both;
+    animation: wa_dialog_content_out var(--wa_duration_medium) var(--wa_ease_out) both;
 }
 
 @keyframes wa_dialog_content_in {
@@ -728,7 +728,7 @@ onUnmounted(() => {
     }
 
     .wa_dialog_enter_active .wa_dialog {
-        animation: wa_dialog_sheet_in .3s cubic-bezier(.22, 1, .36, 1) both;
+        animation: wa_dialog_sheet_in var(--wa_duration_slow) cubic-bezier(.22, 1, .36, 1) both;
     }
 
     /*
@@ -737,12 +737,12 @@ onUnmounted(() => {
      * 仍在入场过渡的 380ms 内。
      */
     .wa_dialog_enter_active .wa_dialog_content {
-        animation-delay: .16s;
-        animation-duration: .18s;
+        animation-delay: var(--wa_duration_fast);
+        animation-duration: var(--wa_duration_fast);
     }
 
     .wa_dialog_leave_active .wa_dialog {
-        animation: wa_dialog_sheet_out .24s cubic-bezier(.4, 0, 1, 1) both;
+        animation: wa_dialog_sheet_out var(--wa_duration_medium) cubic-bezier(.4, 0, 1, 1) both;
     }
 
     .wa_dialog_enter_from .wa_dialog,

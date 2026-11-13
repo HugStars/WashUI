@@ -157,7 +157,7 @@ function Toggle() {
 }
 
 .wa_switch.on {
-    background: var(--wa_color_text);
+    background: var(--wa_color_highlight);
     box-shadow: inset 0 0 0 2px transparent;
 }
 

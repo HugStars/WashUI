@@ -185,7 +185,7 @@ function Remove(index) {
 
 .wa_upload_zone:hover,
 .wa_upload_zone.on {
-    border-color: var(--wa_color_text);
+    border-color: var(--wa_color_highlight);
     color: var(--wa_color_text);
     background: var(--wa_color_hover);
 }
@@ -269,7 +269,7 @@ function Remove(index) {
     gap: 8px;
     min-width: 0;
     padding: 8px 10px;
-    border-radius: 8px;
+    border-radius: var(--wa_radius_control);
     background: var(--wa_color_soft);
     font-size: 12px;
 }

@@ -99,8 +99,8 @@ const Classes = computed(() => {
 }
 
 .wa_btn_primary {
-    color: var(--wa_color_on_text);
-    background: var(--wa_color_text);
+    color: var(--wa_color_on_highlight);
+    background: var(--wa_color_highlight);
 }
 
 .wa_btn_primary:hover,
@@ -159,8 +159,8 @@ const Classes = computed(() => {
     width: 14px;
     height: 14px;
     animation:
-        wa_spin .8s linear infinite,
-        wa_btn_spinner_in .18s var(--wa_ease_spring) both;
+        wa_spin var(--wa_duration_loop) linear infinite,
+        wa_btn_spinner_in var(--wa_duration_fast) var(--wa_ease_spring) both;
 }
 
 @keyframes wa_btn_spinner_in {
@@ -181,7 +181,7 @@ const Classes = computed(() => {
     }
 
     .wa_btn .wa_spinner {
-        animation: wa_spin .8s linear infinite;
+        animation: wa_spin var(--wa_duration_loop) linear infinite;
     }
 
     .wa_btn:hover:not(:disabled),

@@ -27,10 +27,10 @@ const props = defineProps({
         type: String,
         default: 'sm',
     },
-    /** 等宽字体，默认贴近文档 API 表格里的属性 / 类型 / 默认值 */
+    /** 等宽字体；默认关闭，避免中文回退到其他字体 */
     mono: {
         type: Boolean,
-        default: true,
+        default: false,
     },
     /** 白色磨砂半透明表面，与 AppPopover 面板一致 */
     frosted: Boolean,
@@ -67,7 +67,7 @@ const Classes = computed(() => [
     height: 22px;
     padding: 0 6px;
     border: 1px solid transparent;
-    border-radius: 5px;
+    border-radius: var(--wa_radius_sm);
     color: var(--wa_tag_color);
     background: var(--wa_tag_bg);
     font-family: var(--wa_font_mono);
@@ -148,8 +148,8 @@ const Classes = computed(() => [
     border-color: var(--wa_color_border);
     background: var(--wa_color_glass);
     background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
-    -webkit-backdrop-filter: blur(var(--wa_blur));
-    backdrop-filter: blur(var(--wa_blur));
+    -webkit-backdrop-filter: var(--wa_frosted_filter);
+    backdrop-filter: var(--wa_frosted_filter);
 }
 
 .wa_tag_expand {

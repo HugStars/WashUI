@@ -346,8 +346,8 @@ onUnmounted(Unlisten)
     border-radius: var(--wa_radius_popover);
     background: var(--wa_color_glass);
     background: var(--wa_glass_gradient);
-    -webkit-backdrop-filter: blur(var(--wa_blur));
-    backdrop-filter: blur(var(--wa_blur));
+    -webkit-backdrop-filter: var(--wa_frosted_filter);
+    backdrop-filter: var(--wa_frosted_filter);
     box-shadow: var(--wa_shadow_nav);
     outline: 0;
 }

@@ -63,7 +63,7 @@ defineProps({
     flex: none;
     width: 4px;
     height: 15px;
-    border-radius: 3px;
+    border-radius: var(--wa_radius_sm);
     background: var(--wa_color_text_muted);
 }
 
