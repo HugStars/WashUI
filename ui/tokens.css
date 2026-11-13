@@ -8,6 +8,9 @@
     --wa_color_dialog: #ffffff;
     --wa_color_dialog_line: #0000000f;
     --wa_color_text: #1a1a1a;
+    /* * 选中高亮是独立设计变量：不再复用正文黑，便于单独调整 */
+    --wa_color_highlight: #2b2b2b;
+    --wa_color_on_highlight: #ffffff;
     --wa_color_text_muted: #00000099;
     --wa_color_text_subtle: #0000008a;
     --wa_color_text_faint: #0000004d;
@@ -31,8 +34,11 @@
     --wa_color_danger_hover: #d4380d1f;
     --wa_color_primary_hover: #333333;
     --wa_color_focus_ring: #00000020;
-    --wa_color_nav_active: var(--wa_color_text);
-    --wa_color_on_nav_active: var(--wa_color_on_text);
+    --wa_color_nav_active: var(--wa_color_highlight);
+    --wa_color_on_nav_active: var(--wa_color_on_highlight);
+    /* * 提示气泡：亮色主题用深底白字，暗色主题反转为浅底深字 */
+    --wa_color_tooltip: #1f1f1ff2;
+    --wa_color_on_tooltip: #ffffff;
     --wa_color_toast: #1a1a1ad9;
     --wa_color_toast_strong: #242424e6;
     --wa_color_on_toast: #ffffff;
@@ -47,20 +53,46 @@
     --wa_color_on_danger: #ffffff;
     --wa_color_loading_gradient: #00000059;
 
+    /* * 代码块底色：必须是不透明色，行号列才能遮住横向滚过的代码 */
+    --wa_color_code_bg: #ededed;
+
+    /* * 代码高亮：亮色主题的编辑器配色 */
+    --wa_code_kwd: #7c3aed;
+    --wa_code_str: #0a7d55;
+    --wa_code_num: #b45309;
+    --wa_code_cmnt: #8a8a8a;
+    --wa_code_func: #1d6fd1;
+    --wa_code_type: #0f766e;
+    --wa_code_var: #1a1a1a;
+    --wa_code_oper: #666666;
+    --wa_code_bool: #b45309;
+    --wa_code_class: #b45309;
+    --wa_code_section: #7c3aed;
+    --wa_code_esc: #b45309;
+    --wa_code_insert: #0a7d55;
+    --wa_code_deleted: #cf1322;
+    --wa_code_err: #cf1322;
+
     --wa_control_height: 40px;
     --wa_control_height_sm: 32px;
     --wa_space_1: 4px;
     --wa_space_2: 8px;
     --wa_space_3: 12px;
-    --wa_radius_card: 28px;
+    /* * 圆角层级：6 小标记 / 8 控件 / 16 内容块 / 24 卡片与弹框 */
+    --wa_radius_sm: 6px;
     --wa_radius_control: 8px;
-    --wa_radius_small: 10px;
-    --wa_radius_popover: 14px;
+    --wa_radius_small: var(--wa_radius_control);
+    --wa_radius_popover: 16px;
+    --wa_radius_card: 24px;
     --wa_radius_dialog: 24px;
     --wa_radius_pill: 999px;
     --wa_popover_padding: var(--wa_space_2);
 
     --wa_blur: 10px;
+    /* * 磨砂统一入口：模糊、饱和、表面渐变都从这里派生 */
+    --wa_frosted_saturate: 1.35;
+    --wa_frosted_filter: blur(var(--wa_blur)) saturate(var(--wa_frosted_saturate));
+    --wa_frosted_tint: var(--wa_color_glass);
     --wa_shadow_nav: 0 10px 26px #0000000d;
     --wa_shadow_nav_mobile: 0 10px 30px #0000001f;
     --wa_shadow_dialog: 0 24px 70px #00000038, 0 2px 6px #00000014;
@@ -72,9 +104,16 @@
     --wa_shadow_card_active: 0 8px 20px #00000010;
     --wa_glass_gradient: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
 
+    /* * 动画时长统一入口：组件内不再写死秒数，改这里即可全局调速 */
+    --wa_duration_instant: .12s;
     --wa_duration_fast: .15s;
     --wa_duration_base: .2s;
+    --wa_duration_medium: .24s;
     --wa_duration_slow: .34s;
+    --wa_duration_slower: .45s;
+    --wa_duration_route: .55s;
+    --wa_duration_loop: .8s;
+    --wa_duration_shimmer: 1.2s;
     --wa_ease_out: cubic-bezier(.2, .9, .3, 1);
     --wa_ease_in: cubic-bezier(.4, 0, 1, 1);
     --wa_ease_in_out: cubic-bezier(.4, 0, .2, 1);
@@ -94,6 +133,9 @@
     --wa_color_dialog: #1e1e1e;
     --wa_color_dialog_line: #ffffff12;
     --wa_color_text: #f2f2f2;
+    /* * 暗色主题的“黑色高亮”同样走独立变量，改成浅色反色块 */
+    --wa_color_highlight: #e8e8e8;
+    --wa_color_on_highlight: #141414;
     --wa_color_text_muted: #ffffff99;
     --wa_color_text_subtle: #ffffff8a;
     --wa_color_text_faint: #ffffff4d;
@@ -110,14 +152,36 @@
     --wa_color_primary_hover: #d9d9d9;
     --wa_color_focus_ring: #ffffff26;
     --wa_color_on_accent: #0b1f1a;
-    --wa_color_nav_active: #ffffffcc;
-    --wa_color_on_nav_active: #141414;
+    --wa_color_nav_active: var(--wa_color_highlight);
+    --wa_color_on_nav_active: var(--wa_color_on_highlight);
+    --wa_color_tooltip: #edededf2;
+    --wa_color_on_tooltip: #141414;
     --wa_color_danger: #ff7875;
     --wa_color_danger_soft: #ff78751f;
     --wa_color_danger_hover: #ff78752e;
     --wa_color_toast: #e8e8e8f0;
     --wa_color_toast_strong: #f5f5f5;
     --wa_color_on_toast: #1a1a1a;
+    --wa_color_loading_gradient: #ffffff3d;
+
+    --wa_color_code_bg: #282828;
+
+    /* * 代码高亮：暗色主题提高亮度，保持对比度 */
+    --wa_code_kwd: #c084fc;
+    --wa_code_str: #6ee7b7;
+    --wa_code_num: #fbbf24;
+    --wa_code_cmnt: #8f8f8f;
+    --wa_code_func: #93c5fd;
+    --wa_code_type: #5eead4;
+    --wa_code_var: #e5e5e5;
+    --wa_code_oper: #a3a3a3;
+    --wa_code_bool: #fbbf24;
+    --wa_code_class: #fbbf24;
+    --wa_code_section: #c084fc;
+    --wa_code_esc: #fbbf24;
+    --wa_code_insert: #6ee7b7;
+    --wa_code_deleted: #ff7875;
+    --wa_code_err: #ff7875;
     --wa_color_dot_success: #05cfa4;
     --wa_color_dot_warning: #f5a623;
     --wa_color_dot_help: #a855f7;

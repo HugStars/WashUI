@@ -50,8 +50,8 @@ summary:focus-visible,
 }
 
 ::selection {
-    color: var(--wa_color_on_text);
-    background: var(--wa_color_text);
+    color: var(--wa_color_on_highlight);
+    background: var(--wa_color_highlight);
 }
 
 /* PC / 鼠标设备：自定义滚动条  */
