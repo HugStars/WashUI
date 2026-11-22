@@ -86,6 +86,14 @@ function go(item) {
     --doc_side_radius: 18px;
 }
 
+/* 文档里的网格/堆叠/横排已经有 gap，避免和组件默认的纵向字段间距叠加 */
+.doc_grid>.wa_field+.wa_field,
+.doc_stack>.wa_field+.wa_field,
+.doc_row>.wa_field+.wa_field,
+.doc_color_row>.wa_field+.wa_field {
+    margin-top: 0;
+}
+
 .doc_header_name {
     display: inline-block;
     margin-left: 8px;

@@ -15,7 +15,7 @@
 
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">表单</p>
-                    <p>AppInput、AppTextarea、AppPinInput、AppSwitch、AppCheck、AppCheckGroup、AppRadio、AppRadioGroup、AppSelect、AppSelectPanel、AppChoiceList、AppCheckPanel、AppRadioPanel、AppCheckMenu、AppUpload。</p>
+                    <p>AppInput、AppTextarea、AppPinInput、AppSwitch、AppCheck、AppCheckGroup、AppRadio、AppRadioGroup、AppSelect、AppSelectPanel、AppChoiceList、AppCheckPanel、AppRadioPanel、AppCheckMenu、AppUpload、AppDatePicker、AppTimePicker、AppDateTimePicker、AppColorPicker。</p>
                 </div>
 
                 <div class="doc_roadmap_group">

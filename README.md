@@ -247,6 +247,7 @@ onSearch.cancel()
 -   [x] 动画时长、缓动、磨砂、代码高亮、选中高亮统一为设计 token
 -   [x] 圆角统一为 24 / 16 / 8 / 6 四档
 -   [x] 新增 `AppList` / `AppListRow`、`AppHint`、`AppPinInput`
+-   [x] 新增 `AppDatePicker` / `AppTimePicker` / `AppDateTimePicker` / `AppColorPicker`
 -   [x] `AppPanel` 支持 `tip` / `soft` / `plain` 三种形态
 -   [x] 表格行入场、分页滑块、校验高度过渡、角标松手清除
 -   [x] 移动端 AppShell 手势隐藏导航与长按震动统一
