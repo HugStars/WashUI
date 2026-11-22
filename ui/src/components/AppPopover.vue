@@ -206,10 +206,13 @@ function Position() {
     left = Math.min(Math.max(edge, left), Math.max(edge, window.innerWidth - width - edge))
     top = Math.min(Math.max(edge, top), Math.max(edge, window.innerHeight - height - edge))
 
+    const inDialog = Boolean(TriggerEl.value?.closest?.('.wa_dialog_mask'))
+
     PanelStyle.value = {
         ...PanelStyle.value,
         left: `${left}px`,
         top: `${top}px`,
+        zIndex: inDialog ? 'calc(var(--wa_z_dialog) + 2)' : undefined,
         transformOrigin: PLACEMENT_ORIGINS[placement],
         visibility: 'visible',
     }
