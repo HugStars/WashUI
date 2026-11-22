@@ -7,6 +7,11 @@
     min-width: 0;
 }
 
+/* * 纵向排列时，相邻字段之间补间距；放在 grid / flex gap 里时可设 --wa_field_stack_gap: 0 */
+.wa_field+.wa_field {
+    margin-top: var(--wa_field_stack_gap, 14px);
+}
+
 .wa_field_label {
     margin-bottom: 6px;
     font-size: 12px;

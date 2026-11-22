@@ -201,6 +201,18 @@ function Clear() {
     cursor: not-allowed;
 }
 
+/* * 数字输入隐藏原生上下箭头，避免和自定义步进控件重复 */
+.wa_input_control[type='number'] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.wa_input_control[type='number']::-webkit-outer-spin-button,
+.wa_input_control[type='number']::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+}
+
 .wa_input_sm .wa_input_control {
     height: calc(var(--wa_control_height_sm) - 2px);
     font-size: 13px;
