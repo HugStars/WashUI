@@ -48,17 +48,38 @@ function normalizeIconData(data) {
     return null
 }
 
+function painted(value) {
+    return value !== undefined && value !== null && value !== 'none'
+}
+
+/**
+ * 混合图标（同时包含填充元素和描边元素）在 morph 时不能依赖根节点的 stroke 继承，
+ * 否则 morphicons 会把整组图标判成 fill，开放线段会被当成零面积填充而消失。
+ * 这里给没有显式 fill / stroke 的元素补上 stroke，保留原有动画能力。
+ * @param {Array} data 图标节点数组
+ * @returns {Array} 处理后的图标节点数组
+ */
+function normalizePaint(data) {
+    if (!data.some(([, attrs = {}]) => painted(attrs.fill))) return data
+
+    return data.map(([tag, attrs = {}]) => {
+        if (painted(attrs.fill) || painted(attrs.stroke)) return [tag, attrs]
+        return [tag, { ...attrs, stroke: 'currentColor' }]
+    })
+}
+
 function toIconData(icon) {
     // 原始 SVG 先转成 24 网格，转换失败时过滤后渲染
     if (typeof icon === 'string' && icon.trim().startsWith('<')) {
         try {
-            return normalizeIconData(svgToIcon(icon))
+            return normalizePaint(normalizeIconData(svgToIcon(icon)))
         } catch {
             return null
         }
     }
 
-    return normalizeIconData(icon)
+    const data = normalizeIconData(icon)
+    return data ? normalizePaint(data) : null
 }
 
 export default defineComponent({
