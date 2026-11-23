@@ -66,9 +66,9 @@
         <DemoBlock title="尺寸与禁用" description="size 会继承给分组内所有选项；支持单个选项禁用和整组禁用。">
             <div class="doc_choice_stack">
                 <p class="wa_hint">18px</p>
-                <AppCheckGroup v-model="smallSize" :options="compactOptions" :size="18" />
+                <AppCheckGroup v-model="smallSize" :options="compactOptions" :check-size="18" />
                 <p class="wa_hint">24px</p>
-                <AppCheckGroup v-model="largeSize" :options="compactOptions" :size="24" />
+                <AppCheckGroup v-model="largeSize" :options="compactOptions" :check-size="24" />
                 <p class="wa_hint">禁用选项 / 整组禁用</p>
                 <AppCheckGroup v-model="partDisabled" :options="disabledOptions" />
                 <AppCheckGroup v-model="allDisabled" :options="compactOptions" disabled />
@@ -149,7 +149,7 @@ const checkRows = [
     { name: 'label', type: 'string', default: "''", desc: '标签文本' },
     { name: 'labelPosition', type: 'before | after', default: 'after', desc: '标签在复选框前或后；分组中会继承分组设置' },
     { name: 'indeterminate', type: 'boolean', default: 'false', desc: '半选状态，显示为横杠' },
-    { name: 'size', type: 'number | string', default: '20', desc: '复选框尺寸；分组中会继承分组 size' },
+    { name: 'checkSize', type: 'number | string', default: '20', desc: '复选框尺寸；分组中会继承分组 checkSize' },
     { name: 'between', type: 'boolean', default: 'false', desc: '标签与复选框两端对齐' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用单个复选框' },
     { name: 'ariaLabel', type: 'string', default: '复选框', desc: '没有标签时的无障碍名称' },
@@ -161,7 +161,11 @@ const groupRows = [
     { name: 'direction', type: 'horizontal | vertical', default: 'horizontal', desc: '复选项横向或纵向排列' },
     { name: 'labelPosition', type: 'before | after', default: 'after', desc: '每个标签在复选框前或后' },
     { name: 'align', type: 'left | right | between | space-between', default: 'left', desc: '纵向排列时整组靠左/靠右，或让标签与复选框两端对齐' },
-    { name: 'size', type: 'number | string', default: '20', desc: '复选框尺寸，数字按 px 处理' },
+    { name: 'checkSize', type: 'number | string', default: '20', desc: '复选框尺寸，数字按 px 处理' },
+    { name: 'label', type: 'string', default: "''", desc: '组标签' },
+    { name: 'hint', type: 'string', default: "''", desc: '提示文案' },
+    { name: 'error', type: 'string', default: "''", desc: '错误文案；优先级高于 rule' },
+    { name: 'rule', type: 'object | array', default: 'null', desc: '校验规则，与 AppInput 一致' },
     { name: 'ariaLabel', type: 'string', default: '复选框组', desc: '组的无障碍名称' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用整组' },
 ]

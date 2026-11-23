@@ -78,6 +78,9 @@ const propsRows = [
     { name: 'hideLabel', type: 'boolean', default: 'false', desc: '视觉隐藏标签，但保留无障碍名称' },
     { name: 'align', type: 'inline | between', default: 'inline', desc: 'inline 紧挨；between 标签与开关左右分开' },
     { name: 'size', type: 'sm | md', default: 'sm', desc: 'sm 为 44×27 紧凑尺寸；md 为 52×32（Material Web）' },
+    { name: 'hint', type: 'string', default: "''", desc: '提示文案' },
+    { name: 'error', type: 'string', default: "''", desc: '错误文案；优先级高于 rule' },
+    { name: 'rule', type: 'object | array', default: 'null', desc: '校验规则，与 AppInput 一致' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用开关' },
 ]
 

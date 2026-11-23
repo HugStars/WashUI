@@ -8,8 +8,8 @@
                 <AppButton variant="line" @click="toggleTheme">切换</AppButton>
             </div>
             <div class="doc_row doc_gap">
-                <span class="wa_tag">mode: {{ mode }}</span>
-                <span class="wa_tag">theme: {{ theme }}</span>
+                <span class="wa_tag_static">mode: {{ mode }}</span>
+                <span class="wa_tag_static">theme: {{ theme }}</span>
             </div>
         </DemoBlock>
 

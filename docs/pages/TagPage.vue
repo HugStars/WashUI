@@ -1,7 +1,7 @@
 <template>
     <DocPage category="基础" name="AppTag" title="标签"
-        description="静态属性与状态标签，默认等宽、小号、浅底，贴近文档 API 表格里的属性 / 类型 / 默认值。与可点击的 AppChip 不同，AppTag 本身不承载交互。">
-        <DemoBlock title="基础" description="默认尺寸为 sm，使用等宽字体和 --wa_color_soft 底色；text 或默认插槽都可以提供内容。">
+        description="静态属性与状态标签，默认小号、界面字体、浅底，贴近文档 API 表格里的属性 / 类型 / 默认值。与可点击的 AppChip 不同，AppTag 本身不承载交互。">
+        <DemoBlock title="基础" description="默认尺寸为 sm，使用界面字体（mono=false）和 --wa_color_soft 底色；text 或默认插槽都可以提供内容。">
             <div class="doc_row">
                 <AppTag text="string" />
                 <AppTag text="boolean" tone="success" />

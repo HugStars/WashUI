@@ -1,8 +1,8 @@
 <template>
     <DocPage category="基础" name="AppChip" title="标记" description="轻量筛选与状态标记，根元素是 button，点击事件直接透传。">
-        <DemoBlock title="单选筛选" description="active 控制选中态，使用 .on 类表示。">
+        <DemoBlock title="单选筛选" description="selected 控制选中态，使用 .on 类表示。">
             <div class="doc_row">
-                <AppChip v-for="item in filters" :key="item.value" :active="filter === item.value"
+                <AppChip v-for="item in filters" :key="item.value" :selected="filter === item.value"
                     @click="filter = item.value">
                     {{ item.label }}
                 </AppChip>
@@ -14,7 +14,7 @@
             <div class="doc_row">
                 <AppChip text="纯文本" />
                 <AppChip text="紧凑标记" size="sm" />
-                <AppChip active>
+                <AppChip selected>
                     <AppIcon name="refresh" :size="14" />
                     <span>可刷新</span>
                 </AppChip>
@@ -52,7 +52,7 @@ const filters = [
 ]
 
 const propsRows = [
-    { name: 'active', type: 'boolean', default: 'false', desc: '选中状态' },
+    { name: 'selected', type: 'boolean', default: 'false', desc: '选中状态' },
     { name: 'text', type: 'string', default: "''", desc: '文本内容；默认插槽优先' },
     { name: 'frosted', type: 'boolean', default: 'false', desc: '白色磨砂半透明表面，与 AppPopover 一致' },
     { name: 'size', type: 'sm | md', default: 'sm', desc: '标记尺寸；sm 为 26px 高' },

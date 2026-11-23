@@ -68,9 +68,10 @@ const propsRows = [
     { name: 'multiple', type: 'boolean', default: 'false', desc: 'true 渲染复选框，false 渲染单选框' },
     { name: 'options', type: 'Array<{ label, value, disabled? }>', default: '[]', desc: '普通选项' },
     { name: 'groups', type: 'Array<{ label, options }>', default: '[]', desc: '分组选项' },
-    { name: 'size', type: 'number | string', default: '18', desc: '选项尺寸，数字按 px 处理' },
+    { name: 'checkSize', type: 'number | string', default: '18', desc: '选项尺寸，数字按 px 处理' },
     { name: 'labelPosition', type: 'before | after', default: 'after', desc: '标签位置' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用整个列表' },
+    { name: 'autofocus', type: 'boolean', default: 'false', desc: '挂载后聚焦选中项或第一项；下拉面板使用' },
     { name: 'emptyText', type: 'string', default: '暂无选项', desc: '空列表文案' },
     { name: 'ariaLabel', type: 'string', default: '选项列表', desc: '列表无障碍名称' },
 ]

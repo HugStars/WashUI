@@ -28,7 +28,7 @@
                 class="doc_feature_link doc_card_link">
                 <AppCard compact>
                     <template #title>{{ item.title }}</template>
-                    <template #extra>
+                    <template #actions>
                         <AppIcon name="chevron" :size="16" class="doc_feature_arrow" />
                     </template>
                     <p class="wa_hint">{{ item.text }}</p>

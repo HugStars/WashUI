@@ -32,7 +32,7 @@
             <AppNavMenu v-model="decorated" class="doc_nav_demo" aria-label="带角标的导航" :items="[
                 { label: '概览', value: 'overview', icon: 'home' },
                 { label: '通知', value: 'notice', icon: 'bell', badge: 3 },
-                { label: '消息', value: 'message', icon: 'mail', badge: { dot: true, tone: 'neutral' } },
+                { label: '消息', value: 'message', icon: 'mail', badge: { dot: true, tone: 'default' } },
                 { label: '设置', value: 'settings', icon: 'settings' },
                 { label: '归档', value: 'archive', icon: 'folder', disabled: true },
             ]" />
@@ -87,7 +87,6 @@ const propsRows = [
 
 const eventRows = [
     { name: 'update:modelValue', type: 'string | number | symbol', desc: '选中项变化' },
-    { name: 'change', type: 'string | number | symbol', desc: '选中项变化，便于业务监听' },
     { name: 'select', type: 'NavItem', desc: '点击菜单项，回调完整 item' },
 ]
 </script>

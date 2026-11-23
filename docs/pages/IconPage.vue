@@ -113,10 +113,8 @@
                 <div class="doc_icon_search">
                     <AppInput v-model="Search" placeholder="搜索图标" aria-label="搜索图标" clearable />
                 </div>
-                <AppButton size="sm" variant="icon" :disabled="!Selected.length" aria-label="清空选择"
-                    title="清空选择" @click="ClearSelected">
-                    <AppIcon name="close" :size="14" />
-                </AppButton>
+                <AppIconButton name="close" label="清空选择" size="sm" :disabled="!Selected.length"
+                    @click="ClearSelected" />
             </div>
         </div>
 

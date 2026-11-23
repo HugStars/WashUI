@@ -4,7 +4,7 @@
             <div class="doc_row">
                 <AppThemeToggle />
                 <AppThemeToggle size="md" />
-                <span class="wa_tag">当前主题：{{ theme }}</span>
+                <span class="wa_tag_static">当前主题：{{ theme }}</span>
             </div>
         </DemoBlock>
 

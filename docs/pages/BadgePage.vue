@@ -1,19 +1,19 @@
 <template>
     <DocPage category="基础" name="AppBadge" title="消息角标"
-        description="未读数量与状态角标。开启 draggable 后可以拖动：气泡和原位锚点之间会拉出粘性连接，越界只做缩小提示，松手才断开并从松手位置爆开，同时触发 clear。">
+        description="未读数量与状态角标。开启 draggable 后可以拖动：气泡和原位锚点之间会拉出粘性连接，越界只做缩小提示，松手才断开并从角标当前位置爆开，同时触发 clear。">
         <DemoBlock title="基础" description="value 支持数字和短文本，超过 max 显示 max+；dot 只显示圆点。">
             <div class="doc_row">
                 <AppBadge :value="12" />
                 <AppBadge :value="120" />
                 <AppBadge dot />
                 <AppBadge :value="9" tone="accent" />
-                <AppBadge :value="9" tone="neutral" />
+                <AppBadge :value="9" tone="default" />
                 <AppBadge :value="28" size="md" />
             </div>
         </DemoBlock>
 
         <DemoBlock title="拖拽清除"
-            description="按住角标拖动：超过阈值只会缩小提示，松手才真正清除；拖回阈值内还能反悔。清除时四个小圈会从松手位置向四周扩散。">
+            description="按住角标拖动：超过阈值只会缩小提示，松手才真正清除；拖回阈值内还能反悔。清除时四个小圈会从缩小后的角标中心向四周扩散。">
             <div class="doc_badge_stage">
                 <AppBadge v-if="dragCount > 0" :key="dragCount" :value="dragCount" draggable
                     :aria-label="`${dragCount} 条未读，可拖动清除`" @clear="dragCount = 0" />
@@ -50,19 +50,19 @@ const tab = ref('all')
 const moreTab = ref('system')
 
 const tabs = ref([
-    { name: 'all', label: '全部', badge: 12 },
-    { name: 'reply', label: '回复', badge: { text: 3, draggable: true } },
-    { name: 'mention', label: '提到我', badge: { dot: true, tone: 'accent', draggable: true } },
-    { name: 'system', label: '系统', badge: { text: 1, tone: 'neutral', draggable: true } },
+    { value: 'all', label: '全部', badge: 12 },
+    { value: 'reply', label: '回复', badge: { text: 3, draggable: true } },
+    { value: 'mention', label: '提到我', badge: { dot: true, tone: 'accent', draggable: true } },
+    { value: 'system', label: '系统', badge: { text: 1, tone: 'default', draggable: true } },
 ])
 
 const manyTabs = [
-    { name: 'all', label: '全部', badge: 6 },
-    { name: 'reply', label: '回复' },
-    { name: 'mention', label: '提到我', badge: { dot: true, tone: 'accent' } },
-    { name: 'system', label: '系统', badge: { text: 2 } },
-    { name: 'follow', label: '关注', badge: 4 },
-    { name: 'like', label: '点赞', badge: true },
+    { value: 'all', label: '全部', badge: 6 },
+    { value: 'reply', label: '回复' },
+    { value: 'mention', label: '提到我', badge: { dot: true, tone: 'accent' } },
+    { value: 'system', label: '系统', badge: { text: 2 } },
+    { value: 'follow', label: '关注', badge: 4 },
+    { value: 'like', label: '点赞', badge: true },
 ]
 
 const totalUnread = computed(() => tabs.value.reduce((sum, item) => {
@@ -71,20 +71,21 @@ const totalUnread = computed(() => tabs.value.reduce((sum, item) => {
     return sum + (Number(item.badge.text) || 0)
 }, 0))
 
-function ClearBadge({ name }) {
-    const item = tabs.value.find(item => item.name === name)
+function ClearBadge({ value }) {
+    const item = tabs.value.find(item => item.value === value)
     if (item) item.badge = null
 }
 
 const propsRows = [
     { name: 'value', type: 'string | number', default: "''", desc: '未读数量或短文本；dot 模式下忽略' },
     { name: 'dot', type: 'boolean', default: 'false', desc: '只显示一个小圆点' },
-    { name: 'tone', type: 'danger | accent | neutral', default: 'danger', desc: '语义色；danger 使用 --wa_color_danger，accent 使用 --wa_color_accent' },
+    { name: 'tone', type: 'default | accent | success | warning | help | danger', default: 'danger', desc: '语义色；default 使用高亮色，其余使用对应 --wa_color_<tone>' },
     { name: 'size', type: 'sm | md', default: 'sm', desc: '角标尺寸' },
     { name: 'max', type: 'number', default: '99', desc: '数字上限，超过显示 max+' },
     { name: 'draggable', type: 'boolean', default: 'false', desc: '允许拖动；超过阈值后角标缩小提示，松手才断开并触发 clear，拖回范围内可取消' },
     { name: 'maxDistance', type: 'number', default: '72', desc: '断开阈值（px）；松手时判定，拖动过程中只做视觉提示' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用角标交互' },
+    { name: 'readonly', type: 'boolean', default: 'false', desc: '只读展示：渲染为 span，不参与点击、拖动和键盘交互' },
     { name: 'tabindex', type: 'number | string', default: '0', desc: '按钮的 tabindex；放进 tablist 时可设为 -1' },
     { name: 'ariaLabel', type: 'string', default: "''", desc: '无可见文字时的无障碍名称' },
 ]

@@ -157,7 +157,7 @@ onUnmounted(() => {
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    height: 30px;
+    height: var(--wa_size_icon_btn_sm);
     padding: 0 9px;
     border: 1px solid var(--wa_color_line);
     border-radius: var(--wa_radius_control);
@@ -362,7 +362,7 @@ onUnmounted(() => {
 
     .doc_search_trigger {
         position: relative;
-        width: 30px;
+        width: var(--wa_size_icon_btn_sm);
         justify-content: center;
         padding: 0;
     }

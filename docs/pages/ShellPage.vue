@@ -18,7 +18,7 @@
 
         <h2 class="doc_h2">加载状态</h2>
         <p class="doc_text">
-            AppShell 的 loading 属性预留给顶部进度条；当前 AppShell 内置的 AppRouteBar 已关闭。需要顶部进度条时，请按「路由进度条」页单独使用 AppRouteBar，并由 routeLoading 驱动。
+            AppShell 不再内置顶部进度条。需要顶部进度条时，请按「路由进度条」页单独使用 AppRouteBar，并由 routeLoading 驱动。
         </p>
 
         <template #api>
@@ -41,15 +41,16 @@ const navLayouts = [
 ]
 
 const propsRows = [
-    { name: 'nav', type: 'Array', default: '[]', desc: '导航项 { name, label, icon }' },
-    { name: 'active', type: 'string | symbol', default: "''", desc: '当前项 name' },
+    { name: 'items', type: 'Array', default: '[]', desc: '导航项 { value, label, icon }' },
+    { name: 'groups', type: 'Array', default: '[]', desc: '分组导航 { label?, items: [] }；优先级高于 items' },
+    { name: 'active', type: 'string | number | symbol', default: "''", desc: '当前项 value，支持 v-model:active' },
     { name: 'navLayout', type: 'auto | inline | stacked | icon | text', default: 'auto', desc: '导航布局' },
-    { name: 'loading', type: 'boolean', default: 'undefined', desc: '预留给顶部进度条；当前内置 AppRouteBar 已关闭' },
     { name: 'autoHideNav', type: 'boolean', default: 'false', desc: '移动端手指上滑隐藏底部导航、下滑显示，页面回到顶部时强制显示' },
     { name: 'autoHideThreshold', type: 'number', default: '10', desc: '手势判定阈值（px）；横向位移大于纵向时不触发' },
 ]
 
 const eventRows = [
+    { name: 'update:active', type: 'string | symbol', desc: '选中项变化，支持 v-model:active' },
     { name: 'navigate', type: 'item', desc: '点击导航项' },
 ]
 
@@ -58,11 +59,11 @@ const slotRows = [
     { name: 'footer', type: '—', desc: '页脚，存在时才渲染' },
 ]
 
-const gestureCode = `<AppShell :nav="nav" :active="route.name" auto-hide-nav :auto-hide-threshold="12">
+const gestureCode = `<AppShell :items="nav" v-model:active="active" auto-hide-nav :auto-hide-threshold="12">
     <!-- 页面内容 -->
 </AppShell>`
 
-const baseCode = `<AppShell :nav="nav" :active="route.name" :nav-layout="navLayout" @navigate="go">
+const baseCode = `<AppShell :items="nav" v-model:active="active" :nav-layout="navLayout" @navigate="go">
     <PageHeader :title="title" />
 
     <RouterView v-slot="{ Component }">
@@ -77,11 +78,11 @@ const baseCode = `<AppShell :nav="nav" :active="route.name" :nav-layout="navLayo
 </AppShell>`
 
 const navCode = `const nav = [
-    { name: 'home', label: '开始', icon: 'home' },
-    { name: 'components', label: '组件', icon: 'list' },
+    { value: 'home', label: '开始', icon: 'home' },
+    { value: 'components', label: '组件', icon: 'list' },
 ]
 
 function go(item) {
-    if (route.name !== item.name) router.navigate({ name: item.name })
+    if (route.name !== item.value) router.navigate({ name: item.value })
 }`
 </script>

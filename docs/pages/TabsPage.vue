@@ -22,7 +22,7 @@
         </DemoBlock>
 
         <DemoBlock title="按钮组"
-            description="variant=group：对应 Worker API 面板的按钮组。白磨砂底、选中黑色块、hover 时加 inset 内描边，圆角改为小矩形。">
+            description="variant=group：整体是一组按钮。未选中为描边按钮，选中切换为主按钮；容器本身透明，不再使用磨砂底和滑块。">
             <AppTabs v-model="groupTab" variant="group" :items="tabs" />
         </DemoBlock>
 
@@ -80,45 +80,45 @@ const moreTab = ref('settings')
 const badgeTab = ref('all')
 
 const tabs = [
-    { name: 'overview', label: '概览' },
-    { name: 'usage', label: '使用' },
-    { name: 'api', label: 'API' },
+    { value: 'overview', label: '概览' },
+    { value: 'usage', label: '使用' },
+    { value: 'api', label: 'API' },
 ]
 
 const iconTabs = [
-    { name: 'home', label: '开始', icon: 'home' },
-    { name: 'components', label: '组件', icon: 'list' },
-    { name: 'layout', label: '布局', icon: 'layout' },
-    { name: 'disabled', label: '禁用', icon: 'close', disabled: true },
+    { value: 'home', label: '开始', icon: 'home' },
+    { value: 'components', label: '组件', icon: 'list' },
+    { value: 'layout', label: '布局', icon: 'layout' },
+    { value: 'disabled', label: '禁用', icon: 'close', disabled: true },
 ]
 
 const manyTabs = [
-    { name: 'overview', label: '概览' },
-    { name: 'usage', label: '使用' },
-    { name: 'api', label: 'API' },
-    { name: 'examples', label: '示例' },
-    { name: 'tokens', label: '变量' },
-    { name: 'settings', label: '设置' },
-    { name: 'icons', label: '图标' },
-    { name: 'theme', label: '主题' },
-    { name: 'about', label: '关于' },
+    { value: 'overview', label: '概览' },
+    { value: 'usage', label: '使用' },
+    { value: 'api', label: 'API' },
+    { value: 'examples', label: '示例' },
+    { value: 'tokens', label: '变量' },
+    { value: 'settings', label: '设置' },
+    { value: 'icons', label: '图标' },
+    { value: 'theme', label: '主题' },
+    { value: 'about', label: '关于' },
 ]
 
 const badgeTabs = ref([
-    { name: 'all', label: '全部', badge: 12 },
-    { name: 'reply', label: '回复', badge: { text: 3, draggable: true } },
-    { name: 'mention', label: '提到我', badge: { dot: true, tone: 'accent', draggable: true } },
-    { name: 'system', label: '系统', badge: { text: 1, tone: 'neutral' } },
+    { value: 'all', label: '全部', badge: 12 },
+    { value: 'reply', label: '回复', badge: { text: 3, draggable: true } },
+    { value: 'mention', label: '提到我', badge: { dot: true, tone: 'accent', draggable: true } },
+    { value: 'system', label: '系统', badge: { text: 1, tone: 'default' } },
 ])
 
-function ClearTabBadge({ name }) {
-    const item = badgeTabs.value.find(item => item.name === name)
+function ClearTabBadge({ value }) {
+    const item = badgeTabs.value.find(item => item.value === value)
     if (item) item.badge = null
 }
 
 const propsRows = [
-    { name: 'modelValue', type: 'string | number | symbol', default: "''", desc: '当前选中项的 name' },
-    { name: 'items', type: 'Array<{ name, label, icon?, disabled?, badge? }>', default: '[]', desc: '标签项；badge 支持数字、true 或 { text, dot, tone, draggable, max }' },
+    { name: 'modelValue', type: 'string | number | symbol', default: "''", desc: '当前选中项的 value' },
+    { name: 'items', type: 'Array<{ value, label, icon?, disabled?, badge? }>', default: '[]', desc: '标签项；badge 支持数字、true 或 { text, dot, tone, draggable, max }' },
     { name: 'variant', type: 'nav | plain | group', default: 'nav', desc: 'nav 带外框；plain 无边框、无外框、无阴影；group 为按钮组样式（白磨砂底 + 黑色高亮 + hover 内描边）' },
     { name: 'transparent', type: 'boolean', default: 'false', desc: '去掉磨砂、背景、边框和阴影' },
     { name: 'size', type: 'sm | md', default: 'sm', desc: '标签尺寸' },
@@ -132,8 +132,8 @@ const propsRows = [
 
 const eventRows = [
     { name: 'update:modelValue', type: 'string | number | symbol', desc: '选中项变化' },
-    { name: 'change', type: 'item, index', desc: '选中项变化，返回标签项和索引' },
-    { name: 'badge-clear', type: '{ name, item, index, more }', desc: '角标被拖拽或按键清除，由业务更新 items' },
+    { name: 'select', type: 'item', desc: '选中项变化，返回标签项' },
+    { name: 'badge-clear', type: '{ value, item, index, more }', desc: '角标被拖拽或按键清除，由业务更新 items' },
 ]
 
 const slotRows = [

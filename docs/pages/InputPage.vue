@@ -101,6 +101,7 @@ const propsRows = [
 
 const eventRows = [
     { name: 'update:modelValue', type: 'string', desc: '输入值变化' },
+    { name: 'change', type: 'string', desc: '输入值变化时同步触发' },
     { name: 'clear', type: '—', desc: '点击清空按钮' },
 ]
 

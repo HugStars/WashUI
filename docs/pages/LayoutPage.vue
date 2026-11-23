@@ -51,7 +51,7 @@ const navLayouts = [
     { name: 'text', desc: '仅文本' },
 ]
 
-const shellCode = `<AppShell :nav="nav" :active="route.name" @navigate="go">
+const shellCode = `<AppShell :items="nav" :active="route.name" @navigate="go">
     <PageHeader :title="title">
         <template #actions>
             <AppThemeToggle size="sm" />
@@ -70,12 +70,12 @@ const shellCode = `<AppShell :nav="nav" :active="route.name" @navigate="go">
 </AppShell>`
 
 const navCode = `const nav = [
-    { name: 'home', label: '开始', icon: 'home' },
-    { name: 'components', label: '组件', icon: 'list' },
+    { value: 'home', label: '开始', icon: 'home' },
+    { value: 'components', label: '组件', icon: 'list' },
 ]
 
 function go(item) {
-    if (route.name !== item.name) router.navigate({ name: item.name })
+    if (route.name !== item.value) router.navigate({ name: item.value })
 }`
 
 const headerCode = `<PageHeader :title="route.meta.title">

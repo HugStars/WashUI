@@ -49,6 +49,8 @@ const requiredColor = ref('')
 const propsRows = [
     { name: 'modelValue', type: 'string', default: "''", desc: '颜色字符串，格式由 format 决定' },
     { name: 'label', type: 'string', default: "''", desc: '字段标签' },
+    { name: 'placeholder', type: 'string', default: "'请选择颜色'", desc: '未选择颜色时的占位文案' },
+    { name: 'ariaLabel', type: 'string', default: "'颜色选择'", desc: '没有 label 时的无障碍名称' },
     { name: 'format', type: 'hex | rgb | hsl', default: 'hex', desc: '输出格式' },
     { name: 'presets', type: 'Array', default: '内置 8 色', desc: '预设颜色，支持 HEX / RGB / HSL' },
     { name: 'hint / error', type: 'string', default: "''", desc: '提示与错误；错误优先' },

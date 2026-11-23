@@ -1,11 +1,11 @@
 export const nav = [
-    { name: 'home', label: '开始', icon: 'home' },
-    { name: 'guide', label: '指南', icon: 'edit' },
-    { name: 'components', label: '组件', icon: 'grid' },
-    { name: 'layout', label: '布局', icon: 'layout' },
-    { name: 'abilities', label: '能力', icon: 'cpu' },
-    { name: 'icons', label: '图标', icon: 'icons' },
-    { name: 'playground', label: '实验场', icon: 'terminal' },
+    { value: 'home', label: '开始', icon: 'home' },
+    { value: 'guide', label: '指南', icon: 'edit' },
+    { value: 'components', label: '组件', icon: 'grid' },
+    { value: 'layout', label: '布局', icon: 'layout' },
+    { value: 'abilities', label: '能力', icon: 'cpu' },
+    { value: 'icons', label: '图标', icon: 'icons' },
+    { value: 'playground', label: '实验场', icon: 'terminal' },
 ]
 
 export const guidePages = [
@@ -20,15 +20,14 @@ export const componentGroups = [
         title: '基础',
         items: [
             { name: 'button', label: '按钮', component: 'AppButton', page: 'ButtonPage', path: '/components/button', summary: '操作入口，支持类型、尺寸与加载态。' },
+            { name: 'icon-button', label: '图标按钮', component: 'AppIconButton', page: 'IconButtonPage', path: '/components/icon-button', summary: '纯图标操作，支持尺寸、描边、磨砂、选中与加载态。' },
             { name: 'card', label: '卡片', component: 'AppCard', page: 'CardPage', path: '/components/card', summary: '内容分组容器，支持标题、额外区与页脚。' },
             { name: 'code', label: '代码', component: 'AppCode', page: 'CodePage', path: '/components/code', summary: '基于 Speed-highlight 的代码块，支持多语言、行号与复制。' },
             { name: 'chip', label: '标记', component: 'AppChip', page: 'ChipPage', path: '/components/chip', summary: '轻量筛选与状态标记。' },
             { name: 'tag', label: '标签', component: 'AppTag', page: 'TagPage', path: '/components/tag', summary: '静态属性与状态标签，支持色调、磨砂与展开动画。' },
             { name: 'badge', label: '消息角标', component: 'AppBadge', page: 'BadgePage', path: '/components/badge', summary: '未读数量与状态角标，支持拖拽断开清除。' },
-            { name: 'tabs', label: '标签页', component: 'AppTabs', page: 'TabsPage', path: '/components/tabs', summary: '参考导航实现的滑动标签切换，支持面板与两种外观。' },
             { name: 'stat', label: '统计', component: 'AppStat', page: 'StatPage', path: '/components/stat', summary: '紧凑的指标展示。' },
-            { name: 'number', label: '数字跳动', component: 'AppNumber', page: 'NumberPage', path: '/components/number', summary: '数字变化时的平滑跳动。' },
-            { name: 'stepper', label: '步进器', component: 'AppStepper', page: 'StepperPage', path: '/components/stepper', summary: '加减按钮与输入结合的精确数值步进。' },
+            { name: 'animated-number', label: '数字跳动', component: 'AppAnimatedNumber', page: 'NumberPage', path: '/components/animated-number', summary: '只读数字动画，数值变化时平滑跳动。' },
             { name: 'empty', label: '空状态', component: 'AppEmpty', page: 'EmptyPage', path: '/components/empty', summary: '无数据时的占位与操作。' },
             { name: 'list', label: '列表', component: 'AppList', page: 'ListPage', path: '/components/list', summary: 'label / value 列表，支持横线分割、圆角分组、label 在上与选中态。' },
             { name: 'theme-toggle', label: '主题切换', component: 'AppThemeToggle', page: 'ThemeTogglePage', path: '/components/theme-toggle', summary: '亮暗主题切换，内置太阳与月亮图标。' },
@@ -38,6 +37,7 @@ export const componentGroups = [
         title: '导航',
         items: [
             { name: 'nav-menu', label: '导航菜单', component: 'AppNavMenu', page: 'NavMenuPage', path: '/components/nav-menu', summary: '分组导航链接，支持图标、角标、选中态与路由组件。' },
+            { name: 'tabs', label: '标签页', component: 'AppTabs', page: 'TabsPage', path: '/components/tabs', summary: '参考导航实现的滑动标签切换，支持 nav / plain / group 三种外观。' },
         ],
     },
     {
@@ -52,6 +52,7 @@ export const componentGroups = [
         items: [
             { name: 'input', label: '输入框', component: 'AppInput', page: 'InputPage', path: '/components/input', summary: '带标签、提示与校验的输入框。' },
             { name: 'switch', label: '开关', component: 'AppSwitch', page: 'SwitchPage', path: '/components/switch', summary: '二选一状态切换，支持标签对齐、尺寸与禁用。' },
+            { name: 'stepper', label: '步进器', component: 'AppStepper', page: 'StepperPage', path: '/components/stepper', summary: '加减按钮与输入结合的精确数值步进。' },
             { name: 'slider', label: '滑块', component: 'AppSlider', page: 'SliderPage', path: '/components/slider', summary: '连续区间内选择数值，支持步长吸附、键盘操作与数值展示。' },
             { name: 'check', label: '复选框', component: 'AppCheck', page: 'CheckPage', path: '/components/check', summary: '单个复选框 + 分组复选框，支持排列、对齐与半选。' },
             { name: 'radio', label: '单选框', component: 'AppRadio', page: 'RadioPage', path: '/components/radio', summary: '单个单选框 + 分组单选框，排版能力与复选框一致。' },
@@ -62,8 +63,8 @@ export const componentGroups = [
             { name: 'choice-list', label: '选择列表', component: 'AppChoiceList', page: 'ChoiceListPage', path: '/components/choice-list', summary: '复选框 / 单选框共享的列表面板核心。' },
             { name: 'upload', label: '上传', component: 'AppUpload', page: 'UploadPage', path: '/components/upload', summary: '选择、拖拽、校验与文件列表。' },
             { name: 'color-picker', label: '颜色选择', component: 'AppColorPicker', page: 'ColorPickerPage', path: '/components/color-picker', summary: '自绘颜色面板，支持 HEX / RGB / HSL、色相、明度与预设色。' },
-            { name: 'date-picker', label: '日期选择', component: 'AppDatePicker', page: 'DatePickerPage', path: '/components/date-picker', summary: '原生日期输入，支持范围、校验与快捷按钮。' },
-            { name: 'time-picker', label: '时间选择', component: 'AppTimePicker', page: 'TimePickerPage', path: '/components/time-picker', summary: '原生时间输入，支持范围、步长与快捷按钮。' },
+            { name: 'date-picker', label: '日期选择', component: 'AppDatePicker', page: 'DatePickerPage', path: '/components/date-picker', summary: '自绘日期面板，支持范围、校验与快捷按钮。' },
+            { name: 'time-picker', label: '时间选择', component: 'AppTimePicker', page: 'TimePickerPage', path: '/components/time-picker', summary: '自绘时间面板，支持范围、步长与快捷按钮。' },
             { name: 'datetime-picker', label: '日期时间选择', component: 'AppDateTimePicker', page: 'DateTimePickerPage', path: '/components/datetime-picker', summary: '日期与时间一体选择，支持快捷项与校验。' },
             { name: 'textarea', label: '文本域', component: 'AppTextarea', page: 'TextareaPage', path: '/components/textarea', summary: '多行输入，支持行数、列数、缩放、尺寸与磨砂。' },
         ],

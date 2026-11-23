@@ -10,7 +10,7 @@
 
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">基础组件</p>
-                    <p>AppButton、AppCard、AppCode、AppChip、AppTag、AppBadge、AppTabs、AppStat、AppNumber、AppEmpty、AppList / AppListRow、AppHint、AppThemeToggle。</p>
+                    <p>AppButton、AppCard、AppCode、AppChip、AppTag、AppBadge、AppTabs、AppStat、AppAnimatedNumber、AppEmpty、AppList / AppListRow、AppHint、AppThemeToggle。</p>
                 </div>
 
                 <div class="doc_roadmap_group">
@@ -56,7 +56,7 @@
             <AppPanel title="计划" tone="help">
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">表单</p>
-                    <p>AppForm / AppFormItem、异步与跨字段校验、DatePicker、TimePicker、Cascader、Transfer、ColorPicker、Rate。</p>
+                    <p>AppForm / AppFormItem、异步与跨字段校验、AppDateRangePicker、Rate。</p>
                 </div>
                 <div class="doc_roadmap_group">
                     <p class="doc_roadmap_label">数据展示</p>

@@ -1,6 +1,6 @@
 <template>
     <DocPage category="表单" name="AppDatePicker" title="日期选择"
-        description="点击打开自绘日历面板，支持 v-model、校验、日期范围限制和可配置快捷按钮。">
+        description="点击打开自绘日历面板，支持日 / 周 / 月 / 年粒度、日期范围、校验和可配置快捷按钮。">
         <DemoBlock title="基础" description="v-model 绑定 YYYY-MM-DD 字符串。">
             <AppDatePicker v-model="date" label="选择日期" />
             <p class="wa_hint doc_gap">当前：{{ date || '未选择' }}</p>
@@ -14,6 +14,22 @@
         <DemoBlock title="范围与校验" description="min / max 使用 YYYY-MM-DD；rule 与 AppInput 一致。">
             <AppDatePicker v-model="rangeDate" label="活动日期" min="2026-11-01" max="2026-12-31"
                 :rule="{ required: true, message: '请选择活动日期' }" />
+        </DemoBlock>
+
+        <DemoBlock title="年 / 月 / 周" description="picker 控制选择粒度；输出分别为 YYYY、YYYY-MM、YYYY-Www。">
+            <div class="doc_grid">
+                <AppDatePicker v-model="yearValue" picker="year" label="年份" />
+                <AppDatePicker v-model="monthValue" picker="month" label="月份" />
+                <AppDatePicker v-model="weekValue" picker="week" label="周" />
+            </div>
+            <p class="wa_hint doc_gap">
+                年份：{{ yearValue || '未选择' }}；月份：{{ monthValue || '未选择' }}；周：{{ weekValue || '未选择' }}
+            </p>
+        </DemoBlock>
+
+        <DemoBlock title="日期范围" description="range 时 modelValue 为 [开始, 结束]。">
+            <AppDatePicker v-model="rangeValue" range label="活动周期" />
+            <p class="wa_hint doc_gap">当前：{{ rangeValue.length ? rangeValue.join(' ~ ') : '未选择' }}</p>
         </DemoBlock>
 
         <template #api>
@@ -31,6 +47,10 @@ import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 const date = ref('')
 const quickDate = ref('')
 const rangeDate = ref('')
+const yearValue = ref('')
+const monthValue = ref('')
+const weekValue = ref('')
+const rangeValue = ref([])
 
 function offsetDate(days) {
     return formatDate(new Date(Date.now() + days * 86_400_000), 'YYYY-MM-DD')
@@ -43,8 +63,12 @@ const quickOptions = [
 ]
 
 const propsRows = [
-    { name: 'modelValue', type: 'string', default: "''", desc: '日期字符串，格式 YYYY-MM-DD' },
+    { name: 'modelValue', type: 'string | string[]', default: "''", desc: '日期值；range 时为 [开始, 结束]' },
+    { name: 'picker', type: 'day | week | month | year', default: 'day', desc: '选择粒度；输出分别为 YYYY-MM-DD、YYYY-Www、YYYY-MM、YYYY' },
+    { name: 'range', type: 'boolean', default: 'false', desc: '范围选择，modelValue 为 [start, end]' },
     { name: 'label', type: 'string', default: "''", desc: '字段标签' },
+    { name: 'placeholder', type: 'string', default: "'请选择'", desc: '未选择时的占位文案' },
+    { name: 'ariaLabel', type: 'string', default: "'日期时间选择'", desc: '没有 label 时的无障碍名称' },
     { name: 'hint / error', type: 'string', default: "''", desc: '提示与错误；错误优先' },
     { name: 'size', type: 'sm | md', default: 'sm', desc: '控件尺寸' },
     { name: 'min / max', type: 'string', default: "''", desc: '可选日期范围' },
@@ -54,7 +78,7 @@ const propsRows = [
 ]
 
 const eventRows = [
-    { name: 'update:modelValue', type: 'string', desc: '日期变化' },
-    { name: 'change', type: 'string', desc: '日期变化或点击快捷项' }
+    { name: 'update:modelValue', type: 'string | string[]', desc: '日期变化' },
+    { name: 'change', type: 'string | string[]', desc: '日期变化或点击快捷项' }
 ]
 </script>

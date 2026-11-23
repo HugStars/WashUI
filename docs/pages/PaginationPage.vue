@@ -22,7 +22,7 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="监听变化" description="change 同时返回 page 与 pageSize，page-size-change 单独返回条数变化。">
+        <DemoBlock title="监听变化" description="change 同时返回 page 与 pageSize，翻页和条数变化都走这个事件。">
             <AppPagination v-model="eventPage" v-model:page-size="eventPageSize" :total="128" show-size-changer
                 @change="onChange" />
             <p class="wa_hint doc_gap">最近一次变化：第 {{ lastChange.page }} 页，每页 {{ lastChange.pageSize }} 条</p>
@@ -73,7 +73,6 @@ const eventRows = [
     { name: 'update:modelValue', type: 'number', desc: '当前页变化' },
     { name: 'update:pageSize', type: 'number', desc: '每页条数变化' },
     { name: 'change', type: '{ page, pageSize }', desc: '页码或条数变化' },
-    { name: 'page-size-change', type: '{ pageSize, page }', desc: '每页条数变化' },
 ]
 </script>
 

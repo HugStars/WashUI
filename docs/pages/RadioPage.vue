@@ -71,9 +71,9 @@
         <DemoBlock title="尺寸与禁用" description="size 会继承给分组内所有选项；支持单个选项禁用和整组禁用。">
             <div class="doc_radio_stack">
                 <p class="wa_hint">18px</p>
-                <AppRadioGroup v-model="smallSize" :options="compactOptions" :size="18" />
+                <AppRadioGroup v-model="smallSize" :options="compactOptions" :check-size="18" />
                 <p class="wa_hint">24px</p>
-                <AppRadioGroup v-model="largeSize" :options="compactOptions" :size="24" />
+                <AppRadioGroup v-model="largeSize" :options="compactOptions" :check-size="24" />
                 <p class="wa_hint">禁用选项 / 整组禁用</p>
                 <AppRadioGroup v-model="partDisabled" :options="disabledOptions" />
                 <AppRadioGroup v-model="allDisabled" :options="compactOptions" disabled />
@@ -156,7 +156,7 @@ const radioRows = [
     { name: 'value', type: 'string | number | symbol | boolean', default: 'undefined', desc: '在 AppRadioGroup / AppChoiceList 中对应的值' },
     { name: 'label', type: 'string', default: "''", desc: '标签文本' },
     { name: 'labelPosition', type: 'before | after', default: 'after', desc: '标签在单选框前或后；分组中会继承分组设置' },
-    { name: 'size', type: 'number | sm | md', default: '20（segmented 默认 sm）', desc: '普通单选为像素尺寸；segmented 支持 sm / md，默认走 sm' },
+    { name: 'checkSize', type: 'number | string', default: '20', desc: '普通单选框尺寸；segmented 使用分组的 size' },
     { name: 'between', type: 'boolean', default: 'false', desc: '标签与单选框两端对齐' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用单个单选框' },
     { name: 'ariaLabel', type: 'string', default: '单选框', desc: '没有标签时的无障碍名称' },
@@ -170,7 +170,12 @@ const groupRows = [
     { name: 'shape', type: 'pill | rect', default: 'pill', desc: 'segmented 的外形：胶囊或小圆角矩形' },
     { name: 'labelPosition', type: 'before | after', default: 'after', desc: '每个标签在单选框前或后' },
     { name: 'align', type: 'left | right | between | space-between', default: 'left', desc: '纵向排列时整组靠左/靠右，或让标签与单选框两端对齐' },
-    { name: 'size', type: 'number | sm | md', default: '20 (md)', desc: '普通单选框按 px；segmented 使用 sm / md' },
+    { name: 'checkSize', type: 'number | string', default: '20', desc: '普通单选框尺寸，数字按 px 处理' },
+    { name: 'size', type: 'sm | md', default: 'sm', desc: 'segmented 外观尺寸' },
+    { name: 'label', type: 'string', default: "''", desc: '组标签' },
+    { name: 'hint', type: 'string', default: "''", desc: '提示文案' },
+    { name: 'error', type: 'string', default: "''", desc: '错误文案；优先级高于 rule' },
+    { name: 'rule', type: 'object | array', default: 'null', desc: '校验规则，与 AppInput 一致' },
     { name: 'ariaLabel', type: 'string', default: '单选框组', desc: '组的无障碍名称' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用整组' },
 ]

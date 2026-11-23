@@ -105,6 +105,9 @@ const propsRows = [
     { name: 'suffix', type: 'string', default: "''", desc: '数值后缀，例如 % 或 元' },
     { name: 'ariaLabel', type: 'string', default: "''", desc: '无可见标签时的无障碍名称' },
     { name: 'size', type: 'sm | md', default: 'sm', desc: '控件尺寸' },
+    { name: 'hint', type: 'string', default: "''", desc: '提示文案' },
+    { name: 'error', type: 'string', default: "''", desc: '错误文案；优先级高于 rule' },
+    { name: 'rule', type: 'object | array', default: 'null', desc: '校验规则，与 AppInput 一致' },
 ]
 
 const eventRows = [

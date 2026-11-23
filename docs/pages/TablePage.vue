@@ -2,13 +2,13 @@
     <DocPage category="数据" name="AppTable" title="表格"
         description="配置驱动的数据表格，默认紧凑尺寸。columns 定义列，data 提供行；常用能力通过 props 开启，复杂内容用 cell-{key} 插槽接管。">
         <DemoBlock title="基础" description="columns 定义列，data 提供数据；formatter 适合简单的文本格式化。">
-            <AppTable :columns="columns" :data="rows" />
+            <AppTable :columns="columns" :data="rows.slice(0, 5)" />
         </DemoBlock>
 
         <DemoBlock title="自定义单元格" description="cell-{key} 插槽拿到 row、column、value 与 index，可以放标记、按钮等任意内容。">
-            <AppTable :columns="richColumns" :data="rows" table-layout="fixed">
+            <AppTable :columns="richColumns" :data="rows.slice(0, 5)" table-layout="fixed">
                 <template #cell-status="{ value }">
-                    <AppChip size="sm" :active="value === '启用'" @click.stop>{{ value }}</AppChip>
+                    <AppChip size="sm" :selected="value === '启用'" @click.stop>{{ value }}</AppChip>
                 </template>
                 <template #cell-actions="{ row }">
                     <AppButton size="sm" variant="line" @click.stop="toast.success(`编辑 ${row.name}`)">编辑</AppButton>
@@ -17,7 +17,7 @@
         </DemoBlock>
 
         <DemoBlock title="单元格提示" description="列配置 tooltip: true 时使用 formatter 或原始值作为提示；传函数可以自定义提示内容。提示由 AppTooltip 呈现，悬停整格触发。">
-            <AppTable :columns="tooltipColumns" :data="rows" />
+            <AppTable :columns="tooltipColumns" :data="rows.slice(0, 5)" />
         </DemoBlock>
 
         <DemoBlock title="透明样式"
@@ -30,12 +30,12 @@
         </DemoBlock>
 
         <DemoBlock title="排序" description="sortable 开启客户端排序；v-model:sort 接收 { key, order }，order 依次为 asc、desc、null。">
-            <AppTable v-model:sort="sort" :columns="sortColumns" :data="rows" />
+            <AppTable v-model:sort="sort" :columns="sortColumns" :data="rows.slice(0, 5)" />
             <p class="wa_hint doc_gap">当前排序：{{ sort ? `${sort.key} ${sort.order}` : '未排序' }}</p>
         </DemoBlock>
 
         <DemoBlock title="行选择" description="selectable 开启选择列，selectedKeys 受控；selectableRow 返回 false 的行不可选。">
-            <AppTable selectable v-model:selected-keys="selectedKeys" :columns="columns" :data="rows"
+            <AppTable selectable v-model:selected-keys="selectedKeys" :columns="columns" :data="rows.slice(0, 5)"
                 :selectable-row="row => row.status !== '停用'" />
             <p class="wa_hint doc_gap">已选：{{ selectedKeys.join(', ') || '无' }}</p>
         </DemoBlock>
@@ -43,33 +43,35 @@
         <DemoBlock title="固定高度与最小高度"
             description="height 固定表头 + 表体的总高度，表头固定、表体独立滚动；minHeight 保证内容较少时的最小高度。纵向滚动条只出现在表体区域。">
             <div class="doc_table_demo">
-                <AppTable :columns="columns" :data="rows" :height="220" />
+                <AppTable :columns="columns" :data="rows" :height="280" />
                 <AppTable :columns="columns" :data="rows.slice(0, 3)" :min-height="220" />
             </div>
         </DemoBlock>
 
         <DemoBlock title="固定列与粘性表头"
             description="fixed 固定左右列，height 限制内容视口高度，表头自动固定；内容超出时只有表体滚动，并出现横向滚动与边缘阴影。">
-            <AppTable :columns="wideColumns" :data="rows" :height="280">
-                <template #cell-status="{ value }">
-                    <AppChip size="sm" :active="value === '启用'" @click.stop>{{ value }}</AppChip>
-                </template>
-                <template #cell-actions="{ row }">
-                    <AppButton size="sm" variant="line" @click.stop="toast.success(`编辑 ${row.name}`)">编辑</AppButton>
-                </template>
-            </AppTable>
+            <div class="doc_table_fixed">
+                <AppTable :columns="wideColumns" :data="rows" :height="320">
+                    <template #cell-status="{ value }">
+                        <AppChip size="sm" :selected="value === '启用'" @click.stop>{{ value }}</AppChip>
+                    </template>
+                    <template #cell-actions="{ row }">
+                        <AppButton size="sm" variant="line" @click.stop="toast.success(`编辑 ${row.name}`)">编辑</AppButton>
+                    </template>
+                </AppTable>
+            </div>
         </DemoBlock>
 
         <DemoBlock title="加载与空状态" description="loading 显示骨架行并保留表头；没有数据时显示紧凑的空状态。">
             <div class="doc_table_demo">
                 <AppButton size="sm" @click="loading = !loading">{{ loading ? '结束加载' : '模拟加载' }}</AppButton>
-                <AppTable :columns="columns" :data="rows" :loading="loading" :loading-rows="rows.length" />
+                <AppTable :columns="columns" :data="rows.slice(0, 5)" :loading="loading" :loading-rows="5" />
                 <AppTable :columns="columns" :data="[]" empty-text="没有匹配的记录" />
             </div>
         </DemoBlock>
 
         <DemoBlock title="与分页组合" description="表格不内置分页，用 footer 插槽组合 AppPagination；服务端分页时把 data 换成当前页数据即可。">
-            <AppTable :columns="columns" :data="pagedRows" :min-height="250">
+            <AppTable :columns="columns" :data="pagedRows">
                 <template #footer>
                     <AppPagination v-model="page" v-model:page-size="pageSize" :total="rows.length" show-size-changer />
                 </template>
@@ -106,40 +108,41 @@ const rows = [
 ]
 
 const columns = [
-    { key: 'name', title: '成员', width: 160 },
-    { key: 'role', title: '角色', width: 120 },
-    { key: 'status', title: '状态', width: 110 },
-    { key: 'amount', title: '额度', width: 120, align: 'right', formatter: value => `¥${Number(value).toLocaleString()}` },
+    { key: 'name', title: '成员', width: 120 },
+    { key: 'role', title: '角色', width: 100 },
+    { key: 'status', title: '状态', width: 90 },
+    { key: 'amount', title: '额度', width: 110, align: 'right', formatter: value => `¥${Number(value).toLocaleString()}` },
 ]
 
 const richColumns = [
-    { key: 'name', title: '成员', width: 150 },
-    { key: 'email', title: '邮箱', width: 200, ellipsis: true },
-    { key: 'status', title: '状态', width: 110 },
-    { key: 'actions', title: '操作', width: 100, align: 'right' },
+    { key: 'name', title: '成员', width: 120 },
+    { key: 'email', title: '邮箱', width: 160, ellipsis: true },
+    { key: 'status', title: '状态', width: 90 },
+    { key: 'actions', title: '操作', width: 80, align: 'right' },
 ]
 
 const tooltipColumns = [
-    { key: 'name', title: '成员', width: 140, tooltip: true },
-    { key: 'email', title: '邮箱', width: 220, ellipsis: true, tooltip: value => `邮箱：${value}` },
-    { key: 'role', title: '角色', width: 120, tooltip: true },
-    { key: 'amount', title: '额度', width: 120, align: 'right', tooltip: value => `额度：¥${Number(value).toLocaleString()}` },
+    { key: 'name', title: '成员', width: 110, tooltip: true },
+    { key: 'email', title: '邮箱', width: 170, ellipsis: true, tooltip: value => `邮箱：${value}` },
+    { key: 'role', title: '角色', width: 90, tooltip: true },
+    { key: 'amount', title: '额度', width: 100, align: 'right', tooltip: value => `额度：¥${Number(value).toLocaleString()}` },
 ]
 
 const sortColumns = [
-    { key: 'name', title: '成员', width: 180, sortable: true },
-    { key: 'amount', title: '额度', width: 140, align: 'right', sortable: true, formatter: value => `¥${Number(value).toLocaleString()}` },
-    { key: 'time', title: '加入时间', width: 160, sortable: true },
+    { key: 'name', title: '成员', width: 130, sortable: true },
+    { key: 'amount', title: '额度', width: 110, align: 'right', sortable: true, formatter: value => `¥${Number(value).toLocaleString()}` },
+    { key: 'time', title: '加入时间', width: 120, sortable: true },
 ]
 
+// 列宽总和略大于文档内容区，固定列保持紧凑宽度并触发横向滚动
 const wideColumns = [
-    { key: 'id', title: 'ID', width: 72, fixed: 'left', align: 'center' },
-    { key: 'name', title: '成员', width: 140 },
-    { key: 'email', title: '邮箱', width: 220 },
-    { key: 'role', title: '角色', width: 110 },
-    { key: 'time', title: '加入时间', width: 160 },
-    { key: 'status', title: '状态', width: 100, fixed: 'right' },
-    { key: 'actions', title: '操作', width: 96, fixed: 'right', align: 'right' },
+    { key: 'id', title: 'ID', width: 48, fixed: 'left', align: 'center' },
+    { key: 'name', title: '成员', width: 120 },
+    { key: 'email', title: '邮箱', width: 320 },
+    { key: 'role', title: '角色', width: 90 },
+    { key: 'time', title: '加入时间', width: 120 },
+    { key: 'status', title: '状态', width: 72, fixed: 'right' },
+    { key: 'actions', title: '操作', width: 80, fixed: 'right', align: 'right' },
 ]
 
 const sort = ref(null)
@@ -168,6 +171,7 @@ const propsRows = [
     { name: 'maxHeight', type: 'number | string', default: '—', desc: '内容视口最大高度，数字按 px 处理' },
     { name: 'tableLayout', type: 'auto | fixed', default: 'auto', desc: 'fixed 时列宽更可控，ellipsis 更稳定；存在固定列时自动使用 fixed' },
     { name: 'selectable', type: 'boolean', default: 'false', desc: '显示行选择列' },
+    { name: 'rowClickable', type: 'boolean', default: 'false', desc: '行可点击：增加 Tab 焦点，Enter / Space 触发 row-click' },
     { name: 'selectedKeys', type: 'Array', default: '—', desc: 'v-model:selectedKeys；不传时组件内部维护' },
     { name: 'selectableRow', type: 'Function', default: '—', desc: '(row, index) => boolean，返回 false 时该行不可选' },
     { name: 'sort', type: 'Object', default: '—', desc: "v-model:sort，形如 { key, order }；order 为 asc、desc 或 null" },
@@ -215,5 +219,10 @@ const slotRows = [
 .doc_table_demo {
     display: grid;
     gap: 14px;
+}
+
+/* 固定列示例收窄容器，让横向滚动和右侧固定列更直观 */
+.doc_table_fixed {
+    max-width: 680px;
 }
 </style>

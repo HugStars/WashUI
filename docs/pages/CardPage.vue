@@ -6,10 +6,10 @@
             </AppCard>
         </DemoBlock>
 
-        <DemoBlock title="标题、额外区与页脚" description="title、extra、footer 三个插槽可以独立使用。">
+        <DemoBlock title="标题、操作区与页脚" description="title、actions、footer 三个插槽可以独立使用。">
             <AppCard title="今日数据">
-                <template #extra>
-                    <AppChip active>全部</AppChip>
+                <template #actions>
+                    <AppChip selected>全部</AppChip>
                 </template>
                 <div class="doc_grid">
                     <AppStat label="请求数" value="12.3k" />
@@ -55,7 +55,7 @@ const propsRows = [
 const slotRows = [
     { name: 'default', type: '—', desc: '卡片正文' },
     { name: 'title', type: '—', desc: '自定义标题内容' },
-    { name: 'extra', type: '—', desc: '标题右侧额外内容' },
+    { name: 'actions', type: '—', desc: '标题右侧操作区' },
     { name: 'footer', type: '—', desc: '页脚内容' },
 ]
 </script>

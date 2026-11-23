@@ -47,6 +47,8 @@ const quickOptions = [
 const propsRows = [
     { name: 'modelValue', type: 'string', default: "''", desc: '日期时间字符串，格式 YYYY-MM-DDTHH:mm' },
     { name: 'label', type: 'string', default: "''", desc: '字段标签' },
+    { name: 'placeholder', type: 'string', default: "'请选择'", desc: '未选择时的占位文案' },
+    { name: 'ariaLabel', type: 'string', default: "'日期时间选择'", desc: '没有 label 时的无障碍名称' },
     { name: 'hint / error', type: 'string', default: "''", desc: '提示与错误；错误优先' },
     { name: 'size', type: 'sm | md', default: 'sm', desc: '控件尺寸' },
     { name: 'min / max', type: 'string', default: "''", desc: '可选范围，格式 YYYY-MM-DDTHH:mm' },

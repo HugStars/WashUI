@@ -19,8 +19,8 @@
 
         <DemoBlock title="配合 AppPopover" description="触发元素由业务层决定，面板负责选项、选中态与空状态。" :code="popoverCode">
             <AppPopover placement="bottom" :width="240" :padding="6" role="listbox" aria-label="选择环境">
-                <template #trigger="{ open }">
-                    <AppButton variant="line" :aria-expanded="open">选择环境</AppButton>
+                <template #trigger="{ triggerProps }">
+                    <AppButton variant="line" v-bind="triggerProps">选择环境</AppButton>
                 </template>
                 <template #default="{ close }">
                     <AppSelectPanel :options="basicOptions" :model-value="popoverValue"
@@ -175,6 +175,7 @@ const propsRows = [
     { name: 'checkIcon', type: 'boolean | string', default: 'true', desc: '选中标记：true 显示 ✓，false 关闭，字符串按字符或图标名渲染' },
     { name: 'checkPosition', type: 'before | after', default: 'after', desc: '选中标记在标签前或后' },
     { name: 'iconComponent', type: 'Component', default: 'AppIcon', desc: '选项图标与 checkIcon 图标名所用的组件，默认内置 AppIcon，可覆盖' },
+    { name: 'autofocus', type: 'boolean', default: 'false', desc: '挂载后聚焦选中项或第一项；下拉面板使用，常驻侧栏不要开启' },
 ]
 
 const eventRows = [
@@ -205,8 +206,8 @@ const groups = [
 ]`
 
 const popoverCode = `<AppPopover placement="bottom" :width="240" :padding="6" role="listbox" aria-label="选择环境">
-    <template #trigger="{ open }">
-        <AppButton variant="line" :aria-expanded="open">选择环境</AppButton>
+    <template #trigger="{ triggerProps }">
+        <AppButton variant="line" v-bind="triggerProps">选择环境</AppButton>
     </template>
     <template #default="{ close }">
         <AppSelectPanel :options="options" :model-value="value" @select="item => pick(item, close)" />

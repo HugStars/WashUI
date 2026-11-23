@@ -15,14 +15,12 @@
                 <AppTabs v-model="MobileView" class="pg_mobile_tabs" variant="group" size="sm" :items="MobileTabs" />
 
                 <div class="pg_actions">
-                    <AppChip :active="autoRun" size="sm" title="自动运行开关"
+                    <AppChip :selected="autoRun" size="sm" title="自动运行开关"
                         @click="autoRun = !autoRun">自动运行</AppChip>
                     <AppIconButton name="refresh" label="重置" @click.stop="Reset" />
                     <AppIconButton name="trash" label="清空" @click.stop="Clear" />
-                    <AppButton variant="icon" size="sm" class="pg_run_btn" title="运行" aria-label="运行"
-                        @click.stop="Run">
-                        <AppIcon name="play-fill" :size="14" />
-                    </AppButton>
+                    <AppIconButton name="play-fill" label="运行" size="sm" class="pg_run_btn"
+                        @click.stop="Run" />
                 </div>
             </div>
         </div>
@@ -92,7 +90,7 @@ const LocalApi = Object.assign({}, ...Object.values(import.meta.glob('../api/*.j
 const DEFAULT_HTML = `<div class="pg_demo">
   <AppButton variant="primary" @click="count++">点击了 {{ count }} 次</AppButton>
   <AppButton variant="line">描边按钮</AppButton>
-  <AppChip active>标记</AppChip>
+  <AppChip selected>标记</AppChip>
   <AppIcon name="home" :size="24" />
 </div>`
 
@@ -141,8 +139,8 @@ const WorkspaceEl = ref(null)
 
 // section 实验场界面状态
 const MobileTabs = [
-    { name: 'code', label: '代码' },
-    { name: 'preview', label: '预览' }
+    { value: 'code', label: '代码' },
+    { value: 'preview', label: '预览' }
 ]
 const MobileView = ref('code')
 const ActiveFile = ref('html')
@@ -545,15 +543,15 @@ html.wa_playground_active .wa_loading.on {
     height: 26px;
 }
 
-.pg_run_btn.wa_btn_icon {
+.pg_run_btn.wa_icon_btn {
     width: 28px;
     height: 26px;
     color: var(--wa_color_on_highlight);
     background: var(--wa_color_highlight);
 }
 
-.pg_run_btn.wa_btn_icon:hover:not(:disabled),
-.pg_run_btn.wa_btn_icon:active:not(:disabled) {
+.pg_run_btn.wa_icon_btn:hover:not(:disabled),
+.pg_run_btn.wa_icon_btn:active:not(:disabled) {
     color: var(--wa_color_on_highlight);
     background: var(--wa_color_highlight);
     opacity: .88;

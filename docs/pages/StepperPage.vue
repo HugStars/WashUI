@@ -71,6 +71,10 @@ const rows = [
     { name: 'step', type: 'number', default: '1', desc: '每次加减的步长' },
     { name: 'precision', type: 'number', default: 'null', desc: '显示小数位；不传时按 step 推导' },
     { name: 'size', type: 'sm | md', default: 'sm', desc: '控件尺寸' },
+    { name: 'label', type: 'string', default: "''", desc: '字段标签' },
+    { name: 'hint', type: 'string', default: "''", desc: '提示文案' },
+    { name: 'error', type: 'string', default: "''", desc: '错误文案；优先级高于 rule' },
+    { name: 'rule', type: 'object | array', default: 'null', desc: '校验规则，与 AppInput 一致' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: '禁用整组控件' },
     { name: 'ariaLabel', type: 'string', default: '步进器', desc: '控件的无障碍名称' },
 ]

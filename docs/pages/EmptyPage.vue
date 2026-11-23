@@ -31,6 +31,8 @@ import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const propsRows = [
     { name: 'text', type: 'string', default: '暂无数据', desc: '默认文案' },
+    { name: 'compact', type: 'boolean', default: 'false', desc: '紧凑高度，适合弹窗/小容器' },
+    { name: 'minHeight', type: 'number | string', default: "''", desc: '自定义最小高度，数字按 px 处理' },
 ]
 
 const slotRows = [

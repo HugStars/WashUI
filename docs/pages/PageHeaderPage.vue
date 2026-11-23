@@ -83,7 +83,7 @@ const baseCode = `<PageHeader :title="route.meta.title">
     </template>
 </PageHeader>`
 
-const layoutCode = `<AppShell :nav="nav" :active="route.name" @navigate="go">
+const layoutCode = `<AppShell :items="nav" :active="route.name" @navigate="go">
     <PageHeader :title="title" />
 
     <RouterView v-slot="{ Component }">

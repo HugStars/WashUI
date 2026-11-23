@@ -52,7 +52,7 @@ app.use(router)
 router.isReady().then(() => app.mount('#app'))`
 
 const appCode = `<template>
-    <AppShell :nav="nav" :active="route.name" @navigate="go">
+    <AppShell :items="nav" :active="route.name" @navigate="go">
         <PageHeader :title="route.meta.title || '首页'" />
         <RouterView v-slot="{ Component }">
             <PageTransition>
@@ -68,12 +68,12 @@ import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 const nav = [
-    { name: 'home', label: '首页', icon: 'home' },
-    { name: 'list', label: '列表', icon: 'list' },
+    { value: 'home', label: '首页', icon: 'home' },
+    { value: 'list', label: '列表', icon: 'list' },
 ]
 
 function go(item) {
-    if (route.name !== item.name) router.navigate({ name: item.name })
+    if (route.name !== item.value) router.navigate({ name: item.value })
 }
 <\/script>`
 

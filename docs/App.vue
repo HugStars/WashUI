@@ -1,5 +1,5 @@
 <template>
-    <AppShell :nav="nav" :active="active" @navigate="go" auto-hide-nav>
+    <AppShell :items="nav" :active="active" @navigate="go" auto-hide-nav>
         <PageHeader>
             <span>{{ title }}</span>
             <code v-if="currentName" class="doc_header_name">{{ currentName }}</code>
@@ -74,7 +74,7 @@ const entry = {
 }
 
 function go(item) {
-    const path = entry[item.name]
+    const path = entry[item.value]
     if (path && route.path !== path) router.navigate(path)
 }
 </script>
@@ -110,8 +110,8 @@ function go(item) {
     display: inline-grid;
     place-items: center;
     flex: none;
-    width: 30px;
-    height: 30px;
+    width: var(--wa_size_icon_btn_sm);
+    height: var(--wa_size_icon_btn_sm);
     text-decoration: none;
     border: 1px solid var(--wa_color_line);
     border-radius: var(--wa_radius_control);

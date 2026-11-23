@@ -59,6 +59,19 @@ pnpm dev
 | `pnpm version:ui patch` | 递增 `wash-ui` 版本，也可用 `minor` / `major` |
 | `pnpm publish:ui`       | 构建并发布 `wash-ui` 到公共 npm               |
 
+## 0.5.0 API 变更
+
+0.5.0 按 `docs/design/api-conventions.md` 做了 breaking 调整，不保留旧别名：
+
+-   选项统一 `value`：`AppTabs`、`AppShell`、`AppNavMenu`、`AppDeskShell`
+-   `AppChip.active` → `selected`
+-   `AppNumber` → `AppAnimatedNumber`
+-   `AppCard` 的 `extra` 插槽 → `actions`
+-   `AppCheck` / `AppRadio` 的 `size` → `checkSize`
+-   `AppPagination` 删除 `page-size-change`，统一 `change({ page, pageSize })`
+-   `AppPopover` / `AppCheckMenu` 的 trigger 使用 `triggerProps`
+-   `AppPinInput.error` 支持字符串
+
 ## 设计理念
 
 1. **变量先行**：颜色、圆角、间距、阴影、层级、动画时长都来自 CSS 变量，组件不写死主题色或秒数；换主题、调节奏只改一处。

@@ -35,14 +35,14 @@ import { computed, ref } from 'vue'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
 const tabs = [
-    { name: 'overview', label: '概览', text: '页面操作栏用于承载当前页面的主要操作或子级导航。' },
-    { name: 'usage', label: '使用', text: '通过默认插槽放入任意内容，例如透明 AppTabs、按钮组或筛选器。' },
-    { name: 'examples', label: '示例', text: '移动端会移动到顶部标题栏下方，并复用标题栏的磨砂背景。' },
-    { name: 'api', label: 'API', text: '只有一个默认插槽，不引入额外状态。' },
+    { value: 'overview', label: '概览', text: '页面操作栏用于承载当前页面的主要操作或子级导航。' },
+    { value: 'usage', label: '使用', text: '通过默认插槽放入任意内容，例如透明 AppTabs、按钮组或筛选器。' },
+    { value: 'examples', label: '示例', text: '移动端会移动到顶部标题栏下方，并复用标题栏的磨砂背景。' },
+    { value: 'api', label: 'API', text: '只有一个默认插槽，不引入额外状态。' },
 ]
 
 const tab = ref('overview')
-const current = computed(() => tabs.find(item => item.name === tab.value))
+const current = computed(() => tabs.find(item => item.value === tab.value))
 
 const baseCode = `<PageBar bleed>
     <AppTabs v-model="tab" transparent :items="tabs" />

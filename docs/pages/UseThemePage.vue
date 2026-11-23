@@ -8,8 +8,8 @@
                 <AppButton :variant="mode === 'auto' ? 'primary' : 'line'" @click="setTheme('auto')">跟随系统</AppButton>
             </div>
             <div class="doc_row doc_gap">
-                <span class="wa_tag">mode: {{ mode }}</span>
-                <span class="wa_tag">theme: {{ theme }}</span>
+                <span class="wa_tag_static">mode: {{ mode }}</span>
+                <span class="wa_tag_static">theme: {{ theme }}</span>
             </div>
         </DemoBlock>
         <ApiTable title="返回" kind="values" :rows="themeRows" />

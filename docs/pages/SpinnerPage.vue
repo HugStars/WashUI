@@ -36,5 +36,6 @@ import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 const propsRows = [
     { name: 'size', type: 'number | string', default: '20', desc: '宽高，数字自动补 px' },
     { name: 'dot', type: 'boolean', default: 'false', desc: '直接渲染呼吸绿点，不显示旋转加载圈' },
+    { name: 'label', type: 'string', default: '旋转圈为「加载中」，dot 为空', desc: '无障碍名称；为空时按装饰性处理，不进入读屏' },
 ]
 </script>

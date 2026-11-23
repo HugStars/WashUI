@@ -25,11 +25,13 @@
             <AppCheckMenu v-model="dialog" mode="dialog" title="选择通知方式" :options="options" />
         </DemoBlock>
 
-        <DemoBlock title="自定义触发器" description="trigger 插槽可以替换按钮；点击由容器统一处理，无需在插槽内再次调用 toggle。">
+        <DemoBlock title="自定义触发器" description="trigger 插槽可以替换按钮；把 triggerProps 绑定到可聚焦元素即可，无需手动调用 toggle。">
             <div class="doc_check_menu_row">
                 <AppCheckMenu v-model="custom" :options="options">
-                    <template #trigger>
-                        <AppChip :active="custom.length > 0">筛选{{ custom.length ? `（${custom.length}）` : '' }}</AppChip>
+                    <template #trigger="{ triggerProps }">
+                        <AppChip v-bind="triggerProps" :selected="custom.length > 0">
+                            筛选{{ custom.length ? `（${custom.length}）` : '' }}
+                        </AppChip>
                     </template>
                 </AppCheckMenu>
             </div>
@@ -93,7 +95,7 @@ const propsRows = [
     { name: 'mode', type: 'popover | dialog', default: 'popover', desc: '浮层菜单或弹框选择' },
     { name: 'align', type: 'left | center | right', default: 'center', desc: 'popover 与触发器的对齐方式' },
     { name: 'width', type: 'number | string', default: '240', desc: 'popover 模式下的面板宽度' },
-    { name: 'size', type: 'number | string', default: '18', desc: '复选框尺寸，数字按 px 处理；边框与勾线粗细按比例缩放' },
+    { name: 'checkSize', type: 'number | string', default: '18', desc: '复选框尺寸，数字按 px 处理；边框与勾线粗细按比例缩放' },
     { name: 'title', type: 'string', default: '选择', desc: 'dialog 模式下的弹框标题' },
     { name: 'placeholder', type: 'string', default: '请选择', desc: '未选择时触发器显示的文案' },
     { name: 'emptyText', type: 'string', default: '暂无选项', desc: '没有可选项时的提示文案' },
@@ -107,7 +109,7 @@ const eventRows = [
 ]
 
 const slotRows = [
-    { name: 'trigger', type: '{ open, toggle }', desc: '自定义触发器，open 为当前展开状态' },
+    { name: 'trigger', type: '{ open, toggle, triggerProps }', desc: '自定义触发器；把 triggerProps 绑定到可聚焦元素' },
 ]
 
 const baseCode = `<AppCheckMenu v-model="values" :options="options" />

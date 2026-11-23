@@ -72,7 +72,8 @@
         <ApiTable title="事件" kind="events" :rows="windowEventRows" />
 
         <template #api>
-            <ApiTable :rows="configRows" />
+            <ApiTable :rows="propsRows" />
+            <ApiTable title="config" :rows="configRows" />
             <ApiTable title="事件" kind="events" :rows="eventRows" />
             <ApiTable title="插槽" kind="slots" :rows="slotRows" />
         </template>
@@ -173,6 +174,15 @@ function OnNavigate(item) {
 function Notify(text) {
     toast(`${text}（示例）`)
 }
+
+const propsRows = [
+    { name: 'config', type: 'object', default: '{}', desc: '壳层配置，字段见下方 config 表' },
+    { name: 'items', type: 'Array<{ label, value, icon?, badge? }>', default: '[]', desc: '平铺导航项' },
+    { name: 'groups', type: 'Array<{ label?, items }>', default: '[]', desc: '分组导航项，优先级高于 items' },
+    { name: 'active', type: 'string | number | symbol', default: "''", desc: '当前项 value，支持 v-model:active' },
+    { name: 'linkComponent', type: 'string | Component', default: "'a'", desc: '导航链接组件；传 RouterLink 时使用 to' },
+    { name: 'ariaLabel', type: 'string', default: "'桌面应用'", desc: '壳层无障碍名称' },
+]
 
 const configRows = [
     { name: 'dragRegion', type: 'boolean', default: 'false', desc: 'Title 和 Header 是否添加 data-tauri-drag-region' },

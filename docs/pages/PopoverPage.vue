@@ -2,8 +2,8 @@
     <DocPage category="反馈" name="AppPopover" title="弹出框" description="点击触发、浮层展示内容，支持方位、宽度、遮罩外关闭与 Esc 关闭。">
         <DemoBlock title="基础" description="默认点击触发，点击浮层外部或按 Esc 关闭。">
             <AppPopover placement="bottom" :width="240">
-                <template #trigger="{ open }">
-                    <AppButton variant="line" :aria-expanded="open">打开弹出框</AppButton>
+                <template #trigger="{ triggerProps }">
+                    <AppButton variant="line" v-bind="triggerProps">打开弹出框</AppButton>
                 </template>
                 <template #default="{ close }">
                     <div class="doc_popover_list">
@@ -21,8 +21,8 @@
             <div class="doc_popover_grid">
                 <template v-for="cell in placementCells" :key="cell.key">
                     <AppPopover v-if="cell.placement" :placement="cell.placement" :width="200">
-                        <template #trigger="{ open }">
-                            <AppButton class="doc_popover_btn" size="sm" :aria-expanded="open">
+                        <template #trigger="{ triggerProps }">
+                            <AppButton class="doc_popover_btn" size="sm" v-bind="triggerProps">
                                 {{ cell.placement }}
                             </AppButton>
                         </template>
@@ -87,7 +87,7 @@ const eventRows = [
 ]
 
 const slotRows = [
-    { name: 'trigger', type: '{ open, toggle }', desc: '触发元素' },
+    { name: 'trigger', type: '{ open, toggle, triggerProps }', desc: '触发元素；把 triggerProps 绑定到可聚焦元素' },
     { name: 'default', type: '{ close }', desc: '浮层内容' },
 ]
 </script>

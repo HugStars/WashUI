@@ -9,16 +9,12 @@
             </div>
         </DemoBlock>
 
-        <DemoBlock title="尺寸与图标" description="sm 使用紧凑尺寸；icon 用于纯图标操作。">
+        <DemoBlock title="尺寸与图标" description="sm 使用紧凑尺寸；纯图标操作请使用 AppIconButton。">
             <div class="doc_row">
                 <AppButton variant="primary" size="sm">小号</AppButton>
                 <AppButton variant="line" size="md">中号描边</AppButton>
-                <AppButton variant="icon" aria-label="刷新">
-                    <AppIcon name="refresh" :size="17" />
-                </AppButton>
-                <AppButton variant="icon" size="sm" aria-label="查看">
-                    <AppIcon name="chevron" :size="15" />
-                </AppButton>
+                <AppIconButton name="refresh" label="刷新" size="md" />
+                <AppIconButton name="chevron" label="查看" size="sm" />
             </div>
         </DemoBlock>
 
@@ -27,9 +23,6 @@
                 <div class="doc_row">
                     <AppButton frosted>磨砂按钮</AppButton>
                     <AppButton frosted variant="line">磨砂描边</AppButton>
-                    <AppButton frosted variant="icon" aria-label="刷新">
-                        <AppIcon name="refresh" :size="17" />
-                    </AppButton>
                 </div>
             </div>
         </DemoBlock>
@@ -70,7 +63,7 @@ function save() {
 onUnmounted(() => clearTimeout(timer))
 
 const propsRows = [
-    { name: 'variant', type: 'default | primary | line | danger | icon', default: 'default', desc: '视觉类型' },
+    { name: 'variant', type: 'default | primary | line | danger', default: 'default', desc: '视觉类型' },
     { name: 'size', type: 'md | sm', default: 'sm', desc: '尺寸' },
     { name: 'type', type: 'button | submit | reset', default: 'button', desc: '原生 button type' },
     { name: 'loading', type: 'boolean', default: 'false', desc: '加载中，自动禁用' },

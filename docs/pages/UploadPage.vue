@@ -48,7 +48,7 @@ const propsRows = [
 const eventRows = [
     { name: 'update:modelValue', type: 'File[]', desc: '文件列表变化' },
     { name: 'change', type: 'File[]', desc: '添加或移除后触发' },
-    { name: 'reject', type: '{ file, reason }', desc: '校验失败，reason 为 type / size / count' },
+    { name: 'reject', type: '{ file, reason }', desc: '校验失败，reason 为 type / size / count / duplicate' },
     { name: 'remove', type: 'file, index', desc: '移除文件' },
 ]
 </script>
