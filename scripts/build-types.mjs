@@ -69,12 +69,16 @@ function docType(comment) {
 function findProps(ast, comments, source) {
     let node = null
     let emits = []
+    let modelType = ''
 
     function walk(current) {
         if (!current || typeof current !== 'object') return
         if (current.type === 'CallExpression' && current.callee?.name === 'defineProps') {
             const first = current.arguments?.[0]
             if (first?.type === 'ObjectExpression') node = first
+        }
+        if (current.type === 'CallExpression' && current.callee?.name === 'defineModel') {
+            modelType = propOptions(current.arguments?.[0]).type
         }
         if (current.type === 'CallExpression' && current.callee?.name === 'defineEmits') {
             const first = current.arguments?.[0]
@@ -91,10 +95,15 @@ function findProps(ast, comments, source) {
     }
 
     walk(ast)
-    if (!node) return null
+    if (!node && !modelType) return null
 
     const props = []
-    for (const property of node.properties) {
+    if (modelType) {
+        props.push({ name: 'modelValue', type: modelType, optional: true })
+        emits = ['update:modelValue', ...emits]
+    }
+
+    for (const property of node?.properties || []) {
         if (property.type !== 'Property') continue
         const name = property.key.name ?? property.key.value
         if (!name) continue
