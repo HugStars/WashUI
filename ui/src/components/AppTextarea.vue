@@ -103,7 +103,7 @@ const props = defineProps({
     readonly: Boolean,
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'change'])
 
 const TextareaId = useId()
 const TextareaEl = ref(null)
@@ -147,6 +147,7 @@ onUnmounted(() => clearTimeout(MessageTimer))
 function HandleInput(event) {
     const value = event.target.value
     emit('update:modelValue', value)
+    emit('change', value)
     ValidateInput(value)
 }
 

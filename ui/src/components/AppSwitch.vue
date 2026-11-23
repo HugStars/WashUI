@@ -1,19 +1,25 @@
 <template>
-    <div class="wa_switch_row" :class="{ 'wa_switch_between': align === 'between', 'wa_switch_md': size === 'md' }">
-        <label v-if="HasLabel" :id="`${SwitchId}-label`" class="wa_switch_label" :for="SwitchId">
-            <slot>{{ label }}</slot>
-        </label>
+    <div class="wa_field">
+        <div class="wa_switch_row" :class="{ 'wa_switch_between': align === 'between', 'wa_switch_md': size === 'md' }">
+            <label v-if="HasLabel" :id="`${SwitchId}-label`" class="wa_switch_label" :for="SwitchId">
+                <slot>{{ label }}</slot>
+            </label>
 
-        <button :id="SwitchId" type="button" class="wa_switch" :class="{ on: modelValue }" role="switch"
-            :aria-checked="modelValue" :aria-labelledby="HasLabel ? `${SwitchId}-label` : undefined"
-            :aria-label="HasLabel ? undefined : ariaLabel" :disabled="disabled" @click="Toggle">
-            <span class="wa_switch_thumb" aria-hidden="true"></span>
-        </button>
+            <button :id="SwitchId" type="button" class="wa_switch" :class="{ on: modelValue }" role="switch"
+                :aria-checked="modelValue" :aria-labelledby="HasLabel ? `${SwitchId}-label` : undefined"
+                :aria-label="HasLabel ? undefined : ariaLabel" :disabled="disabled" @click="Toggle">
+                <span class="wa_switch_thumb" aria-hidden="true"></span>
+            </button>
+        </div>
+
+        <p v-if="DisplayError" class="wa_field_error">{{ DisplayError }}</p>
+        <p v-else-if="hint" class="wa_field_hint">{{ hint }}</p>
     </div>
 </template>
 
 <script setup>
 import { computed, useId, useSlots } from 'vue'
+import { useValidation } from '../composables/useValidation.js'
 
 const props = defineProps({
     modelValue: Boolean,
@@ -38,10 +44,27 @@ const props = defineProps({
         type: String,
         default: 'sm',
     },
+    hint: {
+        type: String,
+        default: '',
+    },
+    error: {
+        type: String,
+        default: '',
+    },
+    rule: {
+        type: [Object, Array],
+        default: null,
+    },
     disabled: Boolean,
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
+const { DisplayError, OnChange: ValidateChange } = useValidation(
+    props,
+    () => props.modelValue,
+    { defaultTrigger: 'change' }
+)
 
 const slots = useSlots()
 const SwitchId = useId()
@@ -53,6 +76,7 @@ function Toggle() {
     const next = !props.modelValue
     emit('update:modelValue', next)
     emit('change', next)
+    ValidateChange(next)
 }
 </script>
 

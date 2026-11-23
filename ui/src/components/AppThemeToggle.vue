@@ -1,14 +1,12 @@
 <template>
-    <AppButton class="wa_theme_toggle" variant="icon" :size="size" :title="label" :aria-label="label" @click="toggle">
-        <AppIcon :name="theme === 'dark' ? 'sun' : 'moon'" :size="iconSize" />
-    </AppButton>
+    <AppIconButton class="wa_theme_toggle" :name="theme === 'dark' ? 'sun' : 'moon'" :icon-size="iconSize"
+        :size="size" :label="label" @click="toggle" />
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useTheme } from '../core/theme.js'
-import AppButton from './AppButton.vue'
-import AppIcon from './AppIcon.vue'
+import AppIconButton from './AppIconButton.vue'
 
 const props = defineProps({
     /**
@@ -32,12 +30,12 @@ function toggle() {
 </script>
 
 <style>
-.wa_theme_toggle {
+.wa_icon_btn.wa_theme_toggle {
     border: 1px solid var(--wa_color_line);
     background: var(--wa_color_surface);
 }
 
-.wa_theme_toggle:hover {
+.wa_icon_btn.wa_theme_toggle:hover {
     border-color: var(--wa_color_line_strong);
     background: var(--wa_color_hover);
 }

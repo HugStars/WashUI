@@ -6,13 +6,12 @@
 
         <AppPopover placement="bottom" match-trigger :role="multiple ? 'dialog' : 'listbox'" :aria-label="ariaLabel"
             :padding="PopoverPadding" :disabled="disabled" @update:open="OnOpenChange">
-            <template #trigger="{ open, toggle }">
-                <button :id="SelectId" v-bind="$attrs" type="button" class="wa_select_trigger"
+            <template #trigger="{ open, toggle, triggerProps }">
+                <button :id="SelectId" v-bind="{ ...$attrs, ...triggerProps }" type="button" class="wa_select_trigger"
                     :class="{ on: DisplayError, off: disabled, wa_select_sm: size === 'sm', wa_frosted: frosted }"
                     :disabled="disabled" :aria-invalid="DisplayError ? 'true' : undefined"
-                    :aria-describedby="DescribedBy" :aria-haspopup="multiple ? 'dialog' : 'listbox'"
-                    :aria-expanded="open" @keydown.down.prevent="toggle" @keydown.up.prevent="toggle"
-                    @blur="HandleBlur">
+                    :aria-describedby="DescribedBy" @keydown.down.prevent="toggle"
+                    @keydown.up.prevent="toggle" @blur="HandleBlur">
                     <span class="wa_select_value"
                         :class="{ wa_select_placeholder: multiple ? !Values.length : !Selected }">{{ Shown }}</span>
                     <AppIcon class="wa_select_arrow" name="chevron" :size="15" />
@@ -21,7 +20,7 @@
 
             <template #default="{ close }">
                 <AppCheckPanel v-if="multiple" :groups="groups" :options="options" :model-value="Values"
-                    :size="PanelSize" :disabled="disabled" :empty-text="emptyText"
+                    :check-size="PanelSize" :disabled="disabled" autofocus :empty-text="emptyText"
                     @update:model-value="UpdateMultiple" />
                 <AppSelectPanel v-else :groups="groups" :options="options" :model-value="modelValue" :size="size"
                     :check-icon="checkIcon" :check-position="checkPosition" :icon-component="iconComponent"

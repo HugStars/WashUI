@@ -1,20 +1,30 @@
 <template>
-    <div class="wa_choice_group" :class="[
-        `wa_choice_group_${direction}`,
-        {
-            'wa_choice_group_right': direction === 'vertical' && align === 'right',
-            'wa_choice_group_between': direction === 'vertical' && IsBetween,
-        },
-    ]" role="group" :aria-label="ariaLabel">
-        <slot />
+    <div class="wa_field">
+        <span v-if="label || $slots.label" class="wa_field_label">
+            <slot name="label">{{ label }}</slot>
+        </span>
 
-        <AppCheck v-for="item in options" :key="item.value" :value="item.value" :label="item.label"
-            :disabled="item.disabled" />
+        <div class="wa_choice_group" :class="[
+            `wa_choice_group_${direction}`,
+            {
+                'wa_choice_group_right': direction === 'vertical' && align === 'right',
+                'wa_choice_group_between': direction === 'vertical' && IsBetween,
+            },
+        ]" role="group" :aria-label="label || ariaLabel">
+            <slot />
+
+            <AppCheck v-for="item in options" :key="item.value" :value="item.value" :label="item.label"
+                :disabled="item.disabled" />
+        </div>
+
+        <p v-if="DisplayError" class="wa_field_error">{{ DisplayError }}</p>
+        <p v-else-if="hint" class="wa_field_hint">{{ hint }}</p>
     </div>
 </template>
 
 <script setup>
 import { createChoiceGroup, provideChoiceGroup } from '../composables/useChoiceGroup.js'
+import { useValidation } from '../composables/useValidation.js'
 import AppCheck from './AppCheck.vue'
 
 const props = defineProps({
@@ -52,9 +62,25 @@ const props = defineProps({
         default: 'left',
     },
     /** 复选框尺寸，数字按 px 处理 */
-    size: {
+    checkSize: {
         type: [Number, String],
         default: 20,
+    },
+    label: {
+        type: String,
+        default: '',
+    },
+    hint: {
+        type: String,
+        default: '',
+    },
+    error: {
+        type: String,
+        default: '',
+    },
+    rule: {
+        type: [Object, Array],
+        default: null,
     },
     ariaLabel: {
         type: String,
@@ -64,6 +90,14 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
-const { group, IsBetween } = createChoiceGroup(props, emit, true)
+const { DisplayError, OnChange: ValidateChange } = useValidation(
+    props,
+    () => props.modelValue,
+    { defaultTrigger: 'change' }
+)
+const { group, IsBetween } = createChoiceGroup(props, (event, value) => {
+    emit(event, value)
+    if (event === 'change') ValidateChange(value)
+}, true)
 provideChoiceGroup(group)
 </script>

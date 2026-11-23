@@ -1,6 +1,6 @@
 <template>
-    <span ref="TriggerEl" class="wa_popover_trigger" @click="OnTriggerClick">
-        <slot name="trigger" :open="Visible" :toggle="Toggle" />
+    <span ref="TriggerEl" class="wa_popover_trigger">
+        <slot name="trigger" :open="Visible" :toggle="Toggle" :trigger-props="TriggerProps" />
     </span>
 
     <Teleport to="body">
@@ -310,6 +310,17 @@ function OnTriggerClick() {
     if (props.disabled) return
     Toggle()
 }
+
+const TriggerProps = computed(() => ({
+    'aria-expanded': Visible.value,
+    'aria-haspopup': props.role === 'listbox' ? 'listbox' : 'dialog',
+    onClick: OnTriggerClick,
+    onKeydown: event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return
+        event.preventDefault()
+        OnTriggerClick()
+    },
+}))
 
 function OnAfterLeave() {
     Unlisten()

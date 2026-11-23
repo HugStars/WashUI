@@ -6,10 +6,10 @@
 
         <AppPopover v-model:open="PanelOpen" placement="bottom-left" :width="268" :gap="6" :padding="0"
             role="dialog" :aria-label="ariaLabel">
-            <template #trigger="{ open }">
-                <button :id="FieldId" type="button" class="wa_color_trigger"
+            <template #trigger="{ open, triggerProps }">
+                <button :id="FieldId" type="button" class="wa_color_trigger" v-bind="triggerProps"
                     :class="{ on: DisplayError, off: disabled || readonly, wa_color_sm: size === 'sm', open }"
-                    :disabled="disabled || readonly" :aria-haspopup="'dialog'" :aria-expanded="open"
+                    :disabled="disabled || readonly"
                     :aria-labelledby="label ? `${FieldId}-label` : undefined" :aria-label="label ? undefined : ariaLabel"
                     :aria-invalid="DisplayError ? 'true' : undefined">
                     <span class="wa_color_swatch" :class="{ empty: !DisplayColor }"
@@ -23,8 +23,10 @@
 
             <template #default>
                 <div class="wa_color_panel">
-                    <div ref="AreaEl" class="wa_color_area" :style="AreaStyle" @pointerdown="StartDrag"
-                        @pointermove="OnDrag" @pointerup="StopDrag" @pointercancel="StopDrag">
+                    <div ref="AreaEl" class="wa_color_area" :style="AreaStyle" tabindex="0" role="group"
+                        aria-label="颜色区域，方向键调整饱和度和明度" @keydown="OnAreaKeydown"
+                        @pointerdown="StartDrag" @pointermove="OnDrag" @pointerup="StopDrag"
+                        @pointercancel="StopDrag">
                         <span class="wa_color_area_thumb" :style="ThumbStyle"></span>
                     </div>
 
@@ -225,11 +227,23 @@ watch(() => props.format, value => {
     Mode.value = NormalizeMode(value)
 })
 
+let LastEmitted = null
+
 watch(() => props.modelValue, value => {
+    // ! 内部拖动会同步回写 v-model；再按 RGB 反推 HSV 会丢精度，
+    // ! 纯黑/纯白附近还会把色相和饱和度抹掉，表现为拖点闪动
+    if (value === LastEmitted) return
+
     const rgb = ParseColor(value)
     if (rgb) {
         Hsv.value = RgbToHsv(rgb)
         HasInteracted.value = true
+        return
+    }
+
+    if (!value) {
+        Hsv.value = { h: 0, s: 0, v: 0 }
+        HasInteracted.value = false
     }
 }, { immediate: true })
 
@@ -388,10 +402,30 @@ function FormatColor(rgb, mode) {
     return RgbToHex(rgb)
 }
 
-function EmitColor(rgb) {
-    Hsv.value = RgbToHsv(rgb)
+function OnAreaKeydown(event) {
+    const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']
+    if (!keys.includes(event.key) || props.disabled || props.readonly) return
+
+    event.preventDefault()
+
+    const step = event.shiftKey ? 0.05 : 0.01
+    const hsv = { ...Hsv.value }
+
+    if (event.key === 'ArrowLeft') hsv.s = Math.max(0, hsv.s - step)
+    else if (event.key === 'ArrowRight') hsv.s = Math.min(1, hsv.s + step)
+    else if (event.key === 'ArrowUp') hsv.v = Math.min(1, hsv.v + step)
+    else if (event.key === 'ArrowDown') hsv.v = Math.max(0, hsv.v - step)
+
+    Hsv.value = hsv
+    EmitColor(HsvToRgb(hsv.h, hsv.s, hsv.v), true)
+}
+
+function EmitColor(rgb, preserveHsv = false) {
+    // 色板拖到纯黑/纯白时，RGB 反推会丢失色相和饱和度；保留当前 HSV 才能让拖点停在原位置
+    if (!preserveHsv) Hsv.value = RgbToHsv(rgb)
     HasInteracted.value = true
     const value = FormatColor(rgb, Mode.value)
+    LastEmitted = value
     emit('update:modelValue', value)
     emit('change', value)
     ValidateInput(value)
@@ -406,7 +440,7 @@ function UpdateArea(event) {
     const y = Clamp((event.clientY - rect.top) / Math.max(1, rect.height), 0, 1)
 
     Hsv.value = { h: Hsv.value.h, s: x, v: 1 - y }
-    EmitColor(HsvToRgb(Hsv.value.h, x, 1 - y))
+    EmitColor(HsvToRgb(Hsv.value.h, x, 1 - y), true)
 }
 
 function StartDrag(event) {
@@ -430,7 +464,7 @@ function StopDrag() {
 function SetHue(event) {
     const hue = Number(event.target.value) || 0
     Hsv.value = { ...Hsv.value, h: hue }
-    EmitColor(HsvToRgb(hue, Hsv.value.s, Hsv.value.v))
+    EmitColor(HsvToRgb(hue, Hsv.value.s, Hsv.value.v), true)
 }
 
 function OnHexChange(event) {
@@ -563,6 +597,11 @@ function ChoosePreset(color) {
         linear-gradient(to right, #fff, transparent);
     cursor: crosshair;
     touch-action: none;
+}
+
+.wa_color_area:focus-visible {
+    outline: 2px solid var(--wa_color_accent);
+    outline-offset: 2px;
 }
 
 .wa_color_area_thumb {

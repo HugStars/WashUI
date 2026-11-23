@@ -85,6 +85,7 @@ const HasScrollbar = ref(false)
 let ScrollObserver = null
 let ScrollbarFrame = 0
 let FocusFrame = 0
+let AlignFrame = 0
 
 function OptionEls() {
     const el = PanelEl.value
@@ -163,13 +164,18 @@ onMounted(() => {
     nextTick(() => {
         UpdateScrollbar()
         nextTick(() => {
-            ScrollSelectedToCenter()
-            if (!props.autofocus) return
             // ! AppPopover 在 nextTick 里才把面板从 visibility:hidden 切到 visible；
-            // ! 这里等一帧再聚焦，否则浏览器会拒绝 focus，方向键会留在触发器上
+            // ! 这里等一帧再滚动/聚焦，否则拿到的高度为 0，选中项无法居中
             FocusFrame = requestAnimationFrame(() => {
                 FocusFrame = 0
-                if (PanelEl.value) FocusSelected()
+                ScrollSelectedToCenter()
+                if (props.autofocus) FocusSelected()
+
+                // 再等一帧，等定位和字体布局稳定后校正一次
+                AlignFrame = requestAnimationFrame(() => {
+                    AlignFrame = 0
+                    ScrollSelectedToCenter()
+                })
             })
         })
     })
@@ -188,6 +194,7 @@ onUnmounted(() => {
     window.removeEventListener('resize', ScheduleScrollbar)
     cancelAnimationFrame(ScrollbarFrame)
     cancelAnimationFrame(FocusFrame)
+    cancelAnimationFrame(AlignFrame)
 })
 
 watch([() => props.options, () => props.groups, () => props.modelValue, () => props.size], () => {
@@ -239,6 +246,7 @@ const checkRender = computed(() => {
     gap: var(--wa_select_gap);
     min-width: 0;
     max-height: min(320px, calc(100vh - 120px));
+    overflow-x: hidden;
     overflow-y: auto;
     /* warning 不要设置 overscroll-behavior: contain：面板没有滚动条时会拦截滚轮，页面滚不动 */
     /* note 内容滚到边界后允许继续滚动页面；AppPopover 会跟随页面滚动重新定位 */
@@ -366,7 +374,7 @@ const checkRender = computed(() => {
     flex: none;
 }
 
-.wa_select_option.on .wa_select_badge.wa_badge_neutral {
+.wa_select_option.on .wa_select_badge.wa_badge_default {
     --wa_badge_bg: var(--wa_color_on_highlight);
     --wa_badge_color: var(--wa_color_highlight);
 }

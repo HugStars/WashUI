@@ -6,10 +6,10 @@
 
         <AppPopover v-model:open="PanelOpen" placement="bottom-left" :width="PanelWidth" :gap="6" :padding="0"
             role="dialog" :aria-label="ariaLabel">
-            <template #trigger="{ open }">
-                <button :id="FieldId" type="button" class="wa_datetime"
+            <template #trigger="{ open, triggerProps }">
+                <button :id="FieldId" type="button" class="wa_datetime" v-bind="triggerProps"
                     :class="{ on: DisplayError, off: disabled || readonly, wa_datetime_sm: size === 'sm', open }"
-                    :disabled="disabled || readonly" :aria-haspopup="'dialog'" :aria-expanded="open"
+                    :disabled="disabled || readonly"
                     :aria-labelledby="label ? `${FieldId}-label` : undefined" :aria-label="label ? undefined : ariaLabel"
                     :aria-invalid="DisplayError ? 'true' : undefined">
                     <AppIcon :name="IconName" :size="15" class="wa_datetime_icon" aria-hidden="true" />
@@ -24,27 +24,55 @@
                 <div class="wa_dt_panel">
                     <div v-if="mode !== 'time'" class="wa_dt_calendar">
                         <div class="wa_dt_calendar_head">
-                            <button type="button" class="wa_dt_nav" aria-label="上个月" @click="MoveMonth(-1)">
+                            <button type="button" class="wa_dt_nav" aria-label="上一段" @click="MovePeriod(-1)">
                                 <AppIcon name="chevron-left" :size="15" />
                             </button>
-                            <span class="wa_dt_month">{{ MonthLabel }}</span>
-                            <button type="button" class="wa_dt_nav" aria-label="下个月" @click="MoveMonth(1)">
+                            <span class="wa_dt_month">{{ PeriodLabel }}</span>
+                            <button type="button" class="wa_dt_nav" aria-label="下一段" @click="MovePeriod(1)">
                                 <AppIcon name="chevron" :size="15" />
                             </button>
                         </div>
 
-                        <div class="wa_dt_weekdays" aria-hidden="true">
-                            <span v-for="day in Weekdays" :key="day">{{ day }}</span>
+                        <template v-if="PickerMode === 'day'">
+                            <div class="wa_dt_weekdays" aria-hidden="true">
+                                <span v-for="day in Weekdays" :key="day">{{ day }}</span>
+                            </div>
+
+                            <div class="wa_dt_days">
+                                <button v-for="item in CalendarDays" :key="item.key" type="button" class="wa_dt_day"
+                                    :class="{
+                                        on: item.selected,
+                                        muted: !item.current,
+                                        today: item.today,
+                                        in_range: item.inRange
+                                    }" :disabled="item.disabled" @click="ChooseDay(item)">
+                                    {{ item.day }}
+                                </button>
+                            </div>
+                        </template>
+
+                        <div v-else-if="PickerMode === 'month'" class="wa_dt_month_grid">
+                            <button v-for="item in MonthOptions" :key="item.value" type="button"
+                                class="wa_dt_period" :class="{ on: item.selected, in_range: item.inRange }"
+                                :disabled="item.disabled" @click="ChooseMonth(item)">
+                                {{ item.month }} 月
+                            </button>
                         </div>
 
-                        <div class="wa_dt_days">
-                            <button v-for="item in CalendarDays" :key="item.key" type="button" class="wa_dt_day"
-                                :class="{
-                                    on: item.selected,
-                                    muted: !item.current,
-                                    today: item.today
-                                }" :disabled="item.disabled" @click="ChooseDay(item)">
-                                {{ item.day }}
+                        <div v-else-if="PickerMode === 'year'" class="wa_dt_year_grid">
+                            <button v-for="item in YearOptions" :key="item.value" type="button"
+                                class="wa_dt_period" :class="{ on: item.selected, in_range: item.inRange }"
+                                :disabled="item.disabled" @click="ChooseYear(item)">
+                                {{ item.value }}
+                            </button>
+                        </div>
+
+                        <div v-else class="wa_dt_week_list">
+                            <button v-for="item in WeekOptions" :key="item.value" type="button" class="wa_dt_week"
+                                :class="{ on: item.selected, in_range: item.inRange }" :disabled="item.disabled"
+                                @click="ChooseWeek(item)">
+                                <span>{{ item.label }}</span>
+                                <small>{{ item.rangeLabel }}</small>
                             </button>
                         </div>
                     </div>
@@ -56,13 +84,15 @@
                                 <span>{{ padZero(DraftHour) }}</span>
                                 <AppIcon name="chevron" :size="12" class="wa_dt_select_arrow" />
                             </button>
-                            <div v-if="OpenTimeSelect === 'hour'" class="wa_dt_select_menu">
-                                <button v-for="hour in Hours" :key="hour" type="button" class="wa_dt_select_item"
-                                    :class="{ on: hour === DraftHour }" :disabled="IsHourDisabled(hour)"
-                                    @click="PickHour(hour)">
-                                    {{ padZero(hour) }}
-                                </button>
-                            </div>
+                            <Transition name="wa_dt_menu">
+                                <div v-if="OpenTimeSelect === 'hour'" ref="HourMenuEl" class="wa_dt_select_menu">
+                                    <button v-for="hour in Hours" :key="hour" type="button" class="wa_dt_select_item"
+                                        :class="{ on: hour === DraftHour }" :disabled="IsHourDisabled(hour)"
+                                        @click="PickHour(hour)">
+                                        {{ padZero(hour) }}
+                                    </button>
+                                </div>
+                            </Transition>
                         </div>
 
                         <span class="wa_dt_time_sep">:</span>
@@ -73,13 +103,15 @@
                                 <span>{{ padZero(DraftMinute) }}</span>
                                 <AppIcon name="chevron" :size="12" class="wa_dt_select_arrow" />
                             </button>
-                            <div v-if="OpenTimeSelect === 'minute'" class="wa_dt_select_menu">
-                                <button v-for="minute in Minutes" :key="minute" type="button" class="wa_dt_select_item"
-                                    :class="{ on: minute === DraftMinute }" :disabled="IsMinuteDisabled(minute)"
-                                    @click="PickMinute(minute)">
-                                    {{ padZero(minute) }}
-                                </button>
-                            </div>
+                            <Transition name="wa_dt_menu">
+                                <div v-if="OpenTimeSelect === 'minute'" ref="MinuteMenuEl" class="wa_dt_select_menu">
+                                    <button v-for="minute in Minutes" :key="minute" type="button"
+                                        class="wa_dt_select_item" :class="{ on: minute === DraftMinute }"
+                                        :disabled="IsMinuteDisabled(minute)" @click="PickMinute(minute)">
+                                        {{ padZero(minute) }}
+                                    </button>
+                                </div>
+                            </Transition>
                         </div>
                     </div>
 
@@ -110,7 +142,7 @@
 </template>
 
 <script setup>
-import { computed, onUnmounted, ref, useId, watch } from 'vue'
+import { computed, nextTick, onUnmounted, ref, useId, watch } from 'vue'
 import { useValidation } from '../composables/useValidation.js'
 import { formatDate, padZero } from '../utils/format.js'
 import AppButton from './AppButton.vue'
@@ -122,7 +154,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = defineProps({
     modelValue: {
-        type: [String, Number],
+        type: [String, Number, Array],
         default: '',
     },
     /**
@@ -133,6 +165,16 @@ const props = defineProps({
         type: String,
         default: 'date',
     },
+    /**
+     * 日期选择粒度；datetime 模式固定 day
+     * @type {'day' | 'week' | 'month' | 'year'}
+     */
+    picker: {
+        type: String,
+        default: 'day',
+    },
+    /** 范围选择，modelValue 为 [start, end] */
+    range: Boolean,
     label: {
         type: String,
         default: '',
@@ -203,11 +245,17 @@ const Hours = Array.from({ length: 24 }, (_, index) => index)
 
 const PanelOpen = ref(false)
 const OpenTimeSelect = ref(null)
+const HourMenuEl = ref(null)
+const MinuteMenuEl = ref(null)
+const RangeStart = ref('')
+const RangeEnd = ref('')
 const PanelWidth = computed(() => props.mode === 'time' ? 240 : 300)
+const PickerMode = computed(() => props.mode === 'datetime' ? 'day' : props.picker)
 const ViewMonth = ref(StartOfMonth(ParseDate(props.modelValue) || new Date()))
 const DraftDate = ref(ParseDate(props.modelValue) || new Date())
 const DraftHour = ref(ParseTime(props.modelValue).hour)
 const DraftMinute = ref(ParseTime(props.modelValue).minute)
+const SelectedValue = computed(() => Array.isArray(props.modelValue) ? props.modelValue[0] : props.modelValue)
 
 const { DisplayError, OnInput: ValidateInput } = useValidation(
     props,
@@ -258,13 +306,27 @@ function IsMinuteDisabled(minute) {
 }
 
 const DisplayValue = computed(() => {
+    if (Array.isArray(props.modelValue)) return props.modelValue.filter(Boolean).join(' ~ ')
     if (!props.modelValue) return ''
     if (props.mode === 'time') return String(props.modelValue)
     if (props.mode === 'datetime') return String(props.modelValue).replace('T', ' ')
     return String(props.modelValue)
 })
 
-const MonthLabel = computed(() => `${ViewMonth.value.getFullYear()} 年 ${ViewMonth.value.getMonth() + 1} 月`)
+const PeriodLabel = computed(() => {
+    const year = ViewMonth.value.getFullYear()
+    if (PickerMode.value === 'year') {
+        const start = Math.floor(year / 12) * 12
+        return `${start} - ${start + 11}`
+    }
+    if (PickerMode.value === 'month') return `${year} 年`
+    return `${year} 年 ${ViewMonth.value.getMonth() + 1} 月`
+})
+
+function InRange(value) {
+    if (!RangeStart.value || !RangeEnd.value) return false
+    return value > RangeStart.value && value < RangeEnd.value
+}
 
 const CalendarDays = computed(() => {
     const year = ViewMonth.value.getFullYear()
@@ -284,14 +346,68 @@ const CalendarDays = computed(() => {
             date,
             day: date.getDate(),
             current: date.getMonth() === month,
-            selected: value === selected,
+            selected: value === selected || value === RangeStart.value || value === RangeEnd.value,
+            inRange: InRange(value),
             today: value === today,
             disabled: Boolean((MinDate.value && value < MinDate.value) || (MaxDate.value && value > MaxDate.value))
         }
     })
 })
 
+const MonthOptions = computed(() => {
+    const year = ViewMonth.value.getFullYear()
+    return Array.from({ length: 12 }, (_, index) => {
+        const value = `${year}-${padZero(index + 1)}`
+        return {
+            value,
+            month: index + 1,
+            selected: value === SelectedValue.value || value === RangeStart.value || value === RangeEnd.value,
+            inRange: InRange(value),
+            disabled: Boolean((MinDate.value && value < MinDate.value.slice(0, 7)) || (MaxDate.value && value > MaxDate.value.slice(0, 7)))
+        }
+    })
+})
+
+const YearOptions = computed(() => {
+    const start = Math.floor(ViewMonth.value.getFullYear() / 12) * 12
+    return Array.from({ length: 12 }, (_, index) => {
+        const value = String(start + index)
+        return {
+            value,
+            selected: value === SelectedValue.value || value === RangeStart.value || value === RangeEnd.value,
+            inRange: InRange(value),
+            disabled: Boolean((MinDate.value && value < MinDate.value.slice(0, 4)) || (MaxDate.value && value > MaxDate.value.slice(0, 4)))
+        }
+    })
+})
+
+const WeekOptions = computed(() => {
+    const start = StartOfWeek(new Date(ViewMonth.value.getFullYear(), ViewMonth.value.getMonth(), 1))
+    return Array.from({ length: 6 }, (_, index) => {
+        const from = new Date(start)
+        from.setDate(start.getDate() + index * 7)
+        const to = new Date(from)
+        to.setDate(from.getDate() + 6)
+        const value = `${from.getFullYear()}-W${padZero(WeekNumber(from))}`
+        const fromKey = formatDate(from, 'YYYY-MM-DD')
+        const toKey = formatDate(to, 'YYYY-MM-DD')
+
+        return {
+            value,
+            label: `第 ${WeekNumber(from)} 周`,
+            rangeLabel: `${formatDate(from, 'MM-DD')} ~ ${formatDate(to, 'MM-DD')}`,
+            selected: value === SelectedValue.value || value === RangeStart.value || value === RangeEnd.value,
+            inRange: InRange(value),
+            disabled: Boolean((MinDate.value && toKey < MinDate.value) || (MaxDate.value && fromKey > MaxDate.value))
+        }
+    })
+})
+
 const FooterHint = computed(() => {
+    if (props.range) return RangeStart.value && !RangeEnd.value ? '再选择结束' : '选择开始和结束'
+    if (PickerMode.value === 'week') return '点击选择整周'
+    if (PickerMode.value === 'month') return '点击选择月份'
+    if (PickerMode.value === 'year') return '点击选择年份'
     if (props.mode === 'date') return '点击日期选择'
     if (props.mode === 'time') return '选择小时和分钟'
     return '选择日期与时间'
@@ -342,10 +458,20 @@ watch(PanelOpen, open => {
     DraftMinute.value = time.minute
     ViewMonth.value = StartOfMonth(date)
     OpenTimeSelect.value = null
+    RangeStart.value = Array.isArray(props.modelValue) ? props.modelValue[0] || '' : ''
+    RangeEnd.value = Array.isArray(props.modelValue) ? props.modelValue[1] || '' : ''
 })
 
 function ToggleTimeSelect(type) {
     OpenTimeSelect.value = OpenTimeSelect.value === type ? null : type
+    if (OpenTimeSelect.value) {
+        nextTick(() => {
+            const el = type === 'hour' ? HourMenuEl.value : MinuteMenuEl.value
+            if (!el) return
+            const selected = el.querySelector('.on')
+            if (selected) el.scrollTop = Math.max(0, selected.offsetTop - (el.clientHeight - selected.offsetHeight) / 2)
+        })
+    }
 }
 
 function PickHour(hour) {
@@ -365,9 +491,27 @@ function StartOfMonth(date) {
 }
 
 function ParseDate(value) {
-    if (!value || props.mode === 'time') return null
-    const date = new Date(String(value).replace(' ', 'T'))
+    const raw = Array.isArray(value) ? value[0] : value
+    if (!raw || props.mode === 'time') return null
+    const date = new Date(String(raw).replace(' ', 'T'))
     return Number.isNaN(date.getTime()) ? null : date
+}
+
+function StartOfWeek(date) {
+    const next = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    const offset = (next.getDay() + 6) % 7
+    next.setDate(next.getDate() - offset)
+    return next
+}
+
+function WeekNumber(date) {
+    const target = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    const day = (target.getDay() + 6) % 7
+    target.setDate(target.getDate() - day + 3)
+    const firstThursday = new Date(target.getFullYear(), 0, 4)
+    const firstDay = (firstThursday.getDay() + 6) % 7
+    firstThursday.setDate(firstThursday.getDate() - firstDay + 3)
+    return 1 + Math.round((target - firstThursday) / 604800000)
 }
 
 function ParseTime(value) {
@@ -394,8 +538,42 @@ function NormalizeTime(value) {
     }
 }
 
-function MoveMonth(offset) {
-    ViewMonth.value = new Date(ViewMonth.value.getFullYear(), ViewMonth.value.getMonth() + offset, 1)
+function MovePeriod(offset) {
+    const year = ViewMonth.value.getFullYear()
+    const month = ViewMonth.value.getMonth()
+
+    if (PickerMode.value === 'year') {
+        ViewMonth.value = new Date(year + offset * 12, 0, 1)
+        return
+    }
+
+    if (PickerMode.value === 'month') {
+        ViewMonth.value = new Date(year + offset, month, 1)
+        return
+    }
+
+    ViewMonth.value = new Date(year, month + offset, 1)
+}
+
+function SelectValue(value) {
+    if (!props.range || props.mode !== 'date') {
+        EmitValue(value, ClosePanel)
+        return
+    }
+
+    if (!RangeStart.value || RangeEnd.value) {
+        RangeStart.value = value
+        RangeEnd.value = ''
+        return
+    }
+
+    let start = RangeStart.value
+    let end = value
+    if (String(end) < String(start)) [start, end] = [end, start]
+
+    RangeStart.value = start
+    RangeEnd.value = end
+    EmitValue([start, end], ClosePanel)
 }
 
 function DisplayForDraft() {
@@ -418,11 +596,28 @@ function ChooseDay(item) {
 
     DraftDate.value = item.date
     if (props.mode === 'date') {
-        EmitValue(formatDate(item.date, 'YYYY-MM-DD'), ClosePanel)
+        SelectValue(formatDate(item.date, 'YYYY-MM-DD'))
         return
     }
 
     ViewMonth.value = StartOfMonth(item.date)
+}
+
+function ChooseMonth(item) {
+    if (item.disabled) return
+    ViewMonth.value = new Date(Number(item.value.slice(0, 4)), Number(item.value.slice(5, 7)) - 1, 1)
+    SelectValue(item.value)
+}
+
+function ChooseYear(item) {
+    if (item.disabled) return
+    ViewMonth.value = new Date(Number(item.value), 0, 1)
+    SelectValue(item.value)
+}
+
+function ChooseWeek(item) {
+    if (item.disabled) return
+    SelectValue(item.value)
 }
 
 function Confirm(close) {
@@ -573,7 +768,10 @@ function ClosePanel() {
 .wa_dt_day {
     display: grid;
     place-items: center;
-    height: 32px;
+    width: 100%;
+    height: auto;
+    min-height: 30px;
+    aspect-ratio: 1;
     padding: 0;
     border: 0;
     border-radius: var(--wa_radius_sm);
@@ -607,6 +805,97 @@ function ClosePanel() {
 }
 
 .wa_dt_day:disabled {
+    opacity: .3;
+    cursor: not-allowed;
+}
+
+.wa_dt_day.in_range:not(.on) {
+    background: var(--wa_color_active);
+}
+
+.wa_dt_month_grid,
+.wa_dt_year_grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.wa_dt_week_list {
+    display: grid;
+    gap: 4px;
+}
+
+.wa_dt_period {
+    height: 38px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--wa_radius_sm);
+    color: var(--wa_color_text);
+    background: transparent;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.wa_dt_period:hover:not(:disabled) {
+    background: var(--wa_color_hover);
+}
+
+.wa_dt_period.in_range:not(.on) {
+    background: var(--wa_color_active);
+}
+
+.wa_dt_period.on {
+    color: var(--wa_color_on_highlight);
+    background: var(--wa_color_highlight);
+    font-weight: 600;
+}
+
+.wa_dt_period:disabled {
+    opacity: .3;
+    cursor: not-allowed;
+}
+
+.wa_dt_week {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 10px;
+    border: 0;
+    border-radius: var(--wa_radius_sm);
+    color: var(--wa_color_text);
+    background: transparent;
+    font: inherit;
+    font-size: 12px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.wa_dt_week:hover:not(:disabled) {
+    background: var(--wa_color_hover);
+}
+
+.wa_dt_week.in_range:not(.on) {
+    background: var(--wa_color_active);
+}
+
+.wa_dt_week.on {
+    color: var(--wa_color_on_highlight);
+    background: var(--wa_color_highlight);
+}
+
+.wa_dt_week small {
+    color: var(--wa_color_text_subtle);
+    font-size: 11px;
+}
+
+.wa_dt_week.on small {
+    color: inherit;
+    opacity: .82;
+}
+
+.wa_dt_week:disabled {
     opacity: .3;
     cursor: not-allowed;
 }
@@ -680,8 +969,10 @@ function ClosePanel() {
 }
 
 .wa_dt_select_item {
+    width: 100%;
     padding: 5px 0;
     border: 0;
+    text-align: center;
     border-radius: var(--wa_radius_sm);
     color: var(--wa_color_text_muted);
     background: transparent;
@@ -707,6 +998,19 @@ function ClosePanel() {
     cursor: not-allowed;
 }
 
+.wa_dt_menu-enter-active,
+.wa_dt_menu-leave-active {
+    transition:
+        opacity var(--wa_duration_fast) var(--wa_ease_out),
+        transform var(--wa_duration_fast) var(--wa_ease_out);
+}
+
+.wa_dt_menu-enter-from,
+.wa_dt_menu-leave-to {
+    opacity: 0;
+    transform: translateY(-4px) scale(.98);
+}
+
 .wa_dt_quick {
     display: flex;
     flex-wrap: wrap;
@@ -729,7 +1033,9 @@ function ClosePanel() {
 @media (prefers-reduced-motion: reduce) {
     .wa_datetime,
     .wa_datetime_arrow,
-    .wa_dt_day {
+    .wa_dt_day,
+    .wa_dt_menu-enter-active,
+    .wa_dt_menu-leave-active {
         transition: none;
     }
 }

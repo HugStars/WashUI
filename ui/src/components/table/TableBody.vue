@@ -27,7 +27,10 @@
             <tr v-for="(row, index) in rows" :key="getRowKey(row, originalIndex(row, index))"
                 class="wa_table_tr"
                 :class="[getRowClass(row, index), { on: isRowSelected(row, originalIndex(row, index)) }]"
-                @click="handleRowClick(row, index, $event)">
+                :tabindex="rowClickable ? 0 : undefined"
+                @click="handleRowClick(row, index, $event)"
+                @keydown.enter="rowClickable && handleRowClick(row, index, $event)"
+                @keydown.space.prevent="rowClickable && handleRowClick(row, index, $event)">
                 <td v-if="selectable"
                     class="wa_table_td wa_table_select wa_table_sticky wa_table_sticky_left"
                     :class="{ wa_table_sticky_edge_left: selectIsLeftEdge }" :style="{ left: '0px' }"
@@ -69,6 +72,7 @@ import AppTooltip from '../AppTooltip.vue'
 // ! index 是排序后的展示索引，originalIndex 才是选择/rowKey 使用的原始索引，两者不能混用
 // ! 动态插槽名必须和 AppTable 透传的 cell-* / empty 键一致
 defineProps({
+    rowClickable: Boolean,
     columns: {
         type: Array,
         default: () => [],

@@ -215,7 +215,7 @@ const ShellStyle = computed(() => {
         '--wa_desk_window_height': ToSize(c.window.height, '100vh'),
         '--wa_desk_window_min_width': ToSize(c.window.minWidth, '0px'),
         '--wa_desk_window_min_height': ToSize(c.window.minHeight, '0px'),
-        '--wa_desk_glass': c.glass || `color-mix(in srgb, var(--wa_color_glass) ${ClampPercent(c.glassOpacity)}%, transparent)`,
+        '--wa_desk_glass': c.glass || BuildGlass(c),
     }
 })
 
@@ -233,6 +233,28 @@ function ClampPercent(value) {
 function ToSize(value, fallback = '') {
     if (value === null || value === undefined || value === '') return fallback
     return typeof value === 'number' ? `${value}px` : value
+}
+
+/**
+ * 检测当前环境是否支持 color-mix
+ * @returns {boolean} 是否支持 color-mix
+ */
+function SupportsColorMix() {
+    return typeof CSS !== 'undefined'
+        && typeof CSS.supports === 'function'
+        && CSS.supports('color', 'color-mix(in srgb, red 50%, blue)')
+}
+
+/**
+ * 生成桌面外壳的玻璃背景
+ * 默认 100% 和不支持 color-mix 时都直接用纯玻璃色，避免自定义属性失效后背景透明
+ * @param {object} config 桌面外壳配置
+ * @returns {string} CSS 背景值
+ */
+function BuildGlass(config) {
+    const opacity = ClampPercent(config.glassOpacity)
+    if (opacity >= 100 || !SupportsColorMix()) return 'var(--wa_color_glass)'
+    return `color-mix(in srgb, var(--wa_color_glass) ${opacity}%, transparent)`
 }
 
 function MergeConfig(base, patch) {
@@ -566,7 +588,7 @@ function MergeConfig(base, patch) {
 
 /* 磨砂模式下 Toolbar 与 Title / Header / Aside 使用同一层玻璃 */
 .wa_desk_frosted .wa_desk_toolbar {
-    border-top-color: color-mix(in srgb, var(--wa_color_border) 68%, transparent);
+    border-top-color: var(--wa_color_border);
 }
 
 @media (prefers-reduced-motion: reduce) {

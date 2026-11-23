@@ -1,13 +1,13 @@
 <template>
-    <button type="button" class="wa_chip" :aria-pressed="active"
-        :class="{ on: active, wa_frosted: frosted, wa_chip_sm: size === 'sm' }">
+    <button type="button" class="wa_chip" :aria-pressed="selected"
+        :class="{ on: selected, wa_frosted: frosted, wa_chip_sm: size === 'sm' }">
         <slot>{{ text }}</slot>
     </button>
 </template>
 
 <script setup>
 defineProps({
-    active: Boolean,
+    selected: Boolean,
     text: {
         type: String,
         default: '',

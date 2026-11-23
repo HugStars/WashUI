@@ -15,19 +15,28 @@ function NormalizeRules(rule) {
     return Array.isArray(rule) ? rule : [rule]
 }
 
-function CheckRule(rule, value) {
+function CheckRule(rule, value, numeric = false) {
     if (rule.required && IsEmpty(value)) {
         return rule.message || '请填写此项'
     }
 
     if (IsEmpty(value)) return ''
 
-    if (rule.min != null && LengthOf(value) < rule.min) {
-        return rule.message || `至少 ${rule.min} 个字符`
-    }
-
-    if (rule.max != null && LengthOf(value) > rule.max) {
-        return rule.message || `最多 ${rule.max} 个字符`
+    if (numeric) {
+        const number = Number(value)
+        if (rule.min != null && number < rule.min) {
+            return rule.message || `不能小于 ${rule.min}`
+        }
+        if (rule.max != null && number > rule.max) {
+            return rule.message || `不能大于 ${rule.max}`
+        }
+    } else {
+        if (rule.min != null && LengthOf(value) < rule.min) {
+            return rule.message || `至少 ${rule.min} 个字符`
+        }
+        if (rule.max != null && LengthOf(value) > rule.max) {
+            return rule.message || `最多 ${rule.max} 个字符`
+        }
     }
 
     if (rule.pattern instanceof RegExp) {
@@ -61,6 +70,7 @@ function CheckRule(rule, value) {
  * rule 支持对象或数组：
  * { required, min, max, pattern, validator, message, trigger }
  * trigger 支持 'blur' | 'input' | 'change' 或其数组。
+ * min/max 对数字类型按数值比较，对其他值按字符串长度；异步 validator 暂不支持。
  */
 export function useValidation(props, getValue, options = {}) {
     const defaultTrigger = options.defaultTrigger || 'blur'
@@ -69,6 +79,7 @@ export function useValidation(props, getValue, options = {}) {
 
     const Rules = computed(() => NormalizeRules(props.rule))
     const DisplayError = computed(() => props.error || RuleError.value)
+    const IsNumeric = () => props.type === 'number' || typeof getValue() === 'number'
 
     function Run(trigger, value, force = false) {
         const rules = Rules.value.filter(rule => {
@@ -80,7 +91,7 @@ export function useValidation(props, getValue, options = {}) {
         })
 
         for (const rule of rules) {
-            const message = CheckRule(rule, value)
+            const message = CheckRule(rule, value, IsNumeric())
             if (message) {
                 RuleError.value = message
                 return message

@@ -26,12 +26,24 @@
     --wa_color_scroll: #00000026;
     --wa_color_accent: #05cfa4;
     --wa_color_on_accent: #0b1f1a;
+    --wa_color_accent_soft: #05cfa41f;
+    --wa_color_accent_text: #0a9c7d;
     --wa_color_success: #05cfa4;
+    --wa_color_success_soft: #05cfa41f;
+    --wa_color_success_text: #0a9c7d;
     --wa_color_warning: #f59e0b;
+    --wa_color_warning_soft: #f59e0b24;
+    --wa_color_warning_text: #b45309;
     --wa_color_help: #a855f7;
+    --wa_color_help_soft: #a855f71f;
+    --wa_color_help_text: #7e22ce;
     --wa_color_danger: #d4380d;
     --wa_color_danger_soft: #d4380d12;
+    --wa_color_danger_text: var(--wa_color_danger);
     --wa_color_danger_hover: #d4380d1f;
+    --wa_color_neutral: #64748b;
+    --wa_color_neutral_soft: #64748b14;
+    --wa_color_neutral_text: #475569;
     --wa_color_primary_hover: #333333;
     --wa_color_focus_ring: #00000020;
     --wa_color_nav_active: var(--wa_color_highlight);
@@ -75,9 +87,39 @@
 
     --wa_control_height: 40px;
     --wa_control_height_sm: 32px;
+    --wa_size_control_md: var(--wa_control_height);
+    --wa_size_control_sm: var(--wa_control_height_sm);
+    --wa_size_check_sm: 16px;
+    --wa_size_check_md: 20px;
+    --wa_size_tag_sm: 22px;
+    --wa_size_tag_md: 27px;
+    --wa_size_badge_sm: 16px;
+    --wa_size_badge_md: 20px;
+    --wa_size_badge_dot_sm: 8px;
+    --wa_size_badge_dot_md: 10px;
+    --wa_size_icon_btn_xs: 24px;
+    --wa_size_icon_btn_sm: 28px;
+    --wa_size_icon_btn_md: 32px;
+    --wa_size_icon_btn_lg: 36px;
+    --wa_size_pin_sm: 38px;
+    --wa_size_pin_md: 46px;
+    --wa_size_list_row: 44px;
+    --wa_size_empty: 420px;
+    --wa_size_empty_compact: 180px;
     --wa_space_1: 4px;
     --wa_space_2: 8px;
     --wa_space_3: 12px;
+    --wa_space_4: 16px;
+    --wa_space_5: 20px;
+    --wa_space_6: 24px;
+    --wa_font_size_2xs: 10px;
+    --wa_font_size_xs: 11px;
+    --wa_font_size_sm: 12px;
+    --wa_font_size_base: 13px;
+    --wa_font_size_md: 14px;
+    --wa_font_size_lg: 15px;
+    --wa_font_size_xl: 18px;
+    --wa_font_size_2xl: 22px;
     /* * 圆角层级：6 小标记 / 8 控件 / 16 内容块 / 24 卡片与弹框 */
     --wa_radius_sm: 6px;
     --wa_radius_control: 8px;
@@ -102,7 +144,7 @@
     --wa_shadow_thumb_soft: 0 1px 4px #0000001f;
     --wa_shadow_card_hover: 0 12px 28px #00000012;
     --wa_shadow_card_active: 0 8px 20px #00000010;
-    --wa_glass_gradient: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
+    --wa_glass_gradient: var(--wa_color_glass);
 
     /* * 动画时长统一入口：组件内不再写死秒数，改这里即可全局调速 */
     --wa_duration_instant: .12s;
@@ -125,6 +167,13 @@
     --wa_z_dialog: 10;
     --wa_z_toast: 50;
     --wa_z_route: 4000;
+}
+
+/* * 旧内核不支持 color-mix：先用纯玻璃色兜底；支持时再启用渐变 */
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+    :root {
+        --wa_glass_gradient: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
+    }
 }
 
 [data-theme='dark'] {
@@ -158,7 +207,19 @@
     --wa_color_on_tooltip: #141414;
     --wa_color_danger: #ff7875;
     --wa_color_danger_soft: #ff78751f;
+    --wa_color_danger_text: var(--wa_color_danger);
     --wa_color_danger_hover: #ff78752e;
+    --wa_color_accent_soft: #05cfa42e;
+    --wa_color_accent_text: #3dd9a4;
+    --wa_color_success_soft: #05cfa42e;
+    --wa_color_success_text: #3dd9a4;
+    --wa_color_warning_soft: #f59e0b2e;
+    --wa_color_warning_text: #fbbf24;
+    --wa_color_help_soft: #a855f72e;
+    --wa_color_help_text: #c084fc;
+    --wa_color_neutral: #94a3b8;
+    --wa_color_neutral_soft: #94a3b81f;
+    --wa_color_neutral_text: #cbd5e1;
     --wa_color_toast: #e8e8e8f0;
     --wa_color_toast_strong: #f5f5f5;
     --wa_color_on_toast: #1a1a1a;

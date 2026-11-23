@@ -35,7 +35,7 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    size: {
+    checkSize: {
         type: [Number, String],
         default: 18,
     },
@@ -47,6 +47,8 @@ const props = defineProps({
         default: 'after',
     },
     disabled: Boolean,
+    /** 挂载后聚焦选中项或第一项；下拉面板使用，常驻列表不要开启 */
+    autofocus: Boolean,
     emptyText: {
         type: String,
         default: '暂无选项',
@@ -84,7 +86,19 @@ function ScrollCheckedToCenter() {
     el.scrollTop = Math.max(0, Math.min(max, target))
 }
 
-onMounted(() => nextTick(ScrollCheckedToCenter))
+function FocusChecked() {
+    const el = PanelEl.value
+    if (!el) return
+
+    const target = el.querySelector('.wa_check.on, .wa_radio.on')
+        || el.querySelector('.wa_check, .wa_radio')
+    target?.focus({ preventScroll: true })
+}
+
+onMounted(() => nextTick(() => {
+    ScrollCheckedToCenter()
+    if (props.autofocus) FocusChecked()
+}))
 
 // 选项异步到达时重新滚动到已选项
 watch([() => props.options, () => props.groups], () => nextTick(ScrollCheckedToCenter))

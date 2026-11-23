@@ -3,7 +3,8 @@
         <span class="wa_badge_ghost" aria-hidden="true">{{ Label }}</span>
         <span class="wa_badge_anchor" :style="AnchorStyle" aria-hidden="true"></span>
 
-        <svg class="wa_badge_goo" viewBox="0 0 320 320" aria-hidden="true" focusable="false">
+        <!-- 粘性连接只在拖动时存在；常驻的 320px SVG 会撑出滚动容器 -->
+        <svg v-if="Dragging" class="wa_badge_goo" viewBox="0 0 320 320" aria-hidden="true" focusable="false">
             <path v-if="PathData" :d="PathData" />
         </svg>
 
@@ -23,6 +24,7 @@
 
 <script setup>
 import { computed, onUnmounted, ref, watch } from 'vue'
+import { useReducedMotion } from '../composables/useReducedMotion.js'
 import { createGooeyPath } from '../utils/gooey.js'
 
 const props = defineProps({
@@ -34,8 +36,8 @@ const props = defineProps({
     /** 只显示一个小圆点 */
     dot: Boolean,
     /**
-     * danger | accent | neutral
-     * @type {'danger' | 'accent' | 'neutral'}
+     * default | accent | success | warning | help | danger
+     * @type {'default' | 'accent' | 'success' | 'warning' | 'help' | 'danger'}
      */
     tone: {
         type: String,
@@ -106,9 +108,7 @@ let SpringFrame = 0
 let BurstTimer = null
 let FinishTimer = null
 
-const ReducedMotion = typeof window !== 'undefined'
-    && typeof window.matchMedia === 'function'
-    && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+const ReducedMotion = useReducedMotion()
 
 const BaseRadius = computed(() => (props.dot ? DOT_MAP[props.size] || DOT_MAP.sm : SIZE_MAP[props.size] || SIZE_MAP.sm) / 2)
 const Label = computed(() => {
@@ -156,7 +156,7 @@ const BlobStyle = computed(() => ({
     transform: `translate3d(${DragX.value}px, ${DragY.value}px, 0)`,
 }))
 
-// * 爆裂小圈冻结在松手时的位置，而不是回到角标原点
+// * 爆裂小圈跟随角标中心；缩小围绕中心进行，不能用鼠标坐标作为爆炸原点
 const BurstStyle = computed(() => ({
     transform: `translate3d(${BurstX.value}px, ${BurstY.value}px, 0)`,
 }))
@@ -259,7 +259,7 @@ function MarkBroken() {
 function SpringBack() {
     cancelAnimationFrame(SpringFrame)
 
-    if (ReducedMotion) {
+    if (ReducedMotion.value) {
         Settle()
         return
     }
@@ -301,6 +301,24 @@ function Settle() {
     AnchorScale.value = 1
 }
 
+/**
+ * 角标视觉中心相对爆裂容器的偏移
+ * 缩放作用在 translate 之后，缩小后的中心并不等于 DragX / DragY
+ * @returns {{ x: number, y: number }} 相对角标布局中心的偏移
+ */
+function BurstOrigin() {
+    const blob = BlobEl.value
+    const host = blob?.closest?.('.wa_badge')
+    if (!blob || !host) return { x: DragX.value, y: DragY.value }
+
+    const blobRect = blob.getBoundingClientRect()
+    const hostRect = host.getBoundingClientRect()
+    return {
+        x: blobRect.left + blobRect.width / 2 - (hostRect.left + hostRect.width / 2),
+        y: blobRect.top + blobRect.height / 2 - (hostRect.top + hostRect.height / 2),
+    }
+}
+
 function Explode() {
     const speed = Math.hypot(VelocityX, VelocityY)
     let ux
@@ -318,17 +336,18 @@ function Explode() {
     clearTimeout(FinishTimer)
     clearTimeout(BurstTimer)
 
-    if (ReducedMotion) {
+    if (ReducedMotion.value) {
         Finish()
         return
     }
 
-    // * 小圈出现在角标飞出的落点，而不是松手位置
+    // * 小圈出现在角标缩小后的视觉中心，不能直接用指针坐标或未缩放的 Drag
     const finalX = DragX.value + ux * 56
     const finalY = DragY.value + uy * 56
+    const origin = BurstOrigin()
 
-    BurstX.value = finalX
-    BurstY.value = finalY
+    BurstX.value = origin.x
+    BurstY.value = origin.y
     Bursting.value = true
     BurstTimer = setTimeout(() => {
         Bursting.value = false
@@ -401,8 +420,8 @@ onUnmounted(() => {
 
 <style>
 .wa_badge {
-    --wa_badge_size: 16px;
-    --wa_badge_font: 10px;
+    --wa_badge_size: var(--wa_size_badge_sm);
+    --wa_badge_font: var(--wa_font_size_2xs);
     --wa_badge_bg: var(--wa_color_danger);
     --wa_badge_color: var(--wa_color_on_text);
 
@@ -425,8 +444,8 @@ onUnmounted(() => {
 }
 
 .wa_badge_md {
-    --wa_badge_size: 20px;
-    --wa_badge_font: 11px;
+    --wa_badge_size: var(--wa_size_badge_md);
+    --wa_badge_font: var(--wa_font_size_xs);
 }
 
 /* 用不可见文本决定角标宽度，blob 绝对定位铺满 */
@@ -445,12 +464,17 @@ onUnmounted(() => {
 }
 
 .wa_badge_dot {
-    --wa_badge_size: 8px;
+    --wa_badge_size: var(--wa_size_badge_dot_sm);
     --wa_badge_font: 0;
 }
 
 .wa_badge_dot.wa_badge_md {
-    --wa_badge_size: 10px;
+    --wa_badge_size: var(--wa_size_badge_dot_md);
+}
+
+.wa_badge_default {
+    --wa_badge_bg: var(--wa_color_highlight);
+    --wa_badge_color: var(--wa_color_on_highlight);
 }
 
 .wa_badge_accent {
@@ -458,9 +482,24 @@ onUnmounted(() => {
     --wa_badge_color: var(--wa_color_on_accent);
 }
 
-.wa_badge_neutral {
-    --wa_badge_bg: var(--wa_color_highlight);
-    --wa_badge_color: var(--wa_color_on_highlight);
+.wa_badge_success {
+    --wa_badge_bg: var(--wa_color_success);
+    --wa_badge_color: var(--wa_color_on_accent);
+}
+
+.wa_badge_warning {
+    --wa_badge_bg: var(--wa_color_warning);
+    --wa_badge_color: var(--wa_color_on_accent);
+}
+
+.wa_badge_help {
+    --wa_badge_bg: var(--wa_color_help);
+    --wa_badge_color: var(--wa_color_on_text);
+}
+
+.wa_badge_danger {
+    --wa_badge_bg: var(--wa_color_danger);
+    --wa_badge_color: var(--wa_color_on_text);
 }
 
 .wa_badge_blob {

@@ -26,6 +26,7 @@
 <script setup>
 import { computed, onUnmounted, ref, useId, useSlots, watch } from 'vue'
 import { useChoiceItemState } from '../composables/useChoiceGroup.js'
+import { useReducedMotion } from '../composables/useReducedMotion.js'
 
 const props = defineProps({
     modelValue: Boolean,
@@ -51,7 +52,7 @@ const props = defineProps({
         default: '',
     },
     /** 复选框尺寸，数字按 px 处理；在分组中默认继承分组尺寸 */
-    size: {
+    checkSize: {
         type: [Number, String],
         default: null,
     },
@@ -75,9 +76,7 @@ const SizeStyle = computed(() => ({
 }))
 
 // 取消选中时先让 ✓ 变成 ×，再把整个标记缩到 0；动画结束后才移除选中底色
-const ReducedMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    : false
+const ReducedMotion = useReducedMotion()
 const Closing = ref(false)
 const Drawing = ref(false)
 const PrevChecked = ref(Checked.value)
@@ -86,7 +85,7 @@ let CloseTimer = 0
 let DrawTimer = 0
 
 function StartClosing() {
-    if (ReducedMotion) {
+    if (ReducedMotion.value) {
         Closing.value = false
         return
     }
@@ -116,7 +115,7 @@ watch([Checked, Indeterminate], ([checked, mixed]) => {
     // 选中：半选 -> 勾选时直接从短横拆分旋转，不播放手写
     if (checked && !wasChecked) {
         Closing.value = false
-        if (!wasMixed && !mixed && !ReducedMotion) StartDrawing()
+        if (!wasMixed && !mixed && !ReducedMotion.value) StartDrawing()
         else Drawing.value = false
         return
     }

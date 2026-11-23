@@ -50,11 +50,14 @@ const ResolvedIcon = computed(() => {
 
 <style>
 .wa_app_hint {
+    --wa_app_hint_soft: var(--wa_color_soft);
+    --wa_app_hint_line: var(--wa_color_line);
+
     display: flex;
     align-items: flex-start;
     gap: 6px;
     min-width: 0;
-    font-size: 12px;
+    font-size: var(--wa_font_size_sm);
     line-height: 1.65;
     color: var(--wa_color_text_subtle);
 }
@@ -74,26 +77,38 @@ const ResolvedIcon = computed(() => {
 }
 
 .wa_app_hint_success {
-    color: color-mix(in srgb, var(--wa_color_success) 78%, var(--wa_color_text));
+    --wa_app_hint_soft: var(--wa_color_success_soft);
+    --wa_app_hint_line: var(--wa_color_success_soft);
+
+    color: var(--wa_color_success_text);
 }
 
 .wa_app_hint_warning {
-    color: color-mix(in srgb, var(--wa_color_warning) 72%, var(--wa_color_text));
+    --wa_app_hint_soft: var(--wa_color_warning_soft);
+    --wa_app_hint_line: var(--wa_color_warning_soft);
+
+    color: var(--wa_color_warning_text);
 }
 
 .wa_app_hint_help {
-    color: color-mix(in srgb, var(--wa_color_help) 76%, var(--wa_color_text));
+    --wa_app_hint_soft: var(--wa_color_help_soft);
+    --wa_app_hint_line: var(--wa_color_help_soft);
+
+    color: var(--wa_color_help_text);
 }
 
 .wa_app_hint_danger {
-    color: var(--wa_color_danger);
+    --wa_app_hint_soft: var(--wa_color_danger_soft);
+    --wa_app_hint_line: var(--wa_color_danger_soft);
+
+    color: var(--wa_color_danger_text);
 }
 
 .wa_app_hint_box {
     padding: 8px 12px;
-    border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+    border: 1px solid var(--wa_app_hint_line);
     /* * 与 AppPanel / AppList 等内容块共用同一档圆角 */
     border-radius: var(--wa_radius_popover);
-    background: color-mix(in srgb, currentColor 7%, transparent);
+    background: var(--wa_app_hint_soft);
 }
 </style>

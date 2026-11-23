@@ -17,11 +17,11 @@
                     @animationend="OnSliderAnimationEnd"></span>
             </span>
 
-            <button v-for="(item, index) in VisibleItems" :key="item.name" :ref="el => SetTabEl(item.name, el)"
+            <button v-for="(item, index) in VisibleItems" :key="item.value" :ref="el => SetTabEl(item.value, el)"
                 type="button" :id="TabId(index)" class="wa_tabs_tab"
-                :class="{ on: item.name === modelValue, pressed: PressedKey === item.name }" role="tab"
-                :aria-selected="item.name === modelValue" :aria-controls="HasPanel ? PanelId : undefined"
-                :tabindex="item.name === modelValue ? 0 : -1" :disabled="item.disabled" @click="Choose(item, index)">
+                :class="{ on: item.value === modelValue, pressed: PressedKey === item.value }" role="tab"
+                :aria-selected="item.value === modelValue" :aria-controls="HasPanel ? PanelId : undefined"
+                :tabindex="item.value === modelValue ? 0 : -1" :disabled="item.disabled" @click="Choose(item, index)">
                 <AppIcon v-if="item.icon" :name="item.icon" :size="IconSize" />
                 <span>{{ item.label }}</span>
             </button>
@@ -29,12 +29,12 @@
             <!-- 与 AppShell 的更多菜单保持一致：固定 12px 间距，翻转时也不变 -->
             <AppPopover v-if="HiddenItems.length" v-model:open="MoreOpen" placement="bottom" :width="180" :gap="12"
                 :padding="6" role="listbox" aria-label="更多标签">
-                <template #trigger="{ open }">
-                    <button :ref="el => SetTabEl(MORE_KEY, el)" :id="`${uid}-more`" type="button"
+                <template #trigger="{ open, triggerProps }">
+                    <button :ref="el => SetTabEl(MORE_KEY, el)" :id="`${uid}-more`" v-bind="triggerProps" type="button"
                         class="wa_tabs_tab wa_tabs_more"
                         :class="{ on: MoreActive, open, pressed: PressedKey === MORE_KEY }" role="tab"
                         :aria-selected="MoreActive" :aria-controls="HasPanel ? PanelId : undefined"
-                        :aria-haspopup="'listbox'" :aria-expanded="open" :tabindex="MoreActive ? 0 : -1">
+                        :tabindex="MoreActive ? 0 : -1">
                         <AppIcon name="more" :size="18" />
                         <span>更多</span>
                     </button>
@@ -69,6 +69,7 @@ import AppIcon from './AppIcon.vue'
 import AppPopover from './AppPopover.vue'
 import AppSelectPanel from './AppSelectPanel.vue'
 import { usePressFeedback } from '../composables/usePressFeedback.js'
+import { useReducedMotion } from '../composables/useReducedMotion.js'
 
 const MORE_KEY = Symbol('wa-tabs-more')
 
@@ -77,7 +78,7 @@ const props = defineProps({
         type: [String, Number, Symbol],
         default: '',
     },
-    /** { name, label, icon?, disabled? } */
+    /** { value, label, icon?, disabled? } */
     items: {
         type: Array,
         default: () => [],
@@ -128,14 +129,14 @@ const props = defineProps({
     },
 })
 
-const emit = defineEmits(['update:modelValue', 'change', 'badge-clear'])
+const emit = defineEmits(['update:modelValue', 'select', 'badge-clear'])
 
 const slots = useSlots()
 const uid = useId()
 
 const PanelId = `${uid}-panel`
 const HasPanel = computed(() => !!slots.default)
-const ActiveIndex = computed(() => props.items.findIndex(item => item.name === props.modelValue))
+const ActiveIndex = computed(() => props.items.findIndex(item => item.value === props.modelValue))
 const ActiveItem = computed(() => props.items[ActiveIndex.value] || null)
 const IconSize = computed(() => props.size === 'md' ? 17 : 16)
 const ShouldFill = computed(() => props.fill || props.overflow === 'more')
@@ -148,7 +149,7 @@ const VisibleItems = computed(() => {
     return props.items.slice(0, Limit.value - 1)
 })
 const HiddenItems = computed(() => props.items.slice(VisibleItems.value.length))
-const MoreActive = computed(() => HiddenItems.value.some(item => item.name === props.modelValue))
+const MoreActive = computed(() => HiddenItems.value.some(item => item.value === props.modelValue))
 const SliderTarget = computed(() => MoreActive.value ? MORE_KEY : props.modelValue)
 const PanelLabelledBy = computed(() => {
     if (MoreActive.value) return `${uid}-more`
@@ -158,7 +159,7 @@ const MoreOptions = computed(() => HiddenItems.value.map(item => {
     const badge = NormalizeBadge(item.badge)
     return {
         label: item.label,
-        value: item.name,
+        value: item.value,
         icon: item.icon,
         disabled: item.disabled,
         badge: badge ? { ...badge, max: badge.max ?? 99 } : null,
@@ -196,9 +197,7 @@ let ScrollActive = false
 let SuppressTabClick = false
 let Unmounted = false
 
-const ReducedMotion = typeof window !== 'undefined' && window.matchMedia
-    ? window.matchMedia('(prefers-reduced-motion: reduce)')
-    : null
+const ReducedMotion = useReducedMotion()
 const TouchMedia = typeof window !== 'undefined' && window.matchMedia
     ? window.matchMedia('(hover: none)')
     : null
@@ -273,7 +272,7 @@ const Badges = computed(() => {
 
     for (const item of VisibleItems.value) {
         const badge = NormalizeBadge(item.badge)
-        if (badge) result.push({ key: item.name, item, index: props.items.indexOf(item), badge })
+        if (badge) result.push({ key: item.value, item, index: props.items.indexOf(item), badge })
     }
 
     const hiddenBadge = AggregateBadge(HiddenItems.value)
@@ -331,7 +330,7 @@ function OnBadgeClick(entry) {
         return
     }
 
-    const item = props.items.find(item => item.name === entry.key)
+    const item = props.items.find(item => item.value === entry.key)
     if (!item) return
 
     Choose(item, props.items.indexOf(item))
@@ -339,7 +338,7 @@ function OnBadgeClick(entry) {
 
 function OnBadgeClear(entry) {
     emit('badge-clear', {
-        name: entry.key === MORE_KEY ? '' : entry.key,
+        value: entry.key === MORE_KEY ? '' : entry.key,
         item: entry.item,
         index: entry.index,
         more: entry.key === MORE_KEY,
@@ -406,9 +405,9 @@ function ScrollActiveIntoView() {
 
 function Choose(item, index) {
     if (item.disabled) return
-    if (item.name === props.modelValue) return
-    emit('update:modelValue', item.name)
-    emit('change', item, index)
+    if (item.value === props.modelValue) return
+    emit('update:modelValue', item.value)
+    emit('select', item)
 }
 
 function OnKeydown(event) {
@@ -422,7 +421,7 @@ function OnKeydown(event) {
 
     event.preventDefault()
 
-    const current = enabled.findIndex(({ item }) => item.name === props.modelValue)
+    const current = enabled.findIndex(({ item }) => item.value === props.modelValue)
     let next = 0
 
     if (event.key === 'End') next = enabled.length - 1
@@ -432,14 +431,14 @@ function OnKeydown(event) {
     const target = enabled[next]
     Choose(target.item, target.index)
     nextTick(() => {
-        const el = TabEls.get(target.item.name) || TabEls.get(MORE_KEY)
+        const el = TabEls.get(target.item.value) || TabEls.get(MORE_KEY)
         el?.focus()
     })
 }
 
 function SelectMore(option, close) {
     if (option.disabled) return
-    const index = props.items.findIndex(item => item.name === option.value)
+    const index = props.items.findIndex(item => item.value === option.value)
     if (index >= 0) Choose(props.items[index], index)
     close()
 }
@@ -448,7 +447,7 @@ function PlayBounce() {
     cancelAnimationFrame(BounceFrame)
     SliderBounce.value = false
 
-    if (ReducedMotion?.matches) return
+    if (ReducedMotion.value) return
 
     BounceFrame = requestAnimationFrame(() => {
         BounceFrame = requestAnimationFrame(() => {
@@ -639,7 +638,7 @@ watch(
     border: 1px solid var(--wa_color_border);
     border-radius: var(--wa_radius_pill);
     background: var(--wa_color_glass);
-    background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
+    background: var(--wa_glass_gradient);
     -webkit-backdrop-filter: var(--wa_frosted_filter);
     backdrop-filter: var(--wa_frosted_filter);
     box-shadow: var(--wa_shadow_nav);
@@ -679,46 +678,47 @@ watch(
     box-shadow: none;
 }
 
-/* * group：Worker API 面板同款按钮组。白磨砂底、选中黑块、hover 内描边 */
+/* * group：整体是一组按钮，未选中描边，选中为主按钮 */
 .wa_tabs_group .wa_tabs_list {
-    gap: 4px;
-    padding: 4px;
-    border: 1px solid var(--wa_color_line);
-    border-radius: var(--wa_radius_control);
-    background: var(--wa_color_glass);
-    background: var(--wa_glass_gradient);
-    -webkit-backdrop-filter: var(--wa_frosted_filter);
-    backdrop-filter: var(--wa_frosted_filter);
-    box-shadow: var(--wa_shadow_nav);
+    gap: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
 }
 
 .wa_tabs_group .wa_tabs_tab {
-    height: calc(var(--wa_tabs_height) - 2px);
-    border-radius: calc(var(--wa_radius_control) - 2px);
+    height: var(--wa_tabs_height);
+    padding: 0 16px;
+    border: 1px solid var(--wa_color_line);
+    border-radius: var(--wa_radius_pill);
     color: var(--wa_color_text_muted);
-    box-shadow: inset 0 0 0 1px transparent;
+    background: transparent;
+    box-shadow: none;
 }
 
-@media (hover: hover) and (pointer: fine) {
-    .wa_tabs_group .wa_tabs_tab:hover {
-        color: var(--wa_color_text);
-        background: var(--wa_color_hover);
-        box-shadow: inset 0 0 0 1px var(--wa_color_line_strong);
-    }
-}
-
-.wa_tabs_group .wa_tabs_tab.on {
+.wa_tabs_group .wa_tabs_tab.on,
+.wa_tabs_group .wa_tabs_tab.on:hover {
     color: var(--wa_color_on_highlight);
+    background: var(--wa_color_highlight);
+    border-color: var(--wa_color_highlight);
     box-shadow: none;
 }
 
 .wa_tabs_group .wa_tabs_slider,
 .wa_tabs_group .wa_tabs_slider_inner {
-    border-radius: calc(var(--wa_radius_control) - 2px);
+    display: none;
 }
 
-.wa_tabs_group .wa_tabs_slider_inner {
-    background: var(--wa_color_highlight);
+@media (hover: hover) and (pointer: fine) {
+    .wa_tabs_group .wa_tabs_tab:hover:not(.on) {
+        color: var(--wa_color_text);
+        background: var(--wa_color_hover);
+        border-color: var(--wa_color_line_strong);
+    }
 }
 
 .wa_tabs_slider {
@@ -819,8 +819,6 @@ watch(
     .wa_tabs_tab:hover {
         color: var(--wa_color_text);
         background: var(--wa_color_hover);
-        box-shadow: var(--wa_shadow_thumb_soft);
-        transform: translateY(-1px);
     }
 }
 
@@ -857,7 +855,7 @@ watch(
 @media (hover: none) {
     .wa_tabs_tab:active:not(:disabled),
     .wa_tabs_tab.pressed:not(:disabled) {
-        box-shadow: var(--wa_shadow_thumb_soft);
+        background: var(--wa_color_hover);
     }
 }
 

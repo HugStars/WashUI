@@ -1,5 +1,5 @@
 <template>
-    <Teleport v-if="Target" :to="Target">
+    <Teleport :to="Target || 'body'" :disabled="!Target">
         <div class="wa_page_header" :class="[`wa_page_header_${align}`]">
             <span v-if="$slots['icon-left'] || $slots.icon" class="wa_page_icon wa_page_icon_left">
                 <slot name="icon-left">

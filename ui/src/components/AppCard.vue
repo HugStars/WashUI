@@ -1,11 +1,11 @@
 <template>
     <section class="wa_card" :class="{ wa_card_compact: compact, wa_frosted: frosted }">
-        <header v-if="title || $slots.title || $slots.extra" class="wa_card_head">
+        <header v-if="title || $slots.title || $slots.actions" class="wa_card_head">
             <h2 v-if="title || $slots.title" class="wa_card_title">
                 <slot name="title">{{ title }}</slot>
             </h2>
-            <div v-if="$slots.extra" class="wa_card_extra">
-                <slot name="extra" />
+            <div v-if="$slots.actions" class="wa_card_actions">
+                <slot name="actions" />
             </div>
         </header>
         <slot />
@@ -67,7 +67,7 @@ defineProps({
     background: var(--wa_color_text_muted);
 }
 
-.wa_card_extra {
+.wa_card_actions {
     display: flex;
     align-items: center;
     gap: 10px;

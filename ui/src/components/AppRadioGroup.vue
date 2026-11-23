@@ -1,27 +1,37 @@
 <template>
-    <div ref="GroupEl" class="wa_choice_group" :class="[
-        `wa_choice_group_${direction}`,
-        {
-            'wa_choice_group_right': direction === 'vertical' && align === 'right',
-            'wa_choice_group_between': direction === 'vertical' && IsBetween,
-            'wa_choice_group_segmented': variant === 'segmented',
-            'wa_choice_group_segmented_sm': variant === 'segmented' && SegmentedSize === 'sm',
-            'wa_choice_group_segmented_md': variant === 'segmented' && SegmentedSize === 'md',
-            'wa_choice_group_segmented_rect': variant === 'segmented' && shape === 'rect',
-            glider_ready: GliderReady,
-        },
-    ]" role="radiogroup" :aria-label="ariaLabel" @pointerdown="OnPressStart">
-        <span v-if="variant === 'segmented'" class="wa_choice_group_glider"
-            :class="{ ready: GliderReady }" :style="GliderStyle" aria-hidden="true">
-            <span class="wa_choice_group_glider_inner" :class="{ bounce: GliderBounce, press: GliderPress }"
-                @animationend="OnGliderAnimationEnd"></span>
+    <div class="wa_field">
+        <span v-if="label || $slots.label" class="wa_field_label">
+            <slot name="label">{{ label }}</slot>
         </span>
 
-        <slot />
+        <div ref="GroupEl" class="wa_choice_group" :class="[
+            `wa_choice_group_${direction}`,
+            {
+                'wa_choice_group_right': direction === 'vertical' && align === 'right',
+                'wa_choice_group_between': direction === 'vertical' && IsBetween,
+                'wa_choice_group_segmented': variant === 'segmented',
+                'wa_choice_group_segmented_sm': variant === 'segmented' && SegmentedSize === 'sm',
+                'wa_choice_group_segmented_md': variant === 'segmented' && SegmentedSize === 'md',
+                'wa_choice_group_segmented_rect': variant === 'segmented' && shape === 'rect',
+                glider_ready: GliderReady,
+            },
+        ]" role="radiogroup" :aria-label="label || ariaLabel" @pointerdown="OnPressStart" @keydown="OnKeydown">
+            <span v-if="variant === 'segmented'" class="wa_choice_group_glider"
+                :class="{ ready: GliderReady }" :style="GliderStyle" aria-hidden="true">
+                <span class="wa_choice_group_glider_inner" :class="{ bounce: GliderBounce, press: GliderPress }"
+                    @animationend="OnGliderAnimationEnd"></span>
+            </span>
 
-        <AppRadio v-for="item in options" :key="item.value" :ref="el => SetRowEl(item.value, el)"
-            :value="item.value" :label="item.label" :disabled="item.disabled"
-            :class="{ pressed: variant === 'segmented' && PressedKey === item.value }" />
+            <slot />
+
+            <AppRadio v-for="(item, index) in options" :key="item.value" :ref="el => SetRowEl(item.value, el)"
+                :value="item.value" :label="item.label" :disabled="item.disabled"
+                :tabindex="index === ActiveIndex ? 0 : -1"
+                :class="{ pressed: variant === 'segmented' && PressedKey === item.value }" />
+        </div>
+
+        <p v-if="DisplayError" class="wa_field_error">{{ DisplayError }}</p>
+        <p v-else-if="hint" class="wa_field_hint">{{ hint }}</p>
     </div>
 </template>
 
@@ -29,6 +39,8 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { createChoiceGroup, provideChoiceGroup } from '../composables/useChoiceGroup.js'
 import { usePressFeedback } from '../composables/usePressFeedback.js'
+import { useReducedMotion } from '../composables/useReducedMotion.js'
+import { useValidation } from '../composables/useValidation.js'
 import AppRadio from './AppRadio.vue'
 
 const props = defineProps({
@@ -81,13 +93,34 @@ const props = defineProps({
         type: String,
         default: 'left',
     },
-    /**
-     * 单选框尺寸，数字按 px 处理；segmented 下支持 sm（紧凑）和 md（默认）
-     * @type {number | 'sm' | 'md'}
-     */
-    size: {
+    /** 普通单选框尺寸，数字按 px 处理；segmented 使用下面的 size */
+    checkSize: {
         type: [Number, String],
         default: 20,
+    },
+    /**
+     * segmented 外观尺寸
+     * @type {'sm' | 'md'}
+     */
+    size: {
+        type: String,
+        default: 'sm',
+    },
+    label: {
+        type: String,
+        default: '',
+    },
+    hint: {
+        type: String,
+        default: '',
+    },
+    error: {
+        type: String,
+        default: '',
+    },
+    rule: {
+        type: [Object, Array],
+        default: null,
     },
     ariaLabel: {
         type: String,
@@ -97,7 +130,15 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
-const { group, IsBetween } = createChoiceGroup(props, emit, false)
+const { DisplayError, OnChange: ValidateChange } = useValidation(
+    props,
+    () => props.modelValue,
+    { defaultTrigger: 'change' }
+)
+const { group, IsBetween } = createChoiceGroup(props, (event, value) => {
+    emit(event, value)
+    if (event === 'change') ValidateChange(value)
+}, false)
 provideChoiceGroup(group)
 
 const GroupEl = ref(null)
@@ -110,12 +151,44 @@ const { Press: GliderPress, PressedKey, Start: OnPressStart } = usePressFeedback
     RowEls
 )
 const SegmentedSize = computed(() => props.size === 'md' ? 'md' : 'sm')
-const ReducedMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-    ? window.matchMedia('(prefers-reduced-motion: reduce)')
-    : null
+const ActiveIndex = computed(() => {
+    const index = props.options.findIndex(item => item.value === props.modelValue)
+    return index >= 0 ? index : 0
+})
+const ReducedMotion = useReducedMotion()
 let ResizeObserverInstance = null
 let GliderFrame = 0
 let BounceFrame = 0
+
+// section 键盘导航
+// * roving tabindex：组内只有一个可 Tab 项，方向键切换焦点并选中
+function OnKeydown(event) {
+    const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End']
+    if (!keys.includes(event.key)) return
+
+    const groupEl = GroupEl.value
+    if (!groupEl) return
+
+    const radios = [...groupEl.querySelectorAll('.wa_radio:not(:disabled)')]
+    if (!radios.length) return
+
+    event.preventDefault()
+
+    const current = radios.indexOf(document.activeElement)
+    let next = current < 0 ? 0 : current
+
+    if (event.key === 'Home') next = 0
+    else if (event.key === 'End') next = radios.length - 1
+    else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        next = current <= 0 ? radios.length - 1 : current - 1
+    } else if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        next = (current + 1) % radios.length
+    }
+
+    const target = radios[next]
+    target.focus({ preventScroll: true })
+    target.click()
+}
 
 // 记录每个选项的外层行元素，供长按反馈匹配当前按下的是哪一项
 function SetRowEl(value, instance) {
@@ -162,7 +235,7 @@ function PlayBounce() {
     cancelAnimationFrame(BounceFrame)
     GliderBounce.value = false
 
-    if (ReducedMotion?.matches) return
+    if (ReducedMotion.value) return
 
     BounceFrame = requestAnimationFrame(() => {
         BounceFrame = requestAnimationFrame(() => {

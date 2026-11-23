@@ -1,5 +1,5 @@
 <template>
-    <div class="wa_empty">
+    <div class="wa_empty" :class="{ wa_empty_compact: compact }" :style="Style">
         <slot>
             <p>{{ text }}</p>
         </slot>
@@ -8,11 +8,25 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
     text: {
         type: String,
         default: '暂无数据',
     },
+    /** 紧凑高度，适合弹窗/小容器 */
+    compact: Boolean,
+    /** 自定义最小高度，数字按 px 处理 */
+    minHeight: {
+        type: [Number, String],
+        default: '',
+    },
+})
+
+const Style = computed(() => {
+    if (!props.minHeight) return undefined
+    return { minHeight: typeof props.minHeight === 'number' ? `${props.minHeight}px` : props.minHeight }
 })
 </script>
 
@@ -23,11 +37,15 @@ defineProps({
     align-items: center;
     justify-content: center;
     gap: 14px;
-    min-height: 420px;
+    min-height: var(--wa_size_empty);
     color: var(--wa_color_text_subtle);
 }
 
+.wa_empty_compact {
+    min-height: var(--wa_size_empty_compact);
+}
+
 .wa_empty p {
-    font-size: 13px;
+    font-size: var(--wa_font_size_base);
 }
 </style>

@@ -53,6 +53,9 @@ defineProps({
 <style>
 .wa_panel {
     --wa_panel_tone: var(--wa_color_line_strong);
+    --wa_panel_soft: var(--wa_color_soft);
+    --wa_panel_line: var(--wa_color_line);
+
     display: grid;
     gap: 14px;
     min-width: 0;
@@ -74,9 +77,9 @@ defineProps({
 
     gap: 6px;
     padding: 10px 14px;
-    border: 1px solid color-mix(in srgb, var(--wa_panel_tone) 26%, transparent);
+    border: 1px solid var(--wa_panel_line);
     border-radius: var(--wa_radius_popover);
-    background: color-mix(in srgb, var(--wa_panel_tone) 7%, var(--wa_color_surface));
+    background: var(--wa_panel_soft);
 }
 
 .wa_panel_tip.wa_panel_compact {
@@ -135,18 +138,26 @@ defineProps({
 
 .wa_panel_success {
     --wa_panel_tone: var(--wa_color_success);
+    --wa_panel_soft: var(--wa_color_success_soft);
+    --wa_panel_line: var(--wa_color_success_soft);
 }
 
 .wa_panel_warning {
     --wa_panel_tone: var(--wa_color_warning);
+    --wa_panel_soft: var(--wa_color_warning_soft);
+    --wa_panel_line: var(--wa_color_warning_soft);
 }
 
 .wa_panel_help {
     --wa_panel_tone: var(--wa_color_help);
+    --wa_panel_soft: var(--wa_color_help_soft);
+    --wa_panel_line: var(--wa_color_help_soft);
 }
 
 .wa_panel_danger {
     --wa_panel_tone: var(--wa_color_danger);
+    --wa_panel_soft: var(--wa_color_danger_soft);
+    --wa_panel_line: var(--wa_color_danger_soft);
 }
 
 .wa_panel_head {
@@ -194,4 +205,5 @@ defineProps({
     align-items: center;
     gap: 10px;
 }
+
 </style>

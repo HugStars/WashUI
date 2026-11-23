@@ -1,9 +1,9 @@
 <template>
     <template v-if="mode === 'dialog'">
-        <span class="wa_check_menu_trigger_wrap" @click="ToggleDialog">
-            <slot name="trigger" :open="DialogOpen" :toggle="ToggleDialog">
-                <AppButton ref="TriggerEl" class="wa_check_menu_trigger" variant="line" size="sm" :disabled="disabled"
-                    :aria-expanded="DialogOpen" aria-haspopup="dialog">
+        <span class="wa_check_menu_trigger_wrap">
+            <slot name="trigger" :open="DialogOpen" :toggle="ToggleDialog" :trigger-props="DialogTriggerProps">
+                <AppButton ref="TriggerEl" v-bind="DialogTriggerProps" class="wa_check_menu_trigger" variant="line"
+                    size="sm" :disabled="disabled">
                     <span class="wa_check_menu_text">{{ Summary }}</span>
                     <AppIcon name="chevron" :size="14" class="wa_check_menu_arrow" :class="{ on: DialogOpen }" />
                 </AppButton>
@@ -11,7 +11,7 @@
         </span>
 
         <AppDialog v-model:open="DialogOpen" :title="title" :aria-label="title || ariaLabel" :gesture="false">
-            <AppCheckPanel :groups="groups" :options="options" :model-value="Values" :size="size"
+            <AppCheckPanel :groups="groups" :options="options" :model-value="Values" :check-size="checkSize" autofocus
                 :disabled="disabled" :empty-text="emptyText" @update:model-value="Update" />
             <template #footer>
                 <AppButton variant="line" :disabled="!Values.length" @click="Clear">清空</AppButton>
@@ -22,17 +22,17 @@
 
     <AppPopover v-else :placement="PopoverPlacement" :width="width" :padding="6" role="dialog"
         :aria-label="ariaLabel" :disabled="disabled">
-        <template #trigger="{ open, toggle }">
-            <slot name="trigger" :open="open" :toggle="toggle">
-                <AppButton ref="TriggerEl" class="wa_check_menu_trigger" variant="line" size="sm" :disabled="disabled"
-                    :aria-expanded="open" aria-haspopup="dialog">
+        <template #trigger="{ open, toggle, triggerProps }">
+            <slot name="trigger" :open="open" :toggle="toggle" :trigger-props="triggerProps">
+                <AppButton ref="TriggerEl" v-bind="triggerProps" class="wa_check_menu_trigger" variant="line"
+                    size="sm" :disabled="disabled">
                     <span class="wa_check_menu_text">{{ Summary }}</span>
                     <AppIcon name="chevron" :size="14" class="wa_check_menu_arrow" :class="{ on: open }" />
                 </AppButton>
             </slot>
         </template>
 
-        <AppCheckPanel :groups="groups" :options="options" :model-value="Values" :size="size"
+        <AppCheckPanel :groups="groups" :options="options" :model-value="Values" :check-size="checkSize" autofocus
             :disabled="disabled" :empty-text="emptyText" @update:model-value="Update" />
     </AppPopover>
 </template>
@@ -40,6 +40,7 @@
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useChoiceSummary } from '../composables/useChoiceSummary.js'
+import { useReducedMotion } from '../composables/useReducedMotion.js'
 import AppButton from './AppButton.vue'
 import AppCheckPanel from './AppCheckPanel.vue'
 import AppDialog from './AppDialog.vue'
@@ -80,7 +81,7 @@ const props = defineProps({
         type: [Number, String],
         default: 240,
     },
-    size: {
+    checkSize: {
         type: [Number, String],
         default: 18,
     },
@@ -114,9 +115,7 @@ const PopoverPlacement = computed(() => props.align === 'left'
     : props.align === 'right' ? 'bottom-right' : 'bottom')
 const { Values, Summary } = useChoiceSummary(props)
 
-const ReducedMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-    ? window.matchMedia('(prefers-reduced-motion: reduce)')
-    : null
+const ReducedMotion = useReducedMotion()
 
 function TriggerNode() {
     return TriggerEl.value?.$el || TriggerEl.value || null
@@ -128,7 +127,7 @@ function TriggerNode() {
  */
 async function AnimateWidth() {
     const el = TriggerNode()
-    if (!el || typeof el.animate !== 'function' || ReducedMotion?.matches) return
+    if (!el || typeof el.animate !== 'function' || ReducedMotion.value) return
 
     await nextTick()
     const next = el.offsetWidth
@@ -167,6 +166,17 @@ function ToggleDialog() {
     if (props.disabled) return
     DialogOpen.value = !DialogOpen.value
 }
+
+const DialogTriggerProps = computed(() => ({
+    'aria-expanded': DialogOpen.value,
+    'aria-haspopup': 'dialog',
+    onClick: ToggleDialog,
+    onKeydown: event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return
+        event.preventDefault()
+        ToggleDialog()
+    },
+}))
 </script>
 
 <style>

@@ -70,7 +70,7 @@ const props = defineProps({
     },
 })
 
-const emit = defineEmits(['update:modelValue', 'change', 'select'])
+const emit = defineEmits(['update:modelValue', 'select'])
 
 const BodyEl = ref(null)
 const GliderReady = ref(false)
@@ -122,10 +122,17 @@ function IsActive(item, index) {
 }
 
 function ItemTag(item) {
-    return item.href ? props.linkComponent : 'button'
+    return item.to || item.href ? props.linkComponent : 'button'
 }
 
 function LinkProps(item) {
+    if (item.to) {
+        if (props.linkComponent === 'a') {
+            return { href: typeof item.to === 'string' ? item.to : '#' }
+        }
+        return { to: item.to }
+    }
+
     if (!item.href) return { type: 'button' }
 
     if (props.linkComponent === 'a') {
@@ -168,7 +175,6 @@ function OnClick(item, index, event) {
 
     const value = ValueOf(item, index)
     emit('update:modelValue', value)
-    emit('change', value)
     emit('select', item)
 
     // 没有 href 的菜单项是动作按钮，不应该尝试跳转
@@ -441,8 +447,8 @@ onUnmounted(() => {
     flex: none;
 }
 
-/* 选中项是反色底，neutral 角标需要同步反转，否则会和链接背景融在一起 */
-.wa_nav_menu_link.on .wa_nav_menu_badge.wa_badge_neutral {
+/* 选中项是反色底，default 角标需要同步反转，否则会和链接背景融在一起 */
+.wa_nav_menu_link.on .wa_nav_menu_badge.wa_badge_default {
     --wa_badge_bg: var(--wa_color_on_highlight);
     --wa_badge_color: var(--wa_color_highlight);
 }

@@ -118,6 +118,10 @@ function Add(files) {
     const accepted = []
 
     for (const file of source) {
+        if (IsDuplicate(file, current) || IsDuplicate(file, accepted)) {
+            emit('reject', { file, reason: 'duplicate' })
+            continue
+        }
         if (props.maxCount && current.length + accepted.length >= props.maxCount) {
             emit('reject', { file, reason: 'count' })
             continue
@@ -138,6 +142,12 @@ function Add(files) {
     const next = [...current, ...accepted]
     emit('update:modelValue', next)
     emit('change', next)
+}
+
+function IsDuplicate(file, list) {
+    return list.some(item => item.name === file.name
+        && item.size === file.size
+        && item.lastModified === file.lastModified)
 }
 
 function MatchesAccept(file) {

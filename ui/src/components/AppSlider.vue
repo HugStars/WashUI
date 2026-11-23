@@ -27,11 +27,15 @@
             <span v-if="ShowValue" class="wa_slider_value"
                 :class="{ wa_slider_value_on_hover: DisplayMode === 'hover' }">{{ ValueText }}</span>
         </div>
+
+        <p v-if="DisplayError" class="wa_field_error wa_slider_message">{{ DisplayError }}</p>
+        <p v-else-if="hint" class="wa_field_hint wa_slider_message">{{ hint }}</p>
     </div>
 </template>
 
 <script setup>
 import { computed, ref, useId, useSlots, watch } from 'vue'
+import { useValidation } from '../composables/useValidation.js'
 
 const VALUE_DISPLAY = new Set(['hover', 'always', 'none'])
 
@@ -100,9 +104,26 @@ const props = defineProps({
         type: String,
         default: 'sm',
     },
+    hint: {
+        type: String,
+        default: '',
+    },
+    error: {
+        type: String,
+        default: '',
+    },
+    rule: {
+        type: [Object, Array],
+        default: null,
+    },
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
+const { DisplayError, OnChange: ValidateChange } = useValidation(
+    props,
+    () => props.modelValue,
+    { defaultTrigger: 'change' }
+)
 
 const slots = useSlots()
 const SliderId = useId()
@@ -260,7 +281,10 @@ function Commit(value, withChange = false, keepRange = false) {
 
     LocalValue.value = next
     emit('update:modelValue', next)
-    if (withChange) emit('change', next)
+    if (withChange) {
+        emit('change', next)
+        ValidateChange(next)
+    }
 }
 
 function FocusThumb() {
@@ -321,7 +345,10 @@ function OnPointerUp() {
         PointerId = null
     }
 
-    if (LocalValue.value !== DragStartValue) emit('change', LocalValue.value)
+    if (LocalValue.value !== DragStartValue) {
+        emit('change', LocalValue.value)
+        ValidateChange(LocalValue.value)
+    }
 }
 
 function OnKeydown(event) {
@@ -564,5 +591,8 @@ function OnKeydown(event) {
     .wa_slider_thumb:active::before {
         transform: none;
     }
+}
+.wa_slider_message {
+    margin-top: 6px;
 }
 </style>

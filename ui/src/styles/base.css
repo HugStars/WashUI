@@ -82,7 +82,8 @@ summary:focus-visible,
     font-family: var(--wa_font_mono);
 }
 
-.wa_tag {
+/* 纯 HTML 标签样式；不要用 .wa_tag，避免覆盖 AppTag 组件的 tone 颜色和尺寸 */
+.wa_tag_static {
     display: inline-flex;
     align-items: center;
     gap: 4px;

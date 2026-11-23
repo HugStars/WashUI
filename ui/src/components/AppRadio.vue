@@ -2,7 +2,7 @@
     <div class="wa_choice_row" :class="{ wa_choice_row_segmented: Segmented }" :style="BetweenStyle"
         @click.self="Select">
         <button v-if="Segmented" :id="RadioId" type="button" class="wa_radio wa_radio_segmented"
-            :class="{ on: Checked, closing: Closing }" role="radio" :aria-checked="Checked"
+            :class="{ on: Checked, closing: Closing }" role="radio" :aria-checked="Checked" :tabindex="tabindex"
             :aria-label="HasLabel ? undefined : AccessibleLabel" :disabled="Disabled" @click="Select">
             <span class="wa_radio_segmented_text">
                 <slot>{{ label }}</slot>
@@ -16,7 +16,7 @@
             </label>
 
             <button :id="RadioId" type="button" class="wa_radio" :class="{ on: Checked, closing: Closing }"
-                role="radio" :style="SizeStyle" :aria-checked="Checked"
+                role="radio" :style="SizeStyle" :aria-checked="Checked" :tabindex="tabindex"
                 :aria-labelledby="HasLabel ? `${RadioId}-label` : undefined"
                 :aria-label="HasLabel ? undefined : AccessibleLabel" :disabled="Disabled" @click="Select">
                 <span class="wa_radio_dot" aria-hidden="true"></span>
@@ -33,6 +33,7 @@
 <script setup>
 import { computed, onUnmounted, ref, useId, useSlots, watch } from 'vue'
 import { useChoiceItemState } from '../composables/useChoiceGroup.js'
+import { useReducedMotion } from '../composables/useReducedMotion.js'
 
 const props = defineProps({
     modelValue: Boolean,
@@ -58,9 +59,14 @@ const props = defineProps({
         default: '',
     },
     /** 单选框尺寸，数字按 px 处理；在分组中默认继承分组尺寸 */
-    size: {
+    checkSize: {
         type: [Number, String],
         default: null,
+    },
+    /** 由分组控制的 roving tabindex；单独使用时保持原生按钮行为 */
+    tabindex: {
+        type: [Number, String],
+        default: undefined,
     },
     /** 纵向两端对齐时，让标签和单选框分别贴左右两侧 */
     between: Boolean,
@@ -80,16 +86,14 @@ const SizeStyle = computed(() => ({
 }))
 
 // 取消选中时让外圈短暂保持选中，等圆点缩小后再释放，取消过程更明显
-const ReducedMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    : false
+const ReducedMotion = useReducedMotion()
 const Closing = ref(false)
 let CloseTimer = 0
 
 watch(Checked, (checked, wasChecked) => {
     clearTimeout(CloseTimer)
 
-    if (checked || !wasChecked || ReducedMotion) {
+    if (checked || !wasChecked || ReducedMotion.value) {
         Closing.value = false
         return
     }
@@ -232,7 +236,8 @@ function Select() {
 
 /* * 与 AppTabs 一致：按下立即缩放；长按滑块缩放由 AppRadioGroup 的 press 状态控制 */
 .wa_radio.wa_radio_segmented:active:not(:disabled),
-.wa_choice_row.pressed .wa_radio.wa_radio_segmented {
+.wa_choice_row.pressed .wa_radio.wa_radio_segmented:not(.on) {
+    background: var(--wa_color_hover);
     transform: scale(.94);
 }
 

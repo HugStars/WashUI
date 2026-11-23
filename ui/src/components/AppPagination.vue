@@ -90,7 +90,7 @@ const props = defineProps({
     },
 })
 
-const emit = defineEmits(['update:modelValue', 'update:pageSize', 'change', 'page-size-change'])
+const emit = defineEmits(['update:modelValue', 'update:pageSize', 'change'])
 
 const InternalPage = ref(1)
 const InternalPageSize = ref(10)
@@ -170,7 +170,6 @@ function ChangeSize(value) {
     }
 
     emit('update:pageSize', size)
-    emit('page-size-change', { pageSize: size, page })
     emit('change', { page, pageSize: size })
 }
 

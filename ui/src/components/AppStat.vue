@@ -31,9 +31,12 @@ defineProps({
 }
 
 .wa_stat_label {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
     margin-bottom: 4px;
-    font-size: 12px;
+    font-size: var(--wa_font_size_sm);
     color: var(--wa_color_text_subtle);
 }
 

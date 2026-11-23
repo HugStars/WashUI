@@ -82,7 +82,7 @@ const props = defineProps({
     frosted: Boolean,
 })
 
-const emit = defineEmits(['update:modelValue', 'clear'])
+const emit = defineEmits(['update:modelValue', 'change', 'clear'])
 
 const InputId = useId()
 const HintId = `${InputId}-hint`
@@ -122,6 +122,7 @@ onUnmounted(() => clearTimeout(MessageTimer))
 function HandleInput(event) {
     const value = event.target.value
     emit('update:modelValue', value)
+    emit('change', value)
     ValidateInput(value)
 }
 

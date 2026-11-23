@@ -11,7 +11,7 @@ import { computed } from 'vue'
 
 const props = defineProps({
     /**
-     * @type {'default' | 'primary' | 'line' | 'danger' | 'icon'}
+     * @type {'default' | 'primary' | 'line' | 'danger'}
      */
     variant: {
         type: String,
@@ -132,32 +132,12 @@ const Classes = computed(() => {
     font-size: var(--wa_btn_font, 13px);
 }
 
-.wa_btn_icon {
-    position: relative;
-    flex: none;
-    width: var(--wa_btn_icon_size, 40px);
-    height: var(--wa_btn_icon_size, 40px);
-    padding: 0;
-}
-
-.wa_btn_icon .wa_spinner {
-    position: absolute;
-    inset: 0;
-    margin: auto;
-}
-
-.wa_btn_loading.wa_btn_icon> :not(.wa_spinner) {
-    visibility: hidden;
-}
-
-.wa_btn_icon.wa_btn_sm {
-    width: var(--wa_btn_icon_size, 32px);
-    height: var(--wa_btn_icon_size, 32px);
-}
-
 .wa_btn .wa_spinner {
     width: 14px;
     height: 14px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
     animation:
         wa_spin var(--wa_duration_loop) linear infinite,
         wa_btn_spinner_in var(--wa_duration_fast) var(--wa_ease_spring) both;

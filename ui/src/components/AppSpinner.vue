@@ -1,5 +1,7 @@
 <template>
-    <span class="wa_spinner" :class="{ wa_spinner_dotted: dot }" :style="Style" aria-hidden="true">
+    <span class="wa_spinner" :class="{ wa_spinner_dotted: dot }" :style="Style"
+        :role="AccessibleLabel ? 'status' : undefined" :aria-label="AccessibleLabel || undefined"
+        :aria-hidden="AccessibleLabel ? undefined : 'true'">
         <span v-if="dot" class="wa_spinner_dot"></span>
     </span>
 </template>
@@ -14,12 +16,19 @@ const props = defineProps({
     },
     /** dot 模式直接渲染一个呼吸绿点，不显示旋转加载圈，适合 worker / 在线状态 */
     dot: Boolean,
+    /** 无障碍名称；旋转圈默认「加载中」，dot 默认装饰性 */
+    label: {
+        type: String,
+        default: undefined,
+    },
 })
 
 const Style = computed(() => {
     const size = typeof props.size === 'number' ? `${props.size}px` : props.size
     return { width: size, height: size }
 })
+
+const AccessibleLabel = computed(() => props.label ?? (props.dot ? '' : '加载中'))
 </script>
 
 <style>
@@ -49,18 +58,18 @@ const Style = computed(() => {
     height: min(10px, 100%);
     border-radius: 50%;
     background: var(--wa_color_dot_success);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--wa_color_dot_success) 18%, transparent);
+    box-shadow: 0 0 0 4px var(--wa_color_success_soft);
     animation: wa_spinner_dot 2s infinite;
 }
 
 @keyframes wa_spinner_dot {
     0%,
     100% {
-        box-shadow: 0 0 0 4px color-mix(in srgb, var(--wa_color_dot_success) 18%, transparent);
+        box-shadow: 0 0 0 4px var(--wa_color_success_soft);
     }
 
     70% {
-        box-shadow: 0 0 0 12px color-mix(in srgb, var(--wa_color_dot_success) 0%, transparent);
+        box-shadow: 0 0 0 12px transparent;
     }
 }
 

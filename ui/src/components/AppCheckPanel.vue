@@ -1,6 +1,6 @@
 <template>
-    <AppChoiceList multiple :model-value="modelValue" :options="options" :groups="groups" :size="size"
-        :disabled="disabled" :empty-text="emptyText" :aria-label="ariaLabel"
+    <AppChoiceList multiple :model-value="modelValue" :options="options" :groups="groups" :check-size="checkSize"
+        :disabled="disabled" :autofocus="autofocus" :empty-text="emptyText" :aria-label="ariaLabel"
         @update:model-value="emit('update:modelValue', $event)" @change="emit('change', $event)" />
 </template>
 
@@ -20,11 +20,12 @@ defineProps({
         type: Array,
         default: () => [],
     },
-    size: {
+    checkSize: {
         type: [Number, String],
         default: 18,
     },
     disabled: Boolean,
+    autofocus: Boolean,
     emptyText: {
         type: String,
         default: '暂无选项',

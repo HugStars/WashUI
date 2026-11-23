@@ -1,9 +1,10 @@
 <template>
-    <component :is="tag" class="wa_number">{{ display }}</component>
+    <component :is="tag" class="wa_number" :aria-live="live ? 'polite' : undefined">{{ display }}</component>
 </template>
 
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useReducedMotion } from '../composables/useReducedMotion.js'
 
 const props = defineProps({
     value: {
@@ -42,10 +43,12 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    /** 数值变化时用 aria-live 播报，适合实时统计 */
+    live: Boolean,
 })
 
 const current = ref(0)
-const reduceMotion = ref(false)
+const reduceMotion = useReducedMotion()
 
 let frame = 0
 let startedAt = 0
@@ -110,10 +113,6 @@ function Animate(from, to, duration) {
 }
 
 onMounted(() => {
-    reduceMotion.value = typeof window !== 'undefined' && window.matchMedia
-        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        : false
-
     const initial = Number(props.from)
     const start = Number.isFinite(initial) ? initial : 0
 

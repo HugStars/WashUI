@@ -5,7 +5,7 @@
             <div ref="HeaderBarTarget" class="wa_header_bar"></div>
         </header>
 
-        <nav v-if="nav.length" ref="NavEl" class="wa_nav"
+        <nav v-if="NavItems.length" ref="NavEl" class="wa_nav"
             :class="[{ slider_ready: SliderReady }, navLayout !== 'auto' && `wa_nav_${navLayout}`]" aria-label="主导航"
             @pointerdown="OnPressStart" @contextmenu="OnContextMenu">
             <span class="wa_nav_slider" :class="{ ready: SliderReady }" :style="SliderStyle" aria-hidden="true">
@@ -13,21 +13,20 @@
                     @animationend="OnSliderAnimationEnd"></span>
             </span>
 
-            <button v-for="item in VisibleNav" :key="item.name" :ref="el => SetItemEl(item.name, el)" type="button"
-                class="wa_nav_item" :class="{ on: item.name === active, pressed: PressedKey === item.name }"
-                :aria-current="item.name === active ? 'page' : undefined" :aria-label="item.label"
-                :title="navLayout === 'icon' ? item.label : undefined" @click="emit('navigate', item)">
+            <button v-for="item in VisibleNav" :key="item.value" :ref="el => SetItemEl(item.value, el)" type="button"
+                class="wa_nav_item" :class="{ on: item.value === active, pressed: PressedKey === item.value }"
+                :aria-current="item.value === active ? 'page' : undefined" :aria-label="item.label"
+                :title="navLayout === 'icon' ? item.label : undefined" @click="OnNavClick(item)">
                 <AppIcon :name="item.icon" :size="20" />
                 <span class="wa_nav_label">{{ item.label }}</span>
             </button>
 
             <AppPopover v-if="MoreNav.length" v-model:open="MoreOpen" placement="top" :width="128" :gap="12"
                 :padding="6" role="listbox" aria-label="更多导航">
-                <template #trigger="{ open }">
-                    <button :ref="el => SetItemEl(MORE_KEY, el)" type="button" class="wa_nav_item"
-                        :class="{ on: MoreActive, open, pressed: PressedKey === MORE_KEY }"
-                        :aria-current="MoreActive ? 'page' : undefined" aria-label="更多" aria-haspopup="listbox"
-                        :aria-expanded="open" title="更多">
+                <template #trigger="{ open, triggerProps }">
+                    <button :ref="el => SetItemEl(MORE_KEY, el)" v-bind="triggerProps" type="button"
+                        class="wa_nav_item" :class="{ on: MoreActive, open, pressed: PressedKey === MORE_KEY }"
+                        :aria-current="MoreActive ? 'page' : undefined" aria-label="更多" title="更多">
                         <AppIcon name="more" :size="20" />
                         <span class="wa_nav_label">更多</span>
                     </button>
@@ -56,17 +55,24 @@ import AppPopover from '../components/AppPopover.vue'
 import AppSelectPanel from '../components/AppSelectPanel.vue'
 import { HEADER_BAR_TARGET, HEADER_TARGET } from '../core/keys.js'
 import { usePressFeedback } from '../composables/usePressFeedback.js'
+import { useReducedMotion } from '../composables/useReducedMotion.js'
 
 const MAX_NAV = 4
 const MORE_KEY = Symbol('wash-more')
 
 const props = defineProps({
-    nav: {
+    /** 平铺导航项：{ value, label, icon } */
+    items: {
+        type: Array,
+        default: () => [],
+    },
+    /** 分组导航：{ label?, items: [] } */
+    groups: {
         type: Array,
         default: () => [],
     },
     active: {
-        type: [String, Symbol],
+        type: [String, Number, Symbol],
         default: '',
     },
     /**
@@ -75,11 +81,6 @@ const props = defineProps({
     navLayout: {
         type: String,
         default: 'auto',
-    },
-    // note 预留给顶部进度条；当前内置 AppRouteBar 已关闭，需要时单独挂载
-    loading: {
-        type: Boolean,
-        default: undefined,
     },
     /** 移动端根据手指上滑 / 下滑自动隐藏或显示底部导航 */
     autoHideNav: Boolean,
@@ -90,25 +91,34 @@ const props = defineProps({
     },
 })
 
-const emit = defineEmits(['navigate'])
+const emit = defineEmits(['update:active', 'navigate'])
+
+const NavItems = computed(() => props.groups.length
+    ? props.groups.flatMap(group => group.items || [])
+    : props.items)
 
 const HeaderTarget = ref(null)
 const HeaderBarTarget = ref(null)
 const MoreOpen = ref(false)
 const Media = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(max-width: 860px)') : null
 const TouchMedia = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(hover: none)') : null
-const ReducedMotion = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null
+const ReducedMotion = useReducedMotion()
 const Mobile = ref(Media?.matches ?? false)
 const NavHidden = ref(false)
-const HasMore = computed(() => Mobile.value && props.nav.length > MAX_NAV)
-const VisibleNav = computed(() => HasMore.value ? props.nav.slice(0, MAX_NAV - 1) : props.nav)
-const MoreNav = computed(() => HasMore.value ? props.nav.slice(MAX_NAV - 1) : [])
-const MoreActive = computed(() => MoreNav.value.some(item => item.name === props.active))
+const HasMore = computed(() => Mobile.value && NavItems.value.length > MAX_NAV)
+const VisibleNav = computed(() => HasMore.value ? NavItems.value.slice(0, MAX_NAV - 1) : NavItems.value)
+const MoreNav = computed(() => HasMore.value ? NavItems.value.slice(MAX_NAV - 1) : [])
+const MoreActive = computed(() => MoreNav.value.some(item => item.value === props.active))
 const MoreOptions = computed(() => MoreNav.value.map(item => ({
     label: item.label,
-    value: item.name,
+    value: item.value,
     icon: item.icon,
 })))
+
+function OnNavClick(item) {
+    emit('update:active', item.value)
+    emit('navigate', item)
+}
 
 const NavEl = ref(null)
 const ItemEls = new Map()
@@ -167,7 +177,7 @@ function PlayBounce() {
     cancelAnimationFrame(BounceFrame)
     SliderBounce.value = false
 
-    if (ReducedMotion?.matches) return
+    if (ReducedMotion.value) return
 
     BounceFrame = requestAnimationFrame(() => {
         BounceFrame = requestAnimationFrame(() => {
@@ -273,8 +283,8 @@ onUnmounted(() => {
 
 function SelectMore(item, close) {
     close()
-    const target = MoreNav.value.find(nav => nav.name === item.value)
-    if (target) emit('navigate', target)
+    const target = MoreNav.value.find(nav => nav.value === item.value)
+    if (target) OnNavClick(target)
 }
 
 watch(() => props.active, () => {
@@ -483,12 +493,12 @@ provide(HEADER_BAR_TARGET, HeaderBarTarget)
     transform: scale(.94);
 }
 
-/* * 触屏没有 hover，用按下态补上阴影反馈 */
+/* * 触屏没有 hover，用按下态补上背景反馈 */
 @media (hover: none) {
 
-    .wa_nav_item:active,
+    .wa_nav_item:active:not(:disabled),
     .wa_nav_item.pressed {
-        box-shadow: var(--wa_shadow_thumb_soft);
+        background: var(--wa_color_hover);
     }
 }
 

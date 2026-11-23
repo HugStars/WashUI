@@ -1,12 +1,13 @@
 <template>
-    <component :is="clickable ? 'button' : 'div'" class="wa_list_row"
+    <component :is="Tag" class="wa_list_row"
         :class="{
             on: selected,
             off: disabled,
             wa_list_row_top: labelPosition === 'top',
             wa_list_row_responsive: labelPosition === 'responsive',
         }"
-        :type="clickable ? 'button' : undefined" :disabled="clickable ? disabled : undefined"
+        v-bind="LinkAttrs" :type="Tag === 'button' ? 'button' : undefined"
+        :disabled="Tag === 'button' ? disabled : undefined"
         :aria-current="selected ? 'true' : undefined" @click="OnClick">
         <slot name="icon" />
         <span v-if="label || $slots.label" class="wa_list_label">
@@ -21,6 +22,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import AppIcon from './AppIcon.vue'
 
 const props = defineProps({
@@ -41,8 +43,25 @@ const props = defineProps({
         type: String,
         default: 'left',
     },
-    /** 行本身可点击 */
+    /** 行本身可点击；有 href / to 时自动渲染为链接 */
     clickable: Boolean,
+    /** 普通链接地址 */
+    href: {
+        type: String,
+        default: '',
+    },
+    /** 路由目标；配合 linkComponent 使用 */
+    to: {
+        type: [String, Object],
+        default: undefined,
+    },
+    /** 链接组件；传 RouterLink 时 to 生效 */
+    linkComponent: {
+        type: [String, Object, Function],
+        default: 'a',
+    },
+    /** 新窗口打开普通链接 */
+    external: Boolean,
     /** 右侧显示进入箭头 */
     arrow: Boolean,
     selected: Boolean,
@@ -51,8 +70,40 @@ const props = defineProps({
 
 const emit = defineEmits(['click'])
 
+const Tag = computed(() => {
+    if (props.to) return props.linkComponent || 'a'
+    if (props.href) return props.linkComponent || 'a'
+    return props.clickable ? 'button' : 'div'
+})
+
+const Interactive = computed(() => props.clickable || Boolean(props.href) || Boolean(props.to))
+
+const LinkAttrs = computed(() => {
+    if (props.to) {
+        if (props.linkComponent === 'a') {
+            return { href: typeof props.to === 'string' ? props.to : '#' }
+        }
+        return { to: props.to }
+    }
+
+    if (props.href) {
+        return {
+            href: props.href,
+            target: props.external ? '_blank' : undefined,
+            rel: props.external ? 'noreferrer' : undefined,
+        }
+    }
+
+    return {}
+})
+
 function OnClick(event) {
-    if (!props.clickable || props.disabled) return
+    if (props.disabled) {
+        event.preventDefault()
+        return
+    }
+
+    if (!Interactive.value) return
     emit('click', event)
 }
 </script>

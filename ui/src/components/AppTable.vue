@@ -33,7 +33,7 @@
                     <!-- * cell-* 与 empty 插槽同样透传，否则自定义单元格会退回默认文本 -->
                     <TableBody :columns="columns" :rows="SortedData" :loading="loading"
                         :loading-rows="loadingRows" :selectable="selectable" :empty-text="emptyText"
-                        :col-span="ColSpan" :select-is-left-edge="SelectIsLeftEdge"
+                        :col-span="ColSpan" :select-is-left-edge="SelectIsLeftEdge" :row-clickable="rowClickable"
                         :get-row-key="GetRowKey" :original-index="OriginalIndex"
                         :get-row-class="GetRowClass" :is-row-selected="IsRowSelected"
                         :is-row-selectable="IsRowSelectable" :toggle-row="ToggleRow"
@@ -68,7 +68,7 @@
 
                 <TableBody :columns="columns" :rows="SortedData" :loading="loading"
                     :loading-rows="loadingRows" :selectable="selectable" :empty-text="emptyText"
-                    :col-span="ColSpan" :select-is-left-edge="SelectIsLeftEdge"
+                    :col-span="ColSpan" :select-is-left-edge="SelectIsLeftEdge" :row-clickable="rowClickable"
                     :get-row-key="GetRowKey" :original-index="OriginalIndex"
                     :get-row-class="GetRowClass" :is-row-selected="IsRowSelected"
                     :is-row-selectable="IsRowSelectable" :toggle-row="ToggleRow"
@@ -91,6 +91,7 @@
 
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useReducedMotion } from '../composables/useReducedMotion.js'
 import TableBody from './table/TableBody.vue'
 import TableColgroup from './table/TableColgroup.vue'
 import TableHead from './table/TableHead.vue'
@@ -165,6 +166,8 @@ const props = defineProps({
         default: 'auto',
     },
     selectable: Boolean,
+    /** 行可点击：增加键盘 Tab 焦点，Enter / Space 触发行点击 */
+    rowClickable: Boolean,
     /** v-model:selectedKeys；不传时组件内部维护 */
     selectedKeys: {
         type: Array,
@@ -219,9 +222,7 @@ const FlashRows = ref(false)
 
 let FlashTimer = null
 let FlashFrame = 0
-const ReducedMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-    ? window.matchMedia('(prefers-reduced-motion: reduce)')
-    : null
+const ReducedMotion = useReducedMotion()
 
 const SortState = computed(() => props.sort === undefined ? InternalSort.value : props.sort)
 const SelectedKeys = computed(() => props.selectedKeys === undefined ? InternalSelected.value : props.selectedKeys)
@@ -297,7 +298,7 @@ const SortedData = computed(() => {
 
 // * 排序、筛选、翻页替换数据后，让行做一次错峰淡入
 watch(() => SortedData.value, () => {
-    if (ReducedMotion?.matches) return
+    if (ReducedMotion.value) return
 
     cancelAnimationFrame(FlashFrame)
     FlashRows.value = false
@@ -662,7 +663,7 @@ watch(ScrollEl, (el, old) => {
 <style>
 .wa_table {
     --wa_table_bg: var(--wa_color_surface);
-    --wa_table_head_bg: color-mix(in srgb, var(--wa_color_surface) 96%, var(--wa_color_text));
+    --wa_table_head_bg: linear-gradient(var(--wa_color_soft), var(--wa_color_soft)), var(--wa_color_surface);
     --wa_table_cell_pad: 12px 14px;
     --wa_table_font: 13px;
 
@@ -871,7 +872,7 @@ watch(ScrollEl, (el, old) => {
     }
 
     .wa_table_tr:hover .wa_table_sticky {
-        background: color-mix(in srgb, var(--wa_table_bg) 94%, var(--wa_color_text));
+        background: linear-gradient(var(--wa_color_hover), var(--wa_color_hover)), var(--wa_table_bg);
     }
 
     .wa_table_sort:hover {
@@ -884,7 +885,7 @@ watch(ScrollEl, (el, old) => {
 }
 
 .wa_table_stripe .wa_table_tr:nth-child(even) .wa_table_sticky {
-    background: color-mix(in srgb, var(--wa_table_bg) 97%, var(--wa_color_text));
+    background: linear-gradient(var(--wa_color_soft), var(--wa_color_soft)), var(--wa_table_bg);
 }
 
 .wa_table_stripe .wa_table_tr:nth-child(even):hover {
@@ -892,7 +893,7 @@ watch(ScrollEl, (el, old) => {
 }
 
 .wa_table_stripe .wa_table_tr:nth-child(even):hover .wa_table_sticky {
-    background: color-mix(in srgb, var(--wa_table_bg) 94%, var(--wa_color_text));
+    background: linear-gradient(var(--wa_color_hover), var(--wa_color_hover)), var(--wa_table_bg);
 }
 
 .wa_table_tr.on,
@@ -902,17 +903,17 @@ watch(ScrollEl, (el, old) => {
 
 .wa_table_tr.on .wa_table_sticky,
 .wa_table_stripe .wa_table_tr.on:nth-child(even) .wa_table_sticky {
-    background: color-mix(in srgb, var(--wa_table_bg) 92%, var(--wa_color_text));
+    background: linear-gradient(var(--wa_color_active), var(--wa_color_active)), var(--wa_table_bg);
 }
 
 .wa_table_tr.on:hover .wa_table_sticky,
 .wa_table_stripe .wa_table_tr.on:nth-child(even):hover .wa_table_sticky {
-    background: color-mix(in srgb, var(--wa_table_bg) 88%, var(--wa_color_text));
+    background: linear-gradient(var(--wa_color_active), var(--wa_color_active)), var(--wa_table_bg);
 }
 
 .wa_table_tr.on:hover,
 .wa_table_stripe .wa_table_tr.on:nth-child(even):hover {
-    background: color-mix(in srgb, var(--wa_color_active) 70%, var(--wa_color_hover));
+    background: var(--wa_color_active);
 }
 
 .wa_table_bordered .wa_table_th+.wa_table_th,

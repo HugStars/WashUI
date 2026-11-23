@@ -1,24 +1,32 @@
 <template>
-    <div class="wa_stepper" :class="{ wa_stepper_md: size === 'md', is_disabled: disabled }" role="group"
-        :aria-label="ariaLabel">
-        <button type="button" class="wa_stepper_btn" :disabled="disabled || AtMin" aria-label="减少" @click="Step(-1)">
-            <AppIcon name="minus" :size="14" />
-        </button>
+    <div class="wa_field">
+        <span v-if="label" class="wa_field_label">{{ label }}</span>
 
-        <input class="wa_stepper_input" type="text" inputmode="decimal" role="spinbutton"
-            :value="Text" :disabled="disabled" :aria-label="ariaLabel" :aria-valuenow="Current"
-            :aria-valuemin="Number.isFinite(min) ? min : undefined" :aria-valuemax="Number.isFinite(max) ? max : undefined"
-            @focus="$event.target.select()" @change="OnInput" @keydown.up.prevent="Step(1)"
-            @keydown.down.prevent="Step(-1)" @keydown.enter.prevent="$event.target.blur()" />
+        <div class="wa_stepper" :class="{ wa_stepper_md: size === 'md', is_disabled: disabled }" role="group"
+            :aria-label="label || ariaLabel">
+            <button type="button" class="wa_stepper_btn" :disabled="disabled || AtMin" aria-label="减少" @click="Step(-1)">
+                <AppIcon name="minus" :size="14" />
+            </button>
 
-        <button type="button" class="wa_stepper_btn" :disabled="disabled || AtMax" aria-label="增加" @click="Step(1)">
-            <AppIcon name="plus" :size="14" />
-        </button>
+            <input class="wa_stepper_input" type="text" inputmode="decimal" role="spinbutton"
+                :value="Text" :disabled="disabled" :aria-label="label || ariaLabel" :aria-valuenow="Current"
+                :aria-valuemin="Number.isFinite(min) ? min : undefined" :aria-valuemax="Number.isFinite(max) ? max : undefined"
+                @focus="$event.target.select()" @change="OnInput" @keydown.up.prevent="Step(1)"
+                @keydown.down.prevent="Step(-1)" @keydown.enter.prevent="$event.target.blur()" />
+
+            <button type="button" class="wa_stepper_btn" :disabled="disabled || AtMax" aria-label="增加" @click="Step(1)">
+                <AppIcon name="plus" :size="14" />
+            </button>
+        </div>
+
+        <p v-if="DisplayError" class="wa_field_error">{{ DisplayError }}</p>
+        <p v-else-if="hint" class="wa_field_hint">{{ hint }}</p>
     </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { useValidation } from '../composables/useValidation.js'
 import AppIcon from './AppIcon.vue'
 
 const props = defineProps({
@@ -51,6 +59,22 @@ const props = defineProps({
         type: String,
         default: 'sm',
     },
+    label: {
+        type: String,
+        default: '',
+    },
+    hint: {
+        type: String,
+        default: '',
+    },
+    error: {
+        type: String,
+        default: '',
+    },
+    rule: {
+        type: [Object, Array],
+        default: null,
+    },
     ariaLabel: {
         type: String,
         default: '步进器',
@@ -58,6 +82,11 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
+const { DisplayError, OnChange: ValidateChange } = useValidation(
+    props,
+    () => props.modelValue,
+    { defaultTrigger: 'change' }
+)
 
 const Decimals = computed(() => {
     if (props.precision !== null && props.precision !== undefined) {
@@ -90,6 +119,7 @@ function Commit(value) {
     if (next === Current.value) return
     emit('update:modelValue', next)
     emit('change', next)
+    ValidateChange(next)
 }
 
 function Step(direction) {

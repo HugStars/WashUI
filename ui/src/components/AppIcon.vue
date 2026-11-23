@@ -82,6 +82,7 @@ function toIconData(icon) {
     return data ? normalizePaint(data) : null
 }
 
+// 例外：图标需要 render 函数管理 morph 路径的创建与销毁，保留 Options API
 export default defineComponent({
     name: 'AppIcon',
     inheritAttrs: false,

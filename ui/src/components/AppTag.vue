@@ -1,6 +1,10 @@
 <template>
     <span class="wa_tag" :class="Classes">
-        <span class="wa_tag_text"><slot>{{ text }}</slot></span>
+        <span class="wa_tag_text">
+            <slot>
+                <span class="wa_tag_label">{{ text }}</span>
+            </slot>
+        </span>
     </span>
 </template>
 
@@ -64,14 +68,14 @@ const Classes = computed(() => [
     align-items: center;
     gap: 4px;
     max-width: 100%;
-    height: 22px;
+    height: var(--wa_size_tag_sm);
     padding: 0 6px;
     border: 1px solid transparent;
     border-radius: var(--wa_radius_sm);
     color: var(--wa_tag_color);
     background: var(--wa_tag_bg);
     font-family: var(--wa_font_mono);
-    font-size: 12px;
+    font-size: var(--wa_font_size_sm);
     font-weight: 400;
     line-height: 1;
     vertical-align: middle;
@@ -86,17 +90,31 @@ const Classes = computed(() => [
 }
 
 .wa_tag_text {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     min-width: 0;
     overflow: hidden;
     line-height: 1;
+    white-space: nowrap;
+}
+
+.wa_tag_text>svg,
+.wa_tag_text>.wa_icon_raw {
+    flex: none;
+}
+
+.wa_tag_label {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 /* 支持 text-box 的浏览器按字体内容区裁剪；CJK 字形在内容区里偏上，补一点下移 */
 @supports (text-box-trim: trim-both) {
-    .wa_tag_text {
+    .wa_tag_label {
         text-box-trim: trim-both;
         text-box-edge: auto;
         translate: 0 .06em;
@@ -105,15 +123,15 @@ const Classes = computed(() => [
 
 /* 旧内核没有 text-box，中文行盒通常偏上，做一点近似补偿 */
 @supports not (text-box-trim: trim-both) {
-    .wa_tag_text {
+    .wa_tag_label {
         padding-top: .08em;
     }
 }
 
 .wa_tag_md {
-    height: 27px;
+    height: var(--wa_size_tag_md);
     padding: 0 8px;
-    font-size: 13px;
+    font-size: var(--wa_font_size_base);
 }
 
 .wa_tag_pill {
@@ -125,29 +143,29 @@ const Classes = computed(() => [
 }
 
 .wa_tag_success {
-    --wa_tag_color: color-mix(in srgb, var(--wa_color_success) 72%, var(--wa_color_text));
-    --wa_tag_bg: color-mix(in srgb, var(--wa_color_success) 12%, transparent);
+    --wa_tag_color: var(--wa_color_success_text);
+    --wa_tag_bg: var(--wa_color_success_soft);
 }
 
 .wa_tag_warning {
-    --wa_tag_color: color-mix(in srgb, var(--wa_color_warning) 72%, var(--wa_color_text));
-    --wa_tag_bg: color-mix(in srgb, var(--wa_color_warning) 14%, transparent);
+    --wa_tag_color: var(--wa_color_warning_text);
+    --wa_tag_bg: var(--wa_color_warning_soft);
 }
 
 .wa_tag_help {
-    --wa_tag_color: color-mix(in srgb, var(--wa_color_help) 72%, var(--wa_color_text));
-    --wa_tag_bg: color-mix(in srgb, var(--wa_color_help) 12%, transparent);
+    --wa_tag_color: var(--wa_color_help_text);
+    --wa_tag_bg: var(--wa_color_help_soft);
 }
 
 .wa_tag_danger {
-    --wa_tag_color: color-mix(in srgb, var(--wa_color_danger) 72%, var(--wa_color_text));
-    --wa_tag_bg: color-mix(in srgb, var(--wa_color_danger) 12%, transparent);
+    --wa_tag_color: var(--wa_color_danger_text);
+    --wa_tag_bg: var(--wa_color_danger_soft);
 }
 
 .wa_tag_frosted {
     border-color: var(--wa_color_border);
     background: var(--wa_color_glass);
-    background: linear-gradient(to bottom, var(--wa_color_glass), color-mix(in srgb, var(--wa_color_glass) 68%, transparent));
+    background: var(--wa_glass_gradient);
     -webkit-backdrop-filter: var(--wa_frosted_filter);
     backdrop-filter: var(--wa_frosted_filter);
 }
@@ -172,4 +190,5 @@ const Classes = computed(() => [
         animation: none;
     }
 }
+
 </style>
