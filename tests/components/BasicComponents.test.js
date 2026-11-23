@@ -17,7 +17,7 @@ describe('basic components', () => {
             props: { title: '卡片', compact: true, frosted: true },
             slots: {
                 default: '内容',
-                extra: '更多',
+                actions: '更多',
                 footer: '页脚',
             },
         })
@@ -33,9 +33,9 @@ describe('basic components', () => {
         ]))
     })
 
-    it('AppChip renders active state', () => {
+    it('AppChip renders selected state', () => {
         const wrapper = mount(AppChip, {
-            props: { active: true, text: '筛选', frosted: true, size: 'sm' },
+            props: { selected: true, text: '筛选', frosted: true, size: 'sm' },
         })
 
         expect(wrapper.text()).toBe('筛选')

@@ -12,6 +12,23 @@ describe('AppTag', () => {
         expect(wrapper.classes()).toContain('wa_tag_success')
     })
 
+    it('wraps text prop in a label for ellipsis', () => {
+        const wrapper = mount(AppTag, {
+            props: { text: '成功' },
+        })
+
+        expect(wrapper.find('.wa_tag_text > .wa_tag_label').text()).toBe('成功')
+    })
+
+    it('keeps slot content inside the flex text wrapper', () => {
+        const wrapper = mount(AppTag, {
+            slots: { default: '<span class="slot-icon"></span>在线' },
+        })
+
+        expect(wrapper.find('.wa_tag_text > .slot-icon').exists()).toBe(true)
+        expect(wrapper.find('.wa_tag_label').exists()).toBe(false)
+    })
+
     it('applies size, mono, frosted, pill and expand modifiers', () => {
         const wrapper = mount(AppTag, {
             props: {

@@ -62,6 +62,65 @@ describe('AppColorPicker', () => {
         expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['rgb(255, 255, 255)'])
     })
 
+    it('keeps the thumb position after the emitted value is written back', async () => {
+        wrapper = mountPicker({ modelValue: '#000000' })
+        await wrapper.find('.wa_color_trigger').trigger('click')
+        await nextTick()
+
+        const area = wrapper.find('.wa_color_area')
+        await area.trigger('keydown', { key: 'ArrowUp' })
+
+        expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['#030303'])
+
+        await wrapper.setProps({ modelValue: '#030303' })
+        await nextTick()
+
+        const style = wrapper.find('.wa_color_area_thumb').attributes('style')
+        expect(style).toContain('left: 0%')
+        expect(style).toContain('top: 99%')
+    })
+
+    it('keeps the pointer position at pure black after v-model write-back', async () => {
+        wrapper = mountPicker({ modelValue: '#ff0000' })
+        await wrapper.find('.wa_color_trigger').trigger('click')
+        await nextTick()
+
+        const area = wrapper.find('.wa_color_area')
+        area.element.getBoundingClientRect = () => ({
+            left: 0,
+            top: 0,
+            width: 100,
+            height: 100,
+            right: 100,
+            bottom: 100,
+        })
+
+        const event = new MouseEvent('pointerdown', { bubbles: true, cancelable: true })
+        Object.defineProperty(event, 'clientX', { value: 50 })
+        Object.defineProperty(event, 'clientY', { value: 100 })
+        area.element.dispatchEvent(event)
+        await nextTick()
+
+        expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['#000000'])
+
+        await wrapper.setProps({ modelValue: '#000000' })
+        await nextTick()
+
+        const style = wrapper.find('.wa_color_area_thumb').attributes('style')
+        expect(style).toContain('left: 50%')
+        expect(style).toContain('top: 100%')
+    })
+
+    it('clears the current color when modelValue is emptied', async () => {
+        wrapper = mountPicker({ modelValue: '#ff0000' })
+        expect(wrapper.find('.wa_color_value').text()).toBe('#ff0000')
+
+        await wrapper.setProps({ modelValue: '' })
+        await nextTick()
+
+        expect(wrapper.find('.wa_color_value').text()).toBe('请选择颜色')
+    })
+
     it('disables the trigger', () => {
         wrapper = mountPicker({ modelValue: '#000000', disabled: true })
         expect(wrapper.find('.wa_color_trigger').attributes('disabled')).toBeDefined()

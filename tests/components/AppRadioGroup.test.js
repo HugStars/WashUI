@@ -38,7 +38,7 @@ describe('AppRadioGroup', () => {
             props: { modelValue: 'basic', options, variant: 'segmented' },
         })
 
-        expect(wrapper.classes()).toContain('wa_choice_group_segmented')
+        expect(wrapper.find('.wa_choice_group').classes()).toContain('wa_choice_group_segmented')
         expect(wrapper.findAll('.wa_radio_segmented')).toHaveLength(2)
     })
 
@@ -58,16 +58,16 @@ describe('AppRadioGroup', () => {
         wrapper = mount(AppRadioGroup, {
             props: { options: segmentedOptions, modelValue: 'month', variant: 'segmented' },
         })
-        expect(wrapper.classes()).toContain('wa_choice_group_segmented_sm')
-        expect(wrapper.classes()).not.toContain('wa_choice_group_segmented_rect')
+        expect(wrapper.find('.wa_choice_group').classes()).toContain('wa_choice_group_segmented_sm')
+        expect(wrapper.find('.wa_choice_group').classes()).not.toContain('wa_choice_group_segmented_rect')
 
         wrapper.unmount()
         wrapper = mount(AppRadioGroup, {
             props: { options: segmentedOptions, modelValue: 'month', variant: 'segmented', size: 'md', shape: 'rect' },
         })
 
-        expect(wrapper.classes()).toContain('wa_choice_group_segmented_md')
-        expect(wrapper.classes()).toContain('wa_choice_group_segmented_rect')
+        expect(wrapper.find('.wa_choice_group').classes()).toContain('wa_choice_group_segmented_md')
+        expect(wrapper.find('.wa_choice_group').classes()).toContain('wa_choice_group_segmented_rect')
     })
 
     it('emits the selected value when a segmented option is clicked', async () => {

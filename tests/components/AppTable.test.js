@@ -38,6 +38,17 @@ describe('AppTable', () => {
         })
     })
 
+    it('renders a fixed header viewport when maxHeight is set', () => {
+        const wrapper = mount(AppTable, {
+            props: { columns, data, maxHeight: 200 },
+        })
+
+        expect(wrapper.find('.wa_table_viewport').exists()).toBe(true)
+        expect(wrapper.find('.wa_table_viewport').attributes('style')).toContain('max-height: 200px')
+        expect(wrapper.findAll('.wa_table_head_table')).toHaveLength(1)
+        expect(wrapper.findAll('.wa_table_body_scroll')).toHaveLength(1)
+    })
+
     it('renders empty state when there is no data', () => {
         const wrapper = mount(AppTable, {
             props: { columns, data: [], emptyText: '没有记录' },

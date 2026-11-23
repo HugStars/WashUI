@@ -8,8 +8,8 @@ const Host = {
     template: `
         <div class="wa_dialog_mask">
             <AppPopover :width="200">
-                <template #trigger="{ open }">
-                    <button type="button" class="trigger" :aria-expanded="open">打开</button>
+                <template #trigger="{ triggerProps }">
+                    <button type="button" class="trigger" v-bind="triggerProps">打开</button>
                 </template>
                 <div class="panel_content">内容</div>
             </AppPopover>

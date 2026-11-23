@@ -68,6 +68,53 @@ describe('AppDatePicker', () => {
         expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['2026-11-22'])
     })
 
+    it('selects a month with picker=month', async () => {
+        wrapper = mountPicker(AppDatePicker, { modelValue: '2026-05-15', picker: 'month' })
+        await wrapper.find('.wa_datetime').trigger('click')
+        await nextTick()
+
+        const july = wrapper.findAll('.wa_dt_period').find(item => item.text() === '7 月')
+        await july.trigger('click')
+
+        expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['2026-07'])
+        expect(wrapper.emitted('change')?.[0]).toEqual(['2026-07'])
+    })
+
+    it('selects a year with picker=year', async () => {
+        wrapper = mountPicker(AppDatePicker, { modelValue: '2026-05-15', picker: 'year' })
+        await wrapper.find('.wa_datetime').trigger('click')
+        await nextTick()
+
+        const target = wrapper.findAll('.wa_dt_period').find(item => item.text() === '2027')
+        await target.trigger('click')
+
+        expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['2027'])
+    })
+
+    it('selects an ISO week with picker=week', async () => {
+        wrapper = mountPicker(AppDatePicker, { modelValue: '2026-05-15', picker: 'week' })
+        await wrapper.find('.wa_datetime').trigger('click')
+        await nextTick()
+
+        await wrapper.find('.wa_dt_week').trigger('click')
+
+        expect(wrapper.emitted('update:modelValue')?.[0][0]).toMatch(/^\d{4}-W\d{2}$/)
+    })
+
+    it('selects a date range', async () => {
+        wrapper = mountPicker(AppDatePicker, {
+            modelValue: ['2026-11-05', ''],
+            range: true,
+        })
+        await wrapper.find('.wa_datetime').trigger('click')
+        await nextTick()
+
+        await findDay(wrapper, 10).trigger('click')
+
+        expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([['2026-11-05', '2026-11-10']])
+        expect(wrapper.emitted('change')?.[0]).toEqual([['2026-11-05', '2026-11-10']])
+    })
+
     it('disables the trigger and quick options', async () => {
         wrapper = mountPicker(AppDatePicker, {
             modelValue: '',

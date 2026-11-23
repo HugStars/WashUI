@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest'
 import AppTabs from '@ui/src/components/AppTabs.vue'
 
 const items = [
-    { name: 'overview', label: '概览' },
-    { name: 'members', label: '成员' },
-    { name: 'archive', label: '归档', disabled: true },
+    { value: 'overview', label: '概览' },
+    { value: 'members', label: '成员' },
+    { value: 'archive', label: '归档', disabled: true },
 ]
 
 describe('AppTabs', () => {
@@ -21,7 +21,7 @@ describe('AppTabs', () => {
         await tabs[1].trigger('click')
 
         expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['members'])
-        expect(wrapper.emitted('change')?.[0]?.[0]).toMatchObject({ name: 'members' })
+        expect(wrapper.emitted('select')?.[0]?.[0]).toMatchObject({ value: 'members' })
     })
 
     it('ignores disabled tabs', async () => {
@@ -47,8 +47,8 @@ describe('AppTabs', () => {
             props: {
                 modelValue: 'overview',
                 items: [
-                    { name: 'overview', label: '概览', badge: 3 },
-                    { name: 'members', label: '成员', badge: { text: 2 } }
+                    { value: 'overview', label: '概览', badge: 3 },
+                    { value: 'members', label: '成员', badge: { text: 2 } }
                 ],
                 badgeDraggable: true,
                 badgeMaxDistance: 80

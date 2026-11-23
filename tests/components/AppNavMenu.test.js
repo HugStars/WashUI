@@ -39,7 +39,6 @@ describe('AppNavMenu', () => {
 
         await wrapper.find('button').trigger('click')
         expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['open'])
-        expect(wrapper.emitted('change')?.[0]).toEqual(['open'])
         expect(wrapper.emitted('select')?.[0]?.[0]).toMatchObject({ value: 'open' })
     })
 

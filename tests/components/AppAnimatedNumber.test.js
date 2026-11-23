@@ -1,11 +1,11 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { nextTick } from 'vue'
-import AppNumber from '@ui/src/components/AppNumber.vue'
+import AppAnimatedNumber from '@ui/src/components/AppAnimatedNumber.vue'
 
-describe('AppNumber', () => {
+describe('AppAnimatedNumber', () => {
     it('formats value with decimals, separator, prefix and suffix', async () => {
-        const wrapper = mount(AppNumber, {
+        const wrapper = mount(AppAnimatedNumber, {
             props: {
                 value: 1234.5,
                 decimals: 1,
@@ -21,7 +21,7 @@ describe('AppNumber', () => {
     })
 
     it('updates when value changes with no animation duration', async () => {
-        const wrapper = mount(AppNumber, {
+        const wrapper = mount(AppAnimatedNumber, {
             props: { value: 12, duration: 0, animateOnMount: false },
         })
 
@@ -31,7 +31,7 @@ describe('AppNumber', () => {
     })
 
     it('supports a custom tag', () => {
-        const wrapper = mount(AppNumber, {
+        const wrapper = mount(AppAnimatedNumber, {
             props: { value: 1, tag: 'strong', animateOnMount: false },
         })
 

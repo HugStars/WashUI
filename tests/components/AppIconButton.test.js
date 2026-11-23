@@ -22,4 +22,33 @@ describe('AppIconButton', () => {
         expect(wrapper.classes()).toContain('wa_icon_btn_md')
         expect(wrapper.attributes('disabled')).toBeDefined()
     })
+
+    it('supports large line buttons with frosted and active states', () => {
+        const wrapper = mount(AppIconButton, {
+            props: {
+                name: 'star',
+                label: '收藏',
+                size: 'lg',
+                variant: 'line',
+                frosted: true,
+                active: true,
+            },
+        })
+
+        expect(wrapper.classes()).toContain('wa_icon_btn_lg')
+        expect(wrapper.classes()).toContain('wa_icon_btn_line')
+        expect(wrapper.classes()).toContain('wa_frosted')
+        expect(wrapper.classes()).toContain('wa_icon_btn_on')
+        expect(wrapper.attributes('aria-pressed')).toBe('true')
+    })
+
+    it('shows a spinner and disables the button while loading', () => {
+        const wrapper = mount(AppIconButton, {
+            props: { name: 'refresh', label: '刷新', loading: true },
+        })
+
+        expect(wrapper.find('.wa_spinner').exists()).toBe(true)
+        expect(wrapper.attributes('disabled')).toBeDefined()
+        expect(wrapper.attributes('aria-busy')).toBe('true')
+    })
 })

@@ -58,10 +58,10 @@ describe('AppButton', () => {
         expect(wrapper.attributes('disabled')).toBeUndefined()
     })
 
-    it('supports the disabled and icon variants', () => {
+    it('supports the disabled and line variants', () => {
         const wrapper = mount(AppButton, {
             props: {
-                variant: 'icon',
+                variant: 'line',
                 size: 'sm',
                 disabled: true,
             },
@@ -71,9 +71,10 @@ describe('AppButton', () => {
 
         expect(wrapper.classes()).toEqual(expect.arrayContaining([
             'wa_btn',
-            'wa_btn_icon',
+            'wa_btn_line',
             'wa_btn_sm',
         ]))
+        expect(wrapper.classes()).not.toContain('wa_btn_icon')
         expect(wrapper.attributes('disabled')).toBeDefined()
         expect(wrapper.attributes('aria-label')).toBe('关闭')
     })

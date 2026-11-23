@@ -8,7 +8,7 @@ function setup(multiple, modelValue) {
         disabled: false,
         align: 'between',
         direction: 'vertical',
-        size: 18,
+        checkSize: 18,
         labelPosition: 'before',
     }
     const api = createChoiceGroup(props, emit, multiple)
@@ -62,7 +62,7 @@ describe('createChoiceGroup', () => {
         expect(group.multiple).toBe(true)
         expect(group.values.value).toEqual(['a'])
         expect(group.between.value).toBe(true)
-        expect(group.size.value).toBe(18)
+        expect(group.checkSize.value).toBe(18)
         expect(group.labelPosition.value).toBe('before')
     })
 
