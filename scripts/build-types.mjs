@@ -159,8 +159,18 @@ function buildComponent(file) {
     }
 }
 
-function writeComponents(dir, outputDir) {
-    const files = readdirSync(dir).filter(file => file.endsWith('.vue'))
+function exportedNames(indexFile) {
+    const source = readFileSync(indexFile, 'utf8')
+    return new Set(
+        [...source.matchAll(/export\s*\{\s*default as (\w+)\s*\}/g)].map(match => match[1])
+    )
+}
+
+function writeComponents(dir, outputDir, indexFile) {
+    const allowed = exportedNames(indexFile)
+    const files = readdirSync(dir).filter(file => {
+        return file.endsWith('.vue') && allowed.has(file.replace(/\.vue$/, ''))
+    })
     const generated = []
 
     for (const file of files) {
@@ -198,8 +208,8 @@ function writeEntry() {
 }
 
 mkdirSync(outRoot, { recursive: true })
-writeComponents(join(srcRoot, 'components'), join(outRoot, 'components'))
-writeComponents(join(srcRoot, 'layout'), join(outRoot, 'layout'))
+writeComponents(join(srcRoot, 'components'), join(outRoot, 'components'), join(srcRoot, 'components/index.js'))
+writeComponents(join(srcRoot, 'layout'), join(outRoot, 'layout'), join(srcRoot, 'layout/index.js'))
 writeEntry()
 
 console.log(`types written to ${relative(root, outRoot)}`)
