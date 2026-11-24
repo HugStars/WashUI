@@ -1,5 +1,5 @@
 <template>
-    <div class="wa_shell" :class="{ wa_shell_nav_hidden: NavHidden, wa_shell_nav_auto_hide: autoHideNav }">
+    <div class="wa_shell" :class="{ wa_shell_nav_hidden: NavHidden }">
         <header class="wa_header">
             <div ref="HeaderTarget" class="wa_header_slot"></div>
             <div ref="HeaderBarTarget" class="wa_header_bar"></div>
