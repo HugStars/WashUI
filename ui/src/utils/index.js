@@ -1,4 +1,5 @@
 export { createGooeyPath } from './gooey.js'
+export { formatColor, hslToRgb, hsvToRgb, parseColor, rgbToHex, rgbToHsl, rgbToHsv } from './color.js'
 export {
     formatBytes,
     formatBytesFixed,
@@ -12,6 +13,12 @@ export {
     formatDate,
     formatRelativeTime,
     padZero,
+    parseDateValue,
+    parseTimeValue,
+    normalizeDateValue,
+    startOfMonth,
+    startOfWeek,
+    getISOWeekNumber,
     truncate,
     clamp,
     debounce,

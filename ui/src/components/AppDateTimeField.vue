@@ -1,5 +1,5 @@
 <template>
-    <div class="wa_field">
+    <div class="wa_field" v-bind="$attrs">
         <label v-if="label || $slots.label" class="wa_field_label" :id="`${FieldId}-label`">
             <slot name="label">{{ label }}</slot>
         </label>
@@ -142,9 +142,19 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onUnmounted, ref, useId, watch } from 'vue'
+import { computed, nextTick, ref, useId, watch } from 'vue'
+import { useFieldMessage } from '../composables/useFieldMessage.js'
 import { useValidation } from '../composables/useValidation.js'
-import { formatDate, padZero } from '../utils/format.js'
+import {
+    formatDate,
+    getISOWeekNumber,
+    normalizeDateValue,
+    padZero,
+    parseDateValue,
+    parseTimeValue,
+    startOfMonth,
+    startOfWeek,
+} from '../utils/format.js'
 import AppButton from './AppButton.vue'
 import AppChip from './AppChip.vue'
 import AppIcon from './AppIcon.vue'
@@ -251,13 +261,13 @@ const RangeStart = ref('')
 const RangeEnd = ref('')
 const PanelWidth = computed(() => props.mode === 'time' ? 240 : 300)
 const PickerMode = computed(() => props.mode === 'datetime' ? 'day' : props.picker)
-const ViewMonth = ref(StartOfMonth(ParseDate(props.modelValue) || new Date()))
+const ViewMonth = ref(startOfMonth(ParseDate(props.modelValue) || new Date()))
 const DraftDate = ref(ParseDate(props.modelValue) || new Date())
 const DraftHour = ref(ParseTime(props.modelValue).hour)
 const DraftMinute = ref(ParseTime(props.modelValue).minute)
 const SelectedValue = computed(() => Array.isArray(props.modelValue) ? props.modelValue[0] : props.modelValue)
 
-const { DisplayError, OnInput: ValidateInput } = useValidation(
+const { DisplayError, OnChange: ValidateChange } = useValidation(
     props,
     () => props.modelValue,
     { defaultTrigger: 'change' }
@@ -270,11 +280,11 @@ const Minutes = computed(() => {
     return Array.from({ length: Math.ceil(60 / step) }, (_, index) => index * step)
 })
 
-const MinDate = computed(() => NormalizeDate(props.min))
-const MaxDate = computed(() => NormalizeDate(props.max))
+const MinDate = computed(() => normalizeDateValue(props.min))
+const MaxDate = computed(() => normalizeDateValue(props.max))
 
-const MinTime = computed(() => NormalizeTime(props.min))
-const MaxTime = computed(() => NormalizeTime(props.max))
+const MinTime = computed(() => parseTimeValue(props.min))
+const MaxTime = computed(() => parseTimeValue(props.max))
 
 const ActiveMinTime = computed(() => {
     if (!MinTime.value) return null
@@ -382,19 +392,19 @@ const YearOptions = computed(() => {
 })
 
 const WeekOptions = computed(() => {
-    const start = StartOfWeek(new Date(ViewMonth.value.getFullYear(), ViewMonth.value.getMonth(), 1))
+    const start = startOfWeek(new Date(ViewMonth.value.getFullYear(), ViewMonth.value.getMonth(), 1))
     return Array.from({ length: 6 }, (_, index) => {
         const from = new Date(start)
         from.setDate(start.getDate() + index * 7)
         const to = new Date(from)
         to.setDate(from.getDate() + 6)
-        const value = `${from.getFullYear()}-W${padZero(WeekNumber(from))}`
+        const value = `${from.getFullYear()}-W${padZero(getISOWeekNumber(from))}`
         const fromKey = formatDate(from, 'YYYY-MM-DD')
         const toKey = formatDate(to, 'YYYY-MM-DD')
 
         return {
             value,
-            label: `第 ${WeekNumber(from)} 周`,
+            label: `第 ${getISOWeekNumber(from)} 周`,
             rangeLabel: `${formatDate(from, 'MM-DD')} ~ ${formatDate(to, 'MM-DD')}`,
             selected: value === SelectedValue.value || value === RangeStart.value || value === RangeEnd.value,
             inRange: InRange(value),
@@ -424,26 +434,10 @@ const QuickItems = computed(() => props.quick
     })
     .filter(Boolean))
 
-const Message = computed(() => Boolean(DisplayError.value || props.hint))
-const MessageText = ref('')
-const MessageIsError = ref(false)
-let MessageTimer = 0
-
-watch([DisplayError, () => props.hint], ([error, hint]) => {
-    clearTimeout(MessageTimer)
-
-    if (error || hint) {
-        MessageIsError.value = Boolean(error)
-        MessageText.value = error || hint
-        return
-    }
-
-    MessageTimer = setTimeout(() => {
-        MessageText.value = ''
-    }, 220)
-}, { immediate: true })
-
-onUnmounted(() => clearTimeout(MessageTimer))
+const { Message, MessageText, MessageIsError } = useFieldMessage(
+    () => DisplayError.value,
+    () => props.hint
+)
 
 watch(PanelOpen, open => {
     if (!open) {
@@ -456,7 +450,7 @@ watch(PanelOpen, open => {
     DraftDate.value = date
     DraftHour.value = time.hour
     DraftMinute.value = time.minute
-    ViewMonth.value = StartOfMonth(date)
+    ViewMonth.value = startOfMonth(date)
     OpenTimeSelect.value = null
     RangeStart.value = Array.isArray(props.modelValue) ? props.modelValue[0] || '' : ''
     RangeEnd.value = Array.isArray(props.modelValue) ? props.modelValue[1] || '' : ''
@@ -486,56 +480,16 @@ function PickMinute(minute) {
     OpenTimeSelect.value = null
 }
 
-function StartOfMonth(date) {
-    return new Date(date.getFullYear(), date.getMonth(), 1)
-}
-
+// 日期字段在 time 模式下不解析日期；其余语义交给全局工具函数
 function ParseDate(value) {
-    const raw = Array.isArray(value) ? value[0] : value
-    if (!raw || props.mode === 'time') return null
-    const date = new Date(String(raw).replace(' ', 'T'))
-    return Number.isNaN(date.getTime()) ? null : date
+    if (props.mode === 'time') return null
+    return parseDateValue(value)
 }
 
-function StartOfWeek(date) {
-    const next = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-    const offset = (next.getDay() + 6) % 7
-    next.setDate(next.getDate() - offset)
-    return next
-}
-
-function WeekNumber(date) {
-    const target = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-    const day = (target.getDay() + 6) % 7
-    target.setDate(target.getDate() - day + 3)
-    const firstThursday = new Date(target.getFullYear(), 0, 4)
-    const firstDay = (firstThursday.getDay() + 6) % 7
-    firstThursday.setDate(firstThursday.getDate() - firstDay + 3)
-    return 1 + Math.round((target - firstThursday) / 604800000)
-}
-
+// 未选择时间时默认当前时间，格式非法时回到 00:00
 function ParseTime(value) {
     if (!value) return { hour: new Date().getHours(), minute: new Date().getMinutes() }
-    const match = String(value).match(/(\d{1,2}):(\d{2})/)
-    if (!match) return { hour: 0, minute: 0 }
-    return {
-        hour: Math.min(23, Number(match[1])),
-        minute: Math.min(59, Number(match[2]))
-    }
-}
-
-function NormalizeDate(value) {
-    const match = String(value || '').match(/^\d{4}-\d{2}-\d{2}/)
-    return match ? match[0] : ''
-}
-
-function NormalizeTime(value) {
-    const match = String(value || '').match(/(\d{1,2}):(\d{2})/)
-    if (!match) return null
-    return {
-        hour: Math.min(23, Number(match[1])),
-        minute: Math.min(59, Number(match[2]))
-    }
+    return parseTimeValue(value) ?? { hour: 0, minute: 0 }
 }
 
 function MovePeriod(offset) {
@@ -587,7 +541,7 @@ function DisplayForDraft() {
 function EmitValue(value, close) {
     emit('update:modelValue', value)
     emit('change', value)
-    ValidateInput(value)
+    ValidateChange(value)
     close()
 }
 
@@ -600,7 +554,7 @@ function ChooseDay(item) {
         return
     }
 
-    ViewMonth.value = StartOfMonth(item.date)
+    ViewMonth.value = startOfMonth(item.date)
 }
 
 function ChooseMonth(item) {
@@ -621,6 +575,15 @@ function ChooseWeek(item) {
 }
 
 function Confirm(close) {
+    const min = ActiveMinTime.value
+    const max = ActiveMaxTime.value
+    let total = DraftHour.value * 60 + DraftMinute.value
+
+    if (min) total = Math.max(total, min.hour * 60 + min.minute)
+    if (max) total = Math.min(total, max.hour * 60 + max.minute)
+
+    DraftHour.value = Math.floor(total / 60)
+    DraftMinute.value = total % 60
     EmitValue(DisplayForDraft(), close)
 }
 

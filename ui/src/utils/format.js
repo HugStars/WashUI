@@ -12,6 +12,7 @@ function toNumber(value, fallback = 0) {
  * @returns {object} 归一化后的选项
  */
 function normalizeOptions(options = {}, defaults = {}) {
+    const raw = options ?? {}
     const base = {
         decimals: 2,
         trimZeros: true,
@@ -21,17 +22,17 @@ function normalizeOptions(options = {}, defaults = {}) {
         ...defaults
     }
 
-    if (typeof options === 'number') {
-        return { ...base, decimals: Math.max(0, options), trimZeros: false }
+    if (typeof raw === 'number') {
+        return { ...base, decimals: Math.max(0, raw), trimZeros: false }
     }
 
     return {
         ...base,
-        decimals: Math.max(0, toNumber(options.decimals, base.decimals)),
-        trimZeros: options.trimZeros ?? base.trimZeros,
-        space: options.space !== false,
-        unit: options.unit,
-        locale: options.locale
+        decimals: Math.max(0, toNumber(raw.decimals, base.decimals)),
+        trimZeros: raw.trimZeros ?? base.trimZeros,
+        space: raw.space !== false,
+        unit: raw.unit,
+        locale: raw.locale
     }
 }
 
@@ -64,7 +65,7 @@ export function formatBytes(bytes, options = {}) {
 
     const index = config.unit
         ? Math.max(0, BYTE_UNITS.indexOf(String(config.unit).toUpperCase()))
-        : Math.min(Math.floor(Math.log(value) / Math.log(1024)), BYTE_UNITS.length - 1)
+        : Math.max(0, Math.min(Math.floor(Math.log(value) / Math.log(1024)), BYTE_UNITS.length - 1))
     const scaled = value / Math.pow(1024, index)
 
     return `${formatDecimal(scaled, config.decimals, config.trimZeros)}${config.space ? ' ' : ''}${BYTE_UNITS[index]}`
@@ -114,7 +115,7 @@ export function formatDuration(ms, options = {}) {
     const value = toNumber(ms)
     if (value <= 0) return '0 ms'
 
-    const requestedUnit = typeof options === 'object' ? options.unit : undefined
+    const requestedUnit = options && typeof options === 'object' ? options.unit : undefined
     const unit = requestedUnit || (value < 1000 ? 'ms' : 's')
     const config = normalizeOptions(options, {
         decimals: unit === 'ms' ? 1 : 2,
@@ -224,19 +225,139 @@ export function formatDate(value = new Date(), pattern = 'YYYY-MM-DD HH:mm:ss') 
 }
 
 /**
+ * 解析日期值，支持数组范围取第一项
+ * @param {Date|string|number|Array} value 日期值
+ * @returns {Date|null} 无效值返回 null
+ */
+export function parseDateValue(value) {
+    const raw = Array.isArray(value) ? value[0] : value
+    if (!raw) return null
+    if (raw instanceof Date) return Number.isNaN(raw.getTime()) ? null : new Date(raw)
+
+    const text = String(raw).trim()
+    let match = text.match(/^(\d{4})-W(\d{1,2})$/)
+    if (match) {
+        const year = Number(match[1])
+        const week = Number(match[2])
+        if (week < 1 || week > 53) return null
+
+        const jan4 = new Date(year, 0, 4)
+        const offset = (jan4.getDay() + 6) % 7
+        return new Date(year, 0, 4 - offset + (week - 1) * 7)
+    }
+
+    match = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?$/)
+    if (match) {
+        const year = Number(match[1])
+        const month = Number(match[2])
+        const day = Number(match[3])
+        const hour = Number(match[4] || 0)
+        const minute = Number(match[5] || 0)
+        const date = new Date(year, month - 1, day, hour, minute)
+
+        if (
+            date.getFullYear() !== year
+            || date.getMonth() !== month - 1
+            || date.getDate() !== day
+            || date.getHours() !== hour
+            || date.getMinutes() !== minute
+        ) return null
+        return date
+    }
+
+    match = text.match(/^(\d{4})-(\d{1,2})$/)
+    if (match) {
+        const year = Number(match[1])
+        const month = Number(match[2])
+        return month >= 1 && month <= 12 ? new Date(year, month - 1, 1) : null
+    }
+
+    if (/^\d{4}$/.test(text)) return new Date(Number(text), 0, 1)
+
+    // 保留对带时区等其他日期格式的兼容
+    const date = new Date(text)
+    return Number.isNaN(date.getTime()) ? null : date
+}
+
+/**
+ * 解析时分字符串
+ * @param {string} value 形如 09:30 的字符串
+ * @returns {{ hour: number, minute: number } | null} 无效值返回 null
+ */
+export function parseTimeValue(value) {
+    const match = String(value ?? '').match(/(\d{1,2}):(\d{2})/)
+    if (!match) return null
+
+    return {
+        hour: Math.min(23, Number(match[1])),
+        minute: Math.min(59, Number(match[2]))
+    }
+}
+
+/**
+ * 截取日期字符串的 YYYY-MM-DD 部分
+ * @param {string} value 日期字符串
+ * @returns {string} 匹配失败返回空字符串
+ */
+export function normalizeDateValue(value) {
+    const match = String(value || '').match(/^\d{4}-\d{2}-\d{2}/)
+    return match ? match[0] : ''
+}
+
+/**
+ * 取所在月份的第一天
+ * @param {Date} date 日期
+ * @returns {Date} 当月第一天
+ */
+export function startOfMonth(date) {
+    return new Date(date.getFullYear(), date.getMonth(), 1)
+}
+
+/**
+ * 取所在周的周一
+ * @param {Date} date 日期
+ * @returns {Date} 周一
+ */
+export function startOfWeek(date) {
+    const next = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    const offset = (next.getDay() + 6) % 7
+    next.setDate(next.getDate() - offset)
+    return next
+}
+
+/**
+ * 获取 ISO 周序号
+ * @param {Date} date 日期
+ * @returns {number} ISO 周序号
+ */
+export function getISOWeekNumber(date) {
+    const target = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    const day = (target.getDay() + 6) % 7
+    target.setDate(target.getDate() - day + 3)
+
+    const firstThursday = new Date(target.getFullYear(), 0, 4)
+    const firstDay = (firstThursday.getDay() + 6) % 7
+    firstThursday.setDate(firstThursday.getDate() - firstDay + 3)
+
+    return 1 + Math.round((target - firstThursday) / 604800000)
+}
+
+/**
  * 相对时间描述
  * @param {Date|string|number} value 目标时间
  * @param {object} options { base, short }
  * @returns {string} 例如 3 分钟前 / 刚刚
  */
 export function formatRelativeTime(value, options = {}) {
+    const config = options ?? {}
     const date = value instanceof Date ? value : new Date(value)
     if (Number.isNaN(date.getTime())) return ''
 
-    const base = options.base == null ? Date.now() : new Date(options.base).getTime()
+    const base = config.base == null ? Date.now() : new Date(config.base).getTime()
+    if (!Number.isFinite(base)) return ''
     const diff = Math.round((date.getTime() - base) / 1000)
     const abs = Math.abs(diff)
-    const short = options.short === true
+    const short = config.short === true
 
     const units = [
         { limit: 60, size: 1, name: '秒' },
@@ -252,7 +373,7 @@ export function formatRelativeTime(value, options = {}) {
     const unit = units.find(item => abs < item.limit)
     const count = Math.max(1, Math.round(abs / unit.size))
 
-    if (short) return `${diff < 0 ? '' : 'in '}${count}${unit.name}${diff < 0 ? '前' : '后'}`
+    if (short) return `${count}${unit.name}${diff < 0 ? '前' : '后'}`
     return diff < 0 ? `${count} ${unit.name}前` : `${count} ${unit.name}后`
 }
 

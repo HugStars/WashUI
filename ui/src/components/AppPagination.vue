@@ -40,6 +40,7 @@
 
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { clamp } from '../utils/format.js'
 import AppIcon from './AppIcon.vue'
 import AppSelect from './AppSelect.vue'
 
@@ -103,7 +104,7 @@ let GliderFrame = 0
 
 const PageSize = computed(() => Math.max(1, Number(props.pageSize ?? InternalPageSize.value) || 10))
 const PageCount = computed(() => Math.max(1, Math.ceil((Number(props.total) || 0) / PageSize.value)))
-const CurrentPage = computed(() => Clamp(Number(props.modelValue ?? InternalPage.value) || 1, 1, PageCount.value))
+const CurrentPage = computed(() => clamp(Number(props.modelValue ?? InternalPage.value) || 1, 1, PageCount.value))
 const AtStart = computed(() => props.disabled || CurrentPage.value <= 1)
 const AtEnd = computed(() => props.disabled || CurrentPage.value >= PageCount.value)
 const IconSize = computed(() => props.size === 'md' ? 16 : 15)
@@ -142,12 +143,8 @@ const PageItems = computed(() => {
     return items
 })
 
-function Clamp(value, min, max) {
-    return Math.min(Math.max(value, min), max)
-}
-
 function Go(page) {
-    const next = Clamp(page, 1, PageCount.value)
+    const next = clamp(page, 1, PageCount.value)
     if (props.disabled || next === CurrentPage.value) return
 
     if (props.modelValue === null) InternalPage.value = next
@@ -162,7 +159,7 @@ function ChangeSize(value) {
     if (props.pageSize === null) InternalPageSize.value = size
 
     const max = Math.max(1, Math.ceil((Number(props.total) || 0) / size))
-    const page = Clamp(CurrentPage.value, 1, max)
+    const page = clamp(CurrentPage.value, 1, max)
 
     if (page !== CurrentPage.value) {
         if (props.modelValue === null) InternalPage.value = page

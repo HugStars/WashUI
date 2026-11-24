@@ -1,5 +1,5 @@
 <template>
-    <div class="wa_field">
+    <div class="wa_field" v-bind="$attrs">
         <label v-if="label || $slots.label" class="wa_field_label" :id="`${FieldId}-label`">
             <slot name="label">{{ label }}</slot>
         </label>
@@ -101,8 +101,19 @@
 </template>
 
 <script setup>
-import { computed, onUnmounted, ref, useId, watch } from 'vue'
+import { computed, ref, useId, watch } from 'vue'
+import { useFieldMessage } from '../composables/useFieldMessage.js'
 import { useValidation } from '../composables/useValidation.js'
+import {
+    formatColor,
+    hslToRgb,
+    hsvToRgb,
+    parseColor,
+    rgbToHex,
+    rgbToHsl,
+    rgbToHsv,
+} from '../utils/color.js'
+import { clamp } from '../utils/format.js'
 import AppIcon from './AppIcon.vue'
 import AppPopover from './AppPopover.vue'
 
@@ -179,18 +190,18 @@ const AreaEl = ref(null)
 const Dragging = ref(false)
 let DragPointer = null
 
-const { DisplayError, OnInput: ValidateInput } = useValidation(
+const { DisplayError, OnChange: ValidateChange } = useValidation(
     props,
     () => props.modelValue,
     { defaultTrigger: 'change' }
 )
 
-const Rgb = computed(() => HsvToRgb(Hsv.value.h, Hsv.value.s, Hsv.value.v))
-const Hex = computed(() => RgbToHex(Rgb.value))
-const Hsl = computed(() => RgbToHsl(Rgb.value))
+const Rgb = computed(() => hsvToRgb(Hsv.value.h, Hsv.value.s, Hsv.value.v))
+const Hex = computed(() => rgbToHex(Rgb.value))
+const Hsl = computed(() => rgbToHsl(Rgb.value))
 const DisplayColor = computed(() => {
     if (!props.modelValue && !HasInteracted.value) return ''
-    return FormatColor(Rgb.value, Mode.value)
+    return formatColor(Rgb.value, Mode.value)
 })
 const AreaStyle = computed(() => ({
     backgroundColor: `hsl(${Hsv.value.h} 100% 50%)`
@@ -200,28 +211,14 @@ const ThumbStyle = computed(() => ({
     top: `${(1 - Hsv.value.v) * 100}%`
 }))
 const NormalizedPresets = computed(() => props.presets
-    .map(color => ParseColor(color))
+    .map(color => parseColor(color))
     .filter(Boolean)
-    .map(color => FormatColor(color, Mode.value)))
+    .map(color => formatColor(color, Mode.value)))
 
-const Message = computed(() => Boolean(DisplayError.value || props.hint))
-const MessageText = ref('')
-const MessageIsError = ref(false)
-let MessageTimer = 0
-
-watch([DisplayError, () => props.hint], ([error, hint]) => {
-    clearTimeout(MessageTimer)
-
-    if (error || hint) {
-        MessageIsError.value = Boolean(error)
-        MessageText.value = error || hint
-        return
-    }
-
-    MessageTimer = setTimeout(() => {
-        MessageText.value = ''
-    }, 220)
-}, { immediate: true })
+const { Message, MessageText, MessageIsError } = useFieldMessage(
+    () => DisplayError.value,
+    () => props.hint
+)
 
 watch(() => props.format, value => {
     Mode.value = NormalizeMode(value)
@@ -234,9 +231,9 @@ watch(() => props.modelValue, value => {
     // ! 纯黑/纯白附近还会把色相和饱和度抹掉，表现为拖点闪动
     if (value === LastEmitted) return
 
-    const rgb = ParseColor(value)
+    const rgb = parseColor(value)
     if (rgb) {
-        Hsv.value = RgbToHsv(rgb)
+        Hsv.value = rgbToHsv(rgb)
         HasInteracted.value = true
         return
     }
@@ -247,159 +244,8 @@ watch(() => props.modelValue, value => {
     }
 }, { immediate: true })
 
-onUnmounted(() => clearTimeout(MessageTimer))
-
 function NormalizeMode(value) {
     return Modes.includes(value) ? value : 'hex'
-}
-
-function Clamp(value, min, max) {
-    return Math.min(max, Math.max(min, value))
-}
-
-function ParseColor(input) {
-    const value = String(input || '').trim().toLowerCase()
-
-    let match = value.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/)
-    if (match) {
-        const hex = match[1].length === 3
-            ? match[1].split('').map(char => char + char).join('')
-            : match[1]
-        return {
-            r: parseInt(hex.slice(0, 2), 16),
-            g: parseInt(hex.slice(2, 4), 16),
-            b: parseInt(hex.slice(4, 6), 16)
-        }
-    }
-
-    match = value.match(/^rgba?\(([^)]+)\)$/)
-    if (match) {
-        const parts = match[1].split(/[, ]+/).map(Number)
-        if (parts.length >= 3 && parts.slice(0, 3).every(Number.isFinite)) {
-            return {
-                r: Clamp(parts[0], 0, 255),
-                g: Clamp(parts[1], 0, 255),
-                b: Clamp(parts[2], 0, 255)
-            }
-        }
-    }
-
-    match = value.match(/^hsla?\(([^)]+)\)$/)
-    if (match) {
-        const parts = match[1].split(/[, ]+/)
-        const h = Number(parts[0])
-        const s = Number(parts[1])
-        const l = Number(parts[2])
-        if ([h, s, l].every(Number.isFinite)) return HslToRgb(h, s, l)
-    }
-
-    return null
-}
-
-function RgbToHex(rgb) {
-    return '#' + [rgb.r, rgb.g, rgb.b]
-        .map(value => Math.round(Clamp(value, 0, 255)).toString(16).padStart(2, '0'))
-        .join('')
-}
-
-function RgbToHsv(rgb) {
-    const r = rgb.r / 255
-    const g = rgb.g / 255
-    const b = rgb.b / 255
-    const max = Math.max(r, g, b)
-    const min = Math.min(r, g, b)
-    const delta = max - min
-    let h = 0
-
-    if (delta) {
-        if (max === r) h = 60 * (((g - b) / delta) % 6)
-        else if (max === g) h = 60 * ((b - r) / delta + 2)
-        else h = 60 * ((r - g) / delta + 4)
-    }
-
-    return { h: (h + 360) % 360, s: max ? delta / max : 0, v: max }
-}
-
-function HsvToRgb(h, s, v) {
-    const c = v * s
-    const x = c * (1 - Math.abs((h / 60) % 2 - 1))
-    const m = v - c
-    let r = 0
-    let g = 0
-    let b = 0
-
-    if (h < 60) [r, g, b] = [c, x, 0]
-    else if (h < 120) [r, g, b] = [x, c, 0]
-    else if (h < 180) [r, g, b] = [0, c, x]
-    else if (h < 240) [r, g, b] = [0, x, c]
-    else if (h < 300) [r, g, b] = [x, 0, c]
-    else [r, g, b] = [c, 0, x]
-
-    return {
-        r: Math.round((r + m) * 255),
-        g: Math.round((g + m) * 255),
-        b: Math.round((b + m) * 255)
-    }
-}
-
-function RgbToHsl(rgb) {
-    const r = rgb.r / 255
-    const g = rgb.g / 255
-    const b = rgb.b / 255
-    const max = Math.max(r, g, b)
-    const min = Math.min(r, g, b)
-    const delta = max - min
-    let h = 0
-
-    if (delta) {
-        if (max === r) h = 60 * (((g - b) / delta) % 6)
-        else if (max === g) h = 60 * ((b - r) / delta + 2)
-        else h = 60 * ((r - g) / delta + 4)
-    }
-
-    const l = (max + min) / 2
-    const s = delta ? delta / (1 - Math.abs(2 * l - 1)) : 0
-
-    return {
-        h: Math.round((h + 360) % 360),
-        s: Math.round(s * 100),
-        l: Math.round(l * 100)
-    }
-}
-
-function HslToRgb(h, s, l) {
-    const saturation = Clamp(s, 0, 100) / 100
-    const lightness = Clamp(l, 0, 100) / 100
-    const c = (1 - Math.abs(2 * lightness - 1)) * saturation
-    const x = c * (1 - Math.abs(((h % 360) / 60) % 2 - 1))
-    const m = lightness - c / 2
-    let r = 0
-    let g = 0
-    let b = 0
-
-    const hue = ((h % 360) + 360) % 360
-    if (hue < 60) [r, g, b] = [c, x, 0]
-    else if (hue < 120) [r, g, b] = [x, c, 0]
-    else if (hue < 180) [r, g, b] = [0, c, x]
-    else if (hue < 240) [r, g, b] = [0, x, c]
-    else if (hue < 300) [r, g, b] = [x, 0, c]
-    else [r, g, b] = [c, 0, x]
-
-    return {
-        r: Math.round((r + m) * 255),
-        g: Math.round((g + m) * 255),
-        b: Math.round((b + m) * 255)
-    }
-}
-
-function FormatColor(rgb, mode) {
-    if (!rgb) return ''
-    if (mode === 'rgb') return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
-    if (mode === 'hsl') {
-        const hsl = RgbToHsl(rgb)
-        return `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`
-    }
-    return RgbToHex(rgb)
 }
 
 function OnAreaKeydown(event) {
@@ -417,18 +263,18 @@ function OnAreaKeydown(event) {
     else if (event.key === 'ArrowDown') hsv.v = Math.max(0, hsv.v - step)
 
     Hsv.value = hsv
-    EmitColor(HsvToRgb(hsv.h, hsv.s, hsv.v), true)
+    EmitColor(hsvToRgb(hsv.h, hsv.s, hsv.v), true)
 }
 
 function EmitColor(rgb, preserveHsv = false) {
     // 色板拖到纯黑/纯白时，RGB 反推会丢失色相和饱和度；保留当前 HSV 才能让拖点停在原位置
-    if (!preserveHsv) Hsv.value = RgbToHsv(rgb)
+    if (!preserveHsv) Hsv.value = rgbToHsv(rgb)
     HasInteracted.value = true
-    const value = FormatColor(rgb, Mode.value)
+    const value = formatColor(rgb, Mode.value)
     LastEmitted = value
     emit('update:modelValue', value)
     emit('change', value)
-    ValidateInput(value)
+    ValidateChange(value)
 }
 
 function UpdateArea(event) {
@@ -436,11 +282,11 @@ function UpdateArea(event) {
     if (!el) return
 
     const rect = el.getBoundingClientRect()
-    const x = Clamp((event.clientX - rect.left) / Math.max(1, rect.width), 0, 1)
-    const y = Clamp((event.clientY - rect.top) / Math.max(1, rect.height), 0, 1)
+    const x = clamp((event.clientX - rect.left) / Math.max(1, rect.width), 0, 1)
+    const y = clamp((event.clientY - rect.top) / Math.max(1, rect.height), 0, 1)
 
     Hsv.value = { h: Hsv.value.h, s: x, v: 1 - y }
-    EmitColor(HsvToRgb(Hsv.value.h, x, 1 - y), true)
+    EmitColor(hsvToRgb(Hsv.value.h, x, 1 - y), true)
 }
 
 function StartDrag(event) {
@@ -464,18 +310,18 @@ function StopDrag() {
 function SetHue(event) {
     const hue = Number(event.target.value) || 0
     Hsv.value = { ...Hsv.value, h: hue }
-    EmitColor(HsvToRgb(hue, Hsv.value.s, Hsv.value.v), true)
+    EmitColor(hsvToRgb(hue, Hsv.value.s, Hsv.value.v), true)
 }
 
 function OnHexChange(event) {
-    const rgb = ParseColor(event.target.value)
+    const rgb = parseColor(event.target.value)
     if (rgb) EmitColor(rgb)
     else event.target.value = Hex.value
 }
 
 function OnRgbChange(event) {
     const inputs = event.currentTarget.closest('.wa_color_inputs').querySelectorAll('.wa_color_input')
-    const [r, g, b] = Array.from(inputs).map(input => Clamp(Number(input.value) || 0, 0, 255))
+    const [r, g, b] = Array.from(inputs).map(input => clamp(Number(input.value) || 0, 0, 255))
     EmitColor({ r, g, b })
 }
 
@@ -483,13 +329,13 @@ function OnHslChange(event) {
     const inputs = event.currentTarget.closest('.wa_color_inputs').querySelectorAll('.wa_color_input')
     const [h, s, l] = Array.from(inputs).map((input, index) => {
         const value = Number(input.value) || 0
-        return index === 0 ? Clamp(value, 0, 360) : Clamp(value, 0, 100)
+        return index === 0 ? clamp(value, 0, 360) : clamp(value, 0, 100)
     })
-    EmitColor(HslToRgb(h, s, l))
+    EmitColor(hslToRgb(h, s, l))
 }
 
 function ChoosePreset(color) {
-    const rgb = ParseColor(color)
+    const rgb = parseColor(color)
     if (rgb) EmitColor(rgb)
 }
 </script>

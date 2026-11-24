@@ -33,7 +33,8 @@
 </template>
 
 <script setup>
-import { computed, onUnmounted, ref, useId, watch } from 'vue'
+import { computed, ref, useId } from 'vue'
+import { useFieldMessage } from '../composables/useFieldMessage.js'
 import { useValidation } from '../composables/useValidation.js'
 import AppIcon from './AppIcon.vue'
 
@@ -97,27 +98,10 @@ const { DisplayError, OnBlur: ValidateBlur, OnInput: ValidateInput } = useValida
     { defaultTrigger: 'blur' }
 )
 const DescribedBy = computed(() => (DisplayError.value ? ErrorId : props.hint ? HintId : undefined))
-const Message = computed(() => Boolean(DisplayError.value || props.hint))
-const MessageText = ref('')
-const MessageIsError = ref(false)
-let MessageTimer = 0
-
-// * 消息收起时延迟清空文本，让容器高度过渡能完整播放
-watch([DisplayError, () => props.hint], ([error, hint]) => {
-    clearTimeout(MessageTimer)
-
-    if (error || hint) {
-        MessageIsError.value = Boolean(error)
-        MessageText.value = error || hint
-        return
-    }
-
-    MessageTimer = setTimeout(() => {
-        MessageText.value = ''
-    }, 220)
-}, { immediate: true })
-
-onUnmounted(() => clearTimeout(MessageTimer))
+const { Message, MessageText, MessageIsError } = useFieldMessage(
+    () => DisplayError.value,
+    () => props.hint
+)
 
 function HandleInput(event) {
     const value = event.target.value
