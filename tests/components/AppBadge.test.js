@@ -102,6 +102,23 @@ describe('AppBadge', () => {
         wrapper.unmount()
     })
 
+    it('keeps readonly badges non-interactive', async () => {
+        const wrapper = mount(AppBadge, {
+            props: { value: 3, readonly: true, draggable: true, maxDistance: 20 },
+        })
+        const blob = wrapper.find('.wa_badge_blob')
+
+        await blob.trigger('click')
+        blob.element.dispatchEvent(MakePointerEvent('pointerdown', 0, 0))
+        blob.element.dispatchEvent(MakePointerEvent('pointermove', 100, 100))
+        blob.element.dispatchEvent(MakePointerEvent('pointermove', 100, 100))
+        blob.element.dispatchEvent(MakePointerEvent('pointerup', 100, 100))
+        await blob.trigger('keydown', { key: 'Delete' })
+
+        expect(wrapper.emitted('click')).toBeUndefined()
+        expect(wrapper.emitted('clear')).toBeUndefined()
+    })
+
     it('emits click when activated', async () => {
         const wrapper = mount(AppBadge, {
             props: { value: 3 },

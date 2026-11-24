@@ -38,6 +38,23 @@ describe('AppTable', () => {
         })
     })
 
+    it('calculates sticky offsets from explicit column widths', () => {
+        const fixedColumns = [
+            { key: 'id', title: 'ID', width: 50, fixed: 'left' },
+            { key: 'name', title: '名称', width: 120 },
+            { key: 'status', title: '状态', width: 60, fixed: 'right' },
+            { key: 'actions', title: '操作', width: 70, fixed: 'right' },
+        ]
+        const wrapper = mount(AppTable, {
+            props: { columns: fixedColumns, data },
+        })
+        const headers = wrapper.findAll('.wa_table_th')
+
+        expect(headers[0].attributes('style')).toContain('left: 0px')
+        expect(headers[2].attributes('style')).toContain('right: 70px')
+        expect(headers[3].attributes('style')).toContain('right: 0px')
+    })
+
     it('renders a fixed header viewport when maxHeight is set', () => {
         const wrapper = mount(AppTable, {
             props: { columns, data, maxHeight: 200 },

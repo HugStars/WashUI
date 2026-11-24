@@ -1,11 +1,12 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { configureIconDefaults, defaultIcons, getIconDefaults } from '@ui/src/core/icons.js'
 
+const Defaults = getIconDefaults()
 const Original = {
-    spring: { stiffness: 520, damping: 34 },
-    speed: 1,
-    strokeWidth: 1.8,
-    reducedMotion: 'user',
+    ...Defaults,
+    spring: Defaults.spring && typeof Defaults.spring === 'object'
+        ? { ...Defaults.spring }
+        : Defaults.spring,
 }
 
 afterEach(() => {

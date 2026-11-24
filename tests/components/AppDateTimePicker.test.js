@@ -101,6 +101,20 @@ describe('AppDatePicker', () => {
         expect(wrapper.emitted('update:modelValue')?.[0][0]).toMatch(/^\d{4}-W\d{2}$/)
     })
 
+    it('runs change rules after selecting a date', async () => {
+        wrapper = mountPicker(AppDatePicker, {
+            modelValue: '2026-11-15',
+            rule: { pattern: /^2026-11-20$/, message: '只能选 20 号' },
+        })
+        await wrapper.find('.wa_datetime').trigger('click')
+        await nextTick()
+
+        await findDay(wrapper, 21).trigger('click')
+        await nextTick()
+
+        expect(wrapper.find('.wa_field_error').text()).toBe('只能选 20 号')
+    })
+
     it('selects a date range', async () => {
         wrapper = mountPicker(AppDatePicker, {
             modelValue: ['2026-11-05', ''],
@@ -145,6 +159,22 @@ describe('AppTimePicker', () => {
 
         expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['10:15'])
         expect(wrapper.emitted('change')?.[0]).toEqual(['10:15'])
+    })
+})
+
+describe('AppTimePicker bounds', () => {
+    it('clamps the confirmed time to the minimum boundary', async () => {
+        wrapper = mountPicker(AppTimePicker, { modelValue: '12:00', min: '09:30' })
+        await wrapper.find('.wa_datetime').trigger('click')
+        await nextTick()
+
+        await wrapper.findAll('.wa_dt_select_trigger')[0].trigger('click')
+        await wrapper.find('.wa_dt_select_menu')
+            .findAll('.wa_dt_select_item').find(item => item.text() === '09').trigger('click')
+
+        await wrapper.find('.wa_dt_footer .wa_btn').trigger('click')
+
+        expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['09:30'])
     })
 })
 

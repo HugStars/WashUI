@@ -1,4 +1,7 @@
-import { vi } from 'vitest'
+import { enableAutoUnmount } from '@vue/test-utils'
+import { afterEach, vi } from 'vitest'
+
+enableAutoUnmount(afterEach)
 
 if (typeof window !== 'undefined' && typeof window.matchMedia !== 'function') {
     window.matchMedia = vi.fn().mockImplementation(query => ({

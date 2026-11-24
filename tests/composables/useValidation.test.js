@@ -45,6 +45,19 @@ describe('useValidation', () => {
         expect(OnBlur('a')).toBe('')
     })
 
+    it('ignores empty rule entries', () => {
+        const { OnBlur } = setup([null, { required: true, message: '必填' }])
+        expect(OnBlur('')).toBe('必填')
+    })
+
+    it('handles rejected async validators without unhandled rejection', async () => {
+        const rejected = Promise.reject(new Error('async boom'))
+        const { OnBlur } = setup({ validator: () => rejected })
+
+        expect(OnBlur('x')).toBe('暂不支持异步校验，请改用同步 validator')
+        await new Promise(resolve => setTimeout(resolve, 0))
+    })
+
     it('supports custom validators', () => {
         expect(setup({ validator: () => '自定义错误' }).OnBlur('x')).toBe('自定义错误')
         expect(setup({ validator: () => new Error('boom') }).OnBlur('x')).toBe('boom')

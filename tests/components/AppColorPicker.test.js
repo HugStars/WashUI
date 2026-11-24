@@ -121,6 +121,30 @@ describe('AppColorPicker', () => {
         expect(wrapper.find('.wa_color_value').text()).toBe('请选择颜色')
     })
 
+    it('runs change rules after picking a color', async () => {
+        wrapper = mountPicker({
+            modelValue: '#ff0000',
+            rule: { pattern: /^#ffffff$/, message: '只能选白色' },
+        })
+        await wrapper.find('.wa_color_trigger').trigger('click')
+        await nextTick()
+
+        await wrapper.findAll('.wa_color_preset')[0].trigger('click')
+        await nextTick()
+
+        expect(wrapper.find('.wa_field_error').text()).toBe('只能选白色')
+    })
+
+    it('forwards attrs to the field root', () => {
+        wrapper = mount(AppColorPicker, {
+            props: { modelValue: '' },
+            attrs: { class: 'doc_custom_field', id: 'color-field' },
+        })
+
+        expect(wrapper.classes()).toContain('doc_custom_field')
+        expect(wrapper.attributes('id')).toBe('color-field')
+    })
+
     it('disables the trigger', () => {
         wrapper = mountPicker({ modelValue: '#000000', disabled: true })
         expect(wrapper.find('.wa_color_trigger').attributes('disabled')).toBeDefined()

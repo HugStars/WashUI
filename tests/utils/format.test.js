@@ -73,7 +73,10 @@ describe('format options', () => {
         expect(formatBytes(1536, 2)).toBe('1.50 KB')
         expect(formatBytes(1536, { decimals: 2, trimZeros: false })).toBe('1.50 KB')
         expect(formatBytes(1536, { unit: 'MB' })).toBe('0 MB')
+        expect(formatBytes(0.5)).toBe('0.5 B')
+        expect(formatBytes(1536, null)).toBe('1.5 KB')
         expect(formatBytesFixed(2)(1536)).toBe('1.50 KB')
+        expect(formatDuration(1500, null)).toBe('1.50 s')
     })
 
     it('formats numbers, percents and currency', () => {
@@ -86,7 +89,13 @@ describe('format options', () => {
     it('formats dates and relative time', () => {
         expect(formatDate('2026-11-13T13:00:00', 'YYYY/MM/DD')).toBe('2026/11/13')
         expect(formatDate('2026-11-13T13:00:00')).toBe('2026-11-13 13:00:00')
-        expect(formatRelativeTime(Date.now() - 3 * 60 * 1000)).toBe('3 分钟前')
+        expect(formatRelativeTime('2026-11-13T11:57:00', { base: '2026-11-13T12:00:00' })).toBe('3 分钟前')
+        expect(formatRelativeTime('2026-11-13T12:00:00', { base: '2026-11-13T12:00:00', short: true })).toBe('刚刚')
+        expect(formatRelativeTime('2026-11-13T12:03:00', {
+            base: '2026-11-13T12:00:00',
+            short: true,
+        })).toBe('3分钟后')
+        expect(formatRelativeTime('2026-11-13T12:00:00', { base: 'bad' })).toBe('')
     })
 
     it('formats text and ranges', () => {
