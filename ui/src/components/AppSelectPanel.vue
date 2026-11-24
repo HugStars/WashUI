@@ -181,7 +181,7 @@ onMounted(() => {
     })
 
     if (typeof ResizeObserver !== 'undefined' && PanelEl.value) {
-        ScrollObserver = new ResizeObserver(UpdateScrollbar)
+        ScrollObserver = new ResizeObserver(ScheduleScrollbar)
         ScrollObserver.observe(PanelEl.value)
     }
 

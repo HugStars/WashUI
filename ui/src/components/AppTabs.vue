@@ -21,7 +21,7 @@
                 type="button" :id="TabId(index)" class="wa_tabs_tab"
                 :class="{ on: item.value === modelValue, pressed: PressedKey === item.value }" role="tab"
                 :aria-selected="item.value === modelValue" :aria-controls="HasPanel ? PanelId : undefined"
-                :tabindex="item.value === modelValue ? 0 : -1" :disabled="item.disabled" @click="Choose(item, index)">
+                :tabindex="item.value === modelValue ? 0 : -1" :disabled="item.disabled" @click="Choose(item)">
                 <AppIcon v-if="item.icon" :name="item.icon" :size="IconSize" />
                 <span>{{ item.label }}</span>
             </button>
@@ -333,7 +333,7 @@ function OnBadgeClick(entry) {
     const item = props.items.find(item => item.value === entry.key)
     if (!item) return
 
-    Choose(item, props.items.indexOf(item))
+    Choose(item)
 }
 
 function OnBadgeClear(entry) {
@@ -403,7 +403,7 @@ function ScrollActiveIntoView() {
     })
 }
 
-function Choose(item, index) {
+function Choose(item) {
     if (item.disabled) return
     if (item.value === props.modelValue) return
     emit('update:modelValue', item.value)
@@ -414,14 +414,12 @@ function OnKeydown(event) {
     const keys = ['ArrowRight', 'ArrowLeft', 'Home', 'End']
     if (!keys.includes(event.key)) return
 
-    const enabled = props.items
-        .map((item, index) => ({ item, index }))
-        .filter(({ item }) => !item.disabled)
+    const enabled = props.items.filter(item => !item.disabled)
     if (!enabled.length) return
 
     event.preventDefault()
 
-    const current = enabled.findIndex(({ item }) => item.value === props.modelValue)
+    const current = enabled.findIndex(item => item.value === props.modelValue)
     let next = 0
 
     if (event.key === 'End') next = enabled.length - 1
@@ -429,9 +427,9 @@ function OnKeydown(event) {
     else if (event.key === 'ArrowLeft') next = current < 0 ? enabled.length - 1 : (current - 1 + enabled.length) % enabled.length
 
     const target = enabled[next]
-    Choose(target.item, target.index)
+    Choose(target)
     nextTick(() => {
-        const el = TabEls.get(target.item.value) || TabEls.get(MORE_KEY)
+        const el = TabEls.get(target.value) || TabEls.get(MORE_KEY)
         el?.focus()
     })
 }
@@ -439,7 +437,7 @@ function OnKeydown(event) {
 function SelectMore(option, close) {
     if (option.disabled) return
     const index = props.items.findIndex(item => item.value === option.value)
-    if (index >= 0) Choose(props.items[index], index)
+    if (index >= 0) Choose(props.items[index])
     close()
 }
 
@@ -603,10 +601,19 @@ watch(() => props.modelValue, () => {
     })
 })
 
+// 只监听会影响标签尺寸的字段；badge 是绝对定位覆盖层，不参与布局
+const LayoutSignature = computed(() => props.items
+    .map(item => [
+        String(item.value),
+        String(item.label ?? ''),
+        String(item.icon ?? ''),
+        Boolean(item.disabled),
+    ].join('\u001f'))
+    .join('\u001e'))
+
 watch(
-    [() => props.items, () => props.size, () => props.variant, () => props.fill, () => props.overflow, () => props.max],
+    [LayoutSignature, () => props.size, () => props.variant, () => props.fill, () => props.overflow, () => props.max],
     () => nextTick(Refresh),
-    { deep: true },
 )
 </script>
 

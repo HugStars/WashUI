@@ -222,6 +222,7 @@ const FlashRows = ref(false)
 
 let FlashTimer = null
 let FlashFrame = 0
+let ScrollFrame = 0
 const ReducedMotion = useReducedMotion()
 
 const SortState = computed(() => props.sort === undefined ? InternalSort.value : props.sort)
@@ -413,24 +414,29 @@ function GetColumnWidth(column) {
     return ToPx(column.width) || MeasuredWidths.value[column.key] || 0
 }
 
+const StickyOffsets = computed(() => {
+    const offsets = new Map()
+    let left = props.selectable ? SELECT_WIDTH : 0
+
+    for (const column of props.columns) {
+        if (column.fixed !== 'left') continue
+        offsets.set(column.key, left)
+        left += GetColumnWidth(column)
+    }
+
+    let right = 0
+    for (let index = props.columns.length - 1; index >= 0; index--) {
+        const column = props.columns[index]
+        if (column.fixed !== 'right') continue
+        offsets.set(column.key, right)
+        right += GetColumnWidth(column)
+    }
+
+    return offsets
+})
+
 function GetStickyOffset(column) {
-    const list = props.columns
-    const index = list.indexOf(column)
-    if (index < 0) return 0
-
-    if (column.fixed === 'right') {
-        let offset = 0
-        for (let i = list.length - 1; i > index; i--) {
-            if (list[i].fixed === 'right') offset += GetColumnWidth(list[i])
-        }
-        return offset
-    }
-
-    let offset = props.selectable ? SELECT_WIDTH : 0
-    for (let i = 0; i < index; i++) {
-        if (list[i].fixed === 'left') offset += GetColumnWidth(list[i])
-    }
-    return offset
+    return StickyOffsets.value.get(column.key) ?? 0
 }
 
 function ColumnWidthStyle(column) {
@@ -612,8 +618,13 @@ function SyncScrollbarWidth() {
 }
 
 function OnBodyScroll() {
-    UpdateScrollShadow()
-    SyncHeadScroll()
+    if (ScrollFrame) return
+
+    ScrollFrame = requestAnimationFrame(() => {
+        ScrollFrame = 0
+        UpdateScrollShadow()
+        SyncHeadScroll()
+    })
 }
 
 function OnResize() {
@@ -645,6 +656,7 @@ onBeforeUnmount(() => {
     ResizeObserverInstance?.disconnect()
     ResizeObserverInstance = null
     cancelAnimationFrame(FlashFrame)
+    cancelAnimationFrame(ScrollFrame)
     clearTimeout(FlashTimer)
 })
 
