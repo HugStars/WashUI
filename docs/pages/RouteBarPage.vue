@@ -37,7 +37,10 @@ function start() {
     }, 1200)
 }
 
-onUnmounted(() => clearTimeout(timer))
+onUnmounted(() => {
+    clearTimeout(timer)
+    routeLoading.value = false
+})
 
 const propsRows = [
     { name: 'loading', type: 'boolean', default: '跟随 routeLoading', desc: '手动控制进度条显示' },

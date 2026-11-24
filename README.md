@@ -72,6 +72,14 @@ pnpm dev
 -   `AppPopover` / `AppCheckMenu` 的 trigger 使用 `triggerProps`
 -   `AppPinInput.error` 支持字符串
 
+## 0.5.1 补丁
+
+-   修复 DatePicker / ColorPicker 的 `rule` 校验不执行、日期 UTC 偏移、HSL 百分号解析和确认时间越界。
+-   AppPinInput 支持 `keyboard` 与正方形自适应格子，Badge readonly、Select 关闭校验、字段 `$attrs` 透传恢复。
+-   新增全局 `parseDateValue`、`parseTimeValue`、`startOfMonth`、`startOfWeek`、`getISOWeekNumber`、`parseColor`、`rgbToHsv` 等工具并从 `wash-ui/utils` 导出。
+-   优化 Table 固定列计算、Tabs 布局监听、SelectPanel resize 合并与 reduced-motion 单例。
+-   类型生成只输出真实导出组件，补全 `loadingManager` 与 `router.navigate` 类型。
+
 ## 设计理念
 
 1. **变量先行**：颜色、圆角、间距、阴影、层级、动画时长都来自 CSS 变量，组件不写死主题色或秒数；换主题、调节奏只改一处。

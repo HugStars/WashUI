@@ -5,6 +5,8 @@
 -   **范围**：`ui/src/components`、`ui/src/layout`、`ui/src/styles`、`ui/src/composables`、`docs`
 -   **原则**：一次改到位，不做兼容层；旧名字直接移除，文档同步更新
 
+> 0.5.1 为修复与工具函数补丁，不改变 0.5.0 的 breaking API；日期/颜色解析、字段校验和类型导出以当前实现为准。
+
 ## 1. 总原则
 
 1. **同一语义只保留一个名字**：受控值统一 `modelValue`，选项统一 `value`，状态统一 `disabled` / `readonly` / `loading`。

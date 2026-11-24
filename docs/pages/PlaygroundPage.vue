@@ -108,21 +108,18 @@ const editors = [
         key: 'html',
         label: 'HTML',
         lang: 'html',
-        max: 'fill',
         placeholder: '在这里写模板，不需要 <template> 包裹',
     },
     {
         key: 'js',
         label: 'JS',
         lang: 'js',
-        max: 'half',
         placeholder: '在这里写 setup 内容，不需要 <script setup> 包裹',
     },
     {
         key: 'css',
         label: 'CSS',
         lang: 'css',
-        max: 'third',
         placeholder: '在这里写样式，不需要 <style> 包裹',
     },
 ]

@@ -1,6 +1,5 @@
 <template>
-    <section class="pg_editor_block"
-        :class="{ 'is_half': max === 'half', 'is_fill': max === 'fill', is_bare: bare }"
+    <section class="pg_editor_block" :class="{ is_bare: bare }"
         :style="{ '--pg_editor_content_height': `${ContentHeight}px` }">
         <header v-if="!bare" class="pg_editor_head">
             <span class="pg_editor_label">{{ label }}</span>
@@ -38,11 +37,6 @@ const props = defineProps({
     placeholder: {
         type: String,
         default: '',
-    },
-    max: {
-        type: String,
-        default: 'third',
-        allows: ['third', 'half', 'fill'],
     },
     /** 去掉外框和标题，撑满父容器，供实验场的标签式编辑器使用 */
     bare: Boolean,
@@ -134,16 +128,6 @@ onUnmounted(() => {
     border: 1px solid var(--wa_color_line);
     border-radius: var(--wa_radius_control);
     background: var(--wa_color_field);
-}
-
-.pg_editor_block.is_half {
-    max-height: calc((100% - 12px) / 2);
-}
-
-.pg_editor_block.is_fill {
-    flex: 1 1 auto;
-    max-height: none;
-    min-height: 120px;
 }
 
 /* * bare：实验场标签页里的单编辑器，占满父容器，不再自带外框和标题 */

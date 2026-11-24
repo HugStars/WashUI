@@ -44,6 +44,7 @@ import { onUnmounted } from 'vue'
 import { toast } from 'wash-ui'
 import { ApiTable, DemoBlock, DocPage } from '../components/index.js'
 
+const initialTop = toast.configure().top
 let timer = null
 
 function setGlobalTop() {
@@ -69,7 +70,11 @@ function startPersistent() {
     toast.loading('常驻任务，点击“清空全部”结束')
 }
 
-onUnmounted(() => clearTimeout(timer))
+onUnmounted(() => {
+    clearTimeout(timer)
+    toast.clear()
+    toast.configure({ top: initialTop || null })
+})
 
 const methodRows = [
     { name: "toast(text, options)", desc: '普通提示，返回关闭函数' },

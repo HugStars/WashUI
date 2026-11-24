@@ -105,29 +105,23 @@ export const iconPages = [
 ]
 
 export const composablePages = [
-    { name: 'use-theme', label: '主题', en: 'useTheme', page: 'UseThemePage', path: '/composables/theme' },
-    { name: 'use-clipboard', label: '剪贴板', en: 'useClipboard', page: 'UseClipboardPage', path: '/composables/clipboard' },
-    { name: 'use-request', label: '请求', en: 'useRequest', page: 'UseRequestPage', path: '/composables/request' },
+    { name: 'use-theme', label: '主题', en: 'useTheme', page: 'UseThemePage', path: '/composables/theme', summary: '亮暗模式与跟随系统。' },
+    { name: 'use-clipboard', label: '剪贴板', en: 'useClipboard', page: 'UseClipboardPage', path: '/composables/clipboard', summary: '复制文本与 copied 状态。' },
+    { name: 'use-request', label: '请求', en: 'useRequest', page: 'UseRequestPage', path: '/composables/request', summary: '加载、错误与取消状态。' },
 ]
 
 export const abilityOverview = { name: 'abilities', label: '能力总览', en: 'Abilities', path: '/abilities' }
 
 export const utilsPages = [
-    { name: 'utils-bytes', label: '字节与速率', en: 'Bytes', path: '/utils/bytes', summary: '字节、速率、耗时与大数字的格式化。' },
-    { name: 'utils-number', label: '数字与文本', en: 'Number', path: '/utils/number', summary: '千分位、百分比、货币、补零与截断。' },
-    { name: 'utils-date', label: '日期与时间', en: 'Date', path: '/utils/date', summary: '日期模板格式化与相对时间。' },
-    { name: 'utils-async', label: '防抖与节流', en: 'Async', path: '/utils/async', summary: '限制高频函数执行次数，支持取消。' },
-]
-
-export const abilityPages = [
-    ...composablePages,
-    ...utilsPages,
-    { name: 'tokens', label: '设计变量', en: 'Tokens', path: '/tokens' },
+    { name: 'utils-bytes', label: '字节与速率', en: 'Bytes', page: 'UtilsBytesPage', path: '/utils/bytes', summary: '字节数、传输速率、耗时与大数字，支持小数位、固定单位与链式格式化器。' },
+    { name: 'utils-number', label: '数字与文本', en: 'Number', page: 'UtilsNumberPage', path: '/utils/number', summary: '千分位、百分比、货币、补零、截断与区间限制。' },
+    { name: 'utils-date', label: '日期与时间', en: 'Date', page: 'UtilsDatePage', path: '/utils/date', summary: '日期格式化、解析、周边界与相对时间。' },
+    { name: 'utils-async', label: '防抖与节流', en: 'Async', page: 'UtilsAsyncPage', path: '/utils/async', summary: '限制输入、滚动等高频函数的执行次数，返回函数带 cancel()。' },
 ]
 
 export const servicePages = [
-    { name: 'toast', label: '轻提示', en: 'Toast', page: 'ToastPage', path: '/services/toast' },
-    { name: 'loading', label: '加载', en: 'Loading', page: 'LoadingPage', path: '/services/loading' },
+    { name: 'toast', label: '轻提示', en: 'Toast', page: 'ToastPage', path: '/services/toast', summary: '全局消息提示，支持类型、停留与更新。' },
+    { name: 'loading', label: '加载', en: 'Loading', page: 'LoadingPage', path: '/services/loading', summary: '全局加载遮罩，支持多任务与优先级。' },
 ]
 
 export function pageLabel(item) {

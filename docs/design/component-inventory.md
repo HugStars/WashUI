@@ -4,6 +4,7 @@
 -   **状态**：稳定 / 需统一 / 需补文档 / 内部
 -   **优先级**：P0 影响可用性，P1 影响一致性，P2 增强
 -   **改造策略**：0.5.0 breaking，不保留旧别名；`name`、`nav`、`active`、`page-size-change` 等旧写法直接移除
+-   **当前补丁**：0.5.1 修复校验、日期/颜色工具、类型导出与文档清理，不新增 breaking 变更
 
 ## 0. 本轮已完成（0.5.0）
 
@@ -29,6 +30,14 @@
 -   新增 `useReducedMotion`，替换组件内的 motion 快照
 -   语义色 `_soft` / `_text`、尺寸、字号、间距 token 已补齐
 -   DatePicker / TimePicker / DateTimePicker 显式 props 与类型；类型生成支持 `defineModel`
+
+### 0.1 0.5.1 修复补丁
+
+-   修复 DatePicker / ColorPicker 的 `rule` 校验、日期时区、HSL 百分号和时间边界。
+-   修复 Badge readonly、Select 关闭校验、DateTimeField / ColorPicker `$attrs` 透传。
+-   新增全局日期解析/周计算和颜色转换工具，并补充 `utils` 导出与文档。
+-   优化 Table 固定列、Tabs 布局监听、SelectPanel resize、reduced-motion 单例。
+-   类型生成只输出真实导出组件，修复 `loadingManager` 与 `router.navigate` 类型。
 
 ## 1. 公开组件
 
