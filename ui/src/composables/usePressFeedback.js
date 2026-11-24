@@ -49,14 +49,22 @@ export function usePressFeedback(selector, itemEls, delay = 320, haptic = true) 
         }, delay)
     }
 
+    function OnVisibilityChange() {
+        if (document.hidden) Clear()
+    }
+
     onMounted(() => {
         window.addEventListener('pointerup', Clear)
         window.addEventListener('pointercancel', Clear)
+        window.addEventListener('blur', Clear)
+        document.addEventListener('visibilitychange', OnVisibilityChange)
     })
 
     onUnmounted(() => {
         window.removeEventListener('pointerup', Clear)
         window.removeEventListener('pointercancel', Clear)
+        window.removeEventListener('blur', Clear)
+        document.removeEventListener('visibilitychange', OnVisibilityChange)
         clearTimeout(timer)
     })
 

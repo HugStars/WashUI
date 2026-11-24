@@ -153,6 +153,7 @@ function UpdateMultiple(values) {
 
 function OnOpenChange(open) {
     PopoverOpen.value = open
+    if (!open) ValidateBlur(props.multiple ? Values.value : props.modelValue)
 }
 
 function HandleBlur() {

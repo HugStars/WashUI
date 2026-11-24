@@ -25,6 +25,7 @@
 <script setup>
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { useReducedMotion } from '../composables/useReducedMotion.js'
+import { clamp } from '../utils/format.js'
 import { createGooeyPath } from '../utils/gooey.js'
 
 const props = defineProps({
@@ -166,7 +167,7 @@ function AnchorFor(distance) {
 }
 
 function OnPointerDown(event) {
-    if (!props.draggable || props.disabled || Dismissed.value || Flying.value) return
+    if (props.readonly || !props.draggable || props.disabled || Dismissed.value || Flying.value) return
     if (event.pointerType === 'mouse' && event.button !== 0) return
 
     Active = true
@@ -266,8 +267,8 @@ function SpringBack() {
 
     let x = DragX.value
     let y = DragY.value
-    let vx = Clamp(VelocityX * 1000, -1600, 1600)
-    let vy = Clamp(VelocityY * 1000, -1600, 1600)
+    let vx = clamp(VelocityX * 1000, -1600, 1600)
+    let vy = clamp(VelocityY * 1000, -1600, 1600)
     let last = performance.now()
 
     const tick = now => {
@@ -371,6 +372,7 @@ function Finish() {
 }
 
 function OnClick() {
+    if (props.readonly) return
     if (SuppressClick) {
         SuppressClick = false
         return
@@ -380,7 +382,7 @@ function OnClick() {
 }
 
 function OnKeydown(event) {
-    if (!props.draggable || (event.key !== 'Delete' && event.key !== 'Backspace')) return
+    if (props.readonly || !props.draggable || (event.key !== 'Delete' && event.key !== 'Backspace')) return
     event.preventDefault()
     if (Dismissed.value) return
     MarkBroken()
@@ -403,10 +405,6 @@ function Reset() {
     DragX.value = 0
     DragY.value = 0
     AnchorScale.value = 1
-}
-
-function Clamp(value, min, max) {
-    return Math.min(max, Math.max(min, value))
 }
 
 watch(() => props.value, Reset)

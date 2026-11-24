@@ -15,7 +15,11 @@ let pageLocked = false
 let lockedScrollY = 0
 
 function EnsureHost() {
-    if (host || typeof document === 'undefined') return host
+    if (typeof document === 'undefined') return null
+    if (host) {
+        if (!document.contains(host)) document.body.appendChild(host)
+        return host
+    }
 
     host = document.createElement('div')
     host.className = 'wa_loading'
@@ -78,10 +82,15 @@ function ApplyOverlay(item) {
     host.style.backdropFilter = item.blur > 0 ? `blur(${item.blur}px)` : ''
 }
 
+let LastIconKey = ''
+
 function ApplyIcon(item) {
     const icon = item.icon ? getIcon(item.icon) : null
+    const key = `${item.icon || ''}|${item.spin !== false}`
 
     if (!icon) {
+        if (LastIconKey === key) return
+        LastIconKey = key
         ringEl.hidden = false
         iconEl.hidden = true
         iconEl.innerHTML = ''
@@ -89,13 +98,23 @@ function ApplyIcon(item) {
         return
     }
 
+    if (LastIconKey === key) return
+    LastIconKey = key
     ringEl.hidden = true
     iconEl.hidden = false
     iconEl.innerHTML = ''
     iconEl.classList.toggle('spin', item.spin !== false)
 
     if (typeof icon === 'string') {
-        iconEl.innerHTML = sanitizeSvg(icon)
+        const safe = sanitizeSvg(icon)
+        if (!safe) {
+            ringEl.hidden = false
+            iconEl.hidden = true
+            iconEl.innerHTML = ''
+            iconEl.classList.remove('spin')
+            return
+        }
+        iconEl.innerHTML = safe
         return
     }
 
@@ -297,4 +316,4 @@ export const loading = {
     },
 }
 
-export const loadingManager = loading
+export { loading as loadingManager }

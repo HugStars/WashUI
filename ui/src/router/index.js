@@ -1,6 +1,11 @@
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import { routeLoading } from '../core/route_state.js'
 
+/**
+ * 创建应用路由，并附带统一导航方法
+ * @param {object} options 路由配置
+ * @returns {import('vue-router').Router & { navigate: (to: any, options?: { mode?: 'auto' | 'push' | 'replace' }) => void }} 路由实例
+ */
 export function createAppRouter(options = {}) {
     const {
         routes = [],
@@ -37,6 +42,7 @@ export function createAppRouter(options = {}) {
         scrollBehavior(to, from, savedPosition) {
             if (!scroll) return false
             if (savedPosition) return savedPosition
+            if (to.hash) return { el: to.hash }
             return { top: positions.get(to.fullPath) || 0 }
         },
     })
@@ -45,11 +51,14 @@ export function createAppRouter(options = {}) {
         StartLoading()
         if (from.name && typeof window !== 'undefined') {
             positions.set(from.fullPath, window.scrollY)
+            if (positions.size > 200) positions.delete(positions.keys().next().value)
         }
     })
 
-    router.afterEach((to) => {
+    router.afterEach((to, from, failure) => {
         FinishLoading()
+        if (failure) return
+
         const nextTitle = typeof title === 'function' ? title(to) : (to.meta?.title || title)
         if (nextTitle && typeof document !== 'undefined') document.title = nextTitle
         onNavigate?.(to)

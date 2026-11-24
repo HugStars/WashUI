@@ -2,6 +2,7 @@ import { getCurrentScope, onScopeDispose, ref } from 'vue'
 
 function fallbackCopy(text) {
     if (typeof document === 'undefined' || !document.body) return false
+    const previous = document.activeElement
     const el = document.createElement('textarea')
     el.value = text
     el.setAttribute('readonly', '')
@@ -11,6 +12,7 @@ function fallbackCopy(text) {
     el.style.opacity = '0'
     document.body.appendChild(el)
     el.select()
+    el.setSelectionRange(0, text.length)
     let ok = false
     try {
         ok = document.execCommand('copy')
@@ -18,6 +20,7 @@ function fallbackCopy(text) {
         ok = false
     }
     el.remove()
+    previous?.focus?.({ preventScroll: true })
     return ok
 }
 

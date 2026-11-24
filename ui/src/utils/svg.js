@@ -7,11 +7,13 @@ const ALLOWED_TAGS = new Set([
 
 const UNSAFE_STYLE = /expression\s*\(|javascript:/i
 
-function IsUnsafeStyle(value) {
-    if (UNSAFE_STYLE.test(value)) return true
-
+function IsUnsafeUrl(value) {
     const urls = value.match(/url\s*\([^)]*\)/gi) || []
     return urls.some(item => !/^url\s*\(\s*['"]?#/i.test(item))
+}
+
+function IsUnsafeStyle(value) {
+    return UNSAFE_STYLE.test(value) || IsUnsafeUrl(value)
 }
 
 function CleanAttributes(element) {
@@ -30,7 +32,11 @@ function CleanAttributes(element) {
             continue
         }
 
-        if (name === 'style' && IsUnsafeStyle(value)) element.removeAttribute(attr.name)
+        if (name === 'style') {
+            if (IsUnsafeStyle(value)) element.removeAttribute(attr.name)
+        } else if (IsUnsafeUrl(value)) {
+            element.removeAttribute(attr.name)
+        }
     }
 }
 
